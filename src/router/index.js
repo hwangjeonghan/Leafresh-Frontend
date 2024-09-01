@@ -1,23 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import Community from "@/views/Community.vue";
+import PlantShare from "@/views/PlantShare.vue";
+import GardenDiary from "@/views/GardenDiary.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView
+      path: "/",
+      name: "Home",
+      redirect: "/community", // 기본 경로를 커뮤니티 페이지로 리다이렉트
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
-  ]
-})
+      path: "/community",
+      name: "Community",
+      component: Community, // 커뮤니티 페이지
+    },
+    {
+      path: "/plant-share",
+      name: "PlantShare",
+      component: PlantShare, // 식물분양 페이지
+    },
+    {
+      path: "/garden-diary",
+      name: "GardenDiary",
+      component: GardenDiary, // 원예일지 페이지
+    },
+  ],
+});
 
-export default router
+export default router;

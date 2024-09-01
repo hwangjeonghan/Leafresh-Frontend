@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "ghanachoco";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ghanachoco.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GothicA1-Light";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2205@1.0/GothicA1-Light.woff2")
+    format("woff2");
+  font-weight: 300;
+  font-style: normal;
+}
