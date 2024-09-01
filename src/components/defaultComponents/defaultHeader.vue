@@ -4,9 +4,7 @@
   <div class="header_container">
     <div class="header_text_container col">
       <div class="header_item">
-        <router-link to="/community" class="header_title point"
-          >Leafresh</router-link
-        >
+        <router-link to="/" class="header_title point">Leafresh</router-link>
       </div>
       <div class="header_item header_profile">프로필 아이콘</div>
       <div class="header_item col">
@@ -79,9 +77,14 @@ a {
   font-family: "ghanachoco";
   font-size: 18px;
   color: #fff;
-  margin: 20px;
+  margin: 30px;
 }
+
 .header_navigator:hover {
+  color: #a68b6a;
+}
+
+.router-link-active {
   color: #a68b6a;
 }
 
@@ -90,6 +93,7 @@ a {
   font-size: 18px;
   color: #fff;
 }
+
 .header_menu:hover {
   color: #a68b6a;
 }
