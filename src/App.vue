@@ -1,6 +1,6 @@
 <script setup>
-import DefaultHeader from "@/components/defaultComponents/defaultHeader.vue";
-import DefaultSection from "./components/defaultComponents/defaultSection.vue";
+import DefaultHeader from "@/components/common/defaultHeader.vue";
+import DefaultSection from "./components/common/defaultSection.vue";
 </script>
 
 <template>

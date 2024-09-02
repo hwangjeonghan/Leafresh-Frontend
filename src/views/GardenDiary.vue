@@ -1,8 +1,33 @@
-<script setup></script>
+<script setup>
+import Profile from "@/components/diary/diaryProfile.vue";
+import Schedule from "@/components/diary/diarySchedule.vue";
+import Card from "@/components/diary/diaryCard.vue";
+
+
+</script>
+
 
 <template>
   <div class="diary_container">
-    <div class="diary_text">원예일지 페이지 입니다.</div>
+
+
+    
+  <div class="profile">
+    <Profile />
+  </div>
+
+  <div class="schedule">
+
+    <Schedule />
+
+  </div>
+  
+
+  <div class="Card">
+    <Card />
+  </div>
+   
+
   </div>
 </template>
 
@@ -14,11 +39,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
-.diary_text {
-  font-family: "GothicA1-Light";
-  font-size: 20px;
-  color: #b3b3b3;
-}
+
 </style>
