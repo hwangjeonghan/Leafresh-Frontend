@@ -1,3 +1,4 @@
+
 <script setup>
 import { onMounted, watch } from 'vue'; // watch 추가
 import { useRouter } from 'vue-router'; // vue-router 사용
@@ -36,6 +37,8 @@ watch(isLoggedIn, (newValue) => {
 });
 </script>
 
+
+
 <template>
   <div class="header_container">
     <div class="header_text_container col">
@@ -44,6 +47,7 @@ watch(isLoggedIn, (newValue) => {
       </div>
       <div class="header_item header_profile">프로필 아이콘</div>
       <div class="header_item col">
+
         <router-link to="/community" class="header_navigator point">커뮤니티</router-link>
         <router-link to="/plant-share" class="header_navigator point">식물분양</router-link>
         <router-link to="/garden-diary" class="header_navigator point">원예일지</router-link>
@@ -52,6 +56,19 @@ watch(isLoggedIn, (newValue) => {
         <!-- 로그인 상태에 따라 로그인/로그아웃 버튼 표시 -->
         <router-link v-if="!isLoggedIn" to="/login" class="header_menu point">로그인</router-link>
         <button v-else @click="logout" class="header_menu point">로그아웃</button>
+
+        <router-link to="/community" class="header_navigator point"
+          >커뮤니티</router-link
+        >
+        <router-link to="/plant-share" class="header_navigator point"
+          >식물분양</router-link
+        >
+        <router-link to="/garden-diary" class="header_navigator point"
+          >원예일지</router-link
+        >
+      </div>
+      <div class="header_item">
+        <div class="header_menu point">로그인</div>
       </div>
     </div>
   </div>
@@ -124,9 +141,11 @@ a {
   font-family: "ghanachoco";
   font-size: 18px;
   color: #fff;
+
   background: none;
   border: none;
   cursor: pointer;
+
 }
 
 .header_menu:hover {
