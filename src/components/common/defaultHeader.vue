@@ -57,19 +57,9 @@ watch(isLoggedIn, (newValue) => {
         <router-link v-if="!isLoggedIn" to="/login" class="header_menu point">로그인</router-link>
         <button v-else @click="logout" class="header_menu point">로그아웃</button>
 
-        <router-link to="/community" class="header_navigator point"
-          >커뮤니티</router-link
-        >
-        <router-link to="/plant-share" class="header_navigator point"
-          >식물분양</router-link
-        >
-        <router-link to="/garden-diary" class="header_navigator point"
-          >원예일지</router-link
-        >
+        
       </div>
-      <div class="header_item">
-        <div class="header_menu point">로그인</div>
-      </div>
+    
     </div>
   </div>
 </template>
