@@ -10,36 +10,40 @@ import Card from "@/components/diary/diaryCard.vue";
 <template>
   <div class="diary_container">
 
+      
+    <div class="profile">
+      <Profile />
+    </div> 
 
+    <div class="schedule">
+
+      <Schedule />
+
+    </div>
     
-  <div class="profile">
-    <Profile />
-  </div>
 
-  <div class="schedule">
-
-    <Schedule />
-
-  </div>
-  
-
-  <div class="Card">
-    <Card />
-  </div>
-   
-
+    <div class="Card">
+      <Card />
+    </div>
+    
   </div>
 </template>
 
 <style scoped>
+
 .diary_container {
   width: 100%;
   height: 100%;
-  background-color: #f2d9bb;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+}
+
+.profile,
+.schedule,
+.card {
+  margin: 10px 0; /* 자식 요소들 사이에 여백 추가 */
 }
 
 
