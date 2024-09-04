@@ -1,20 +1,25 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
-const date = ref(new Date());
+//date를 ref 를 만들어서 화면에 표시할 수 있도록 함. 
+//new Date 는 사용자의 시스템에 설정된 현재 날짜와 시간을 기반으로 표기
+const date = ref(new Date()); 
 
-const yearMonth = computed(() => {
-  return `${date.value.getFullYear()}년 ${date.value.getMonth() + 1}월`;
-});
-
+// 화살표에 따라서 날짜들이 바껴야 하니까
 const formattedDates = ref([]);
+const yearMonth = ref([]);
+
+const renderYearMonth = ()=>{
+  return `${date.value.getFullYear()}년 ${date.value.getMonth() + 1}월`;
+}
 
 const renderCalendar = () => {
   const viewYear = date.value.getFullYear();
   const viewMonth = date.value.getMonth();
-
   const prevLast = new Date(viewYear, viewMonth, 0);
   const thisLast = new Date(viewYear, viewMonth + 1, 0);
+
+  yearMonth.value = renderYearMonth();
 
   const PLDate = prevLast.getDate();
   const PLDay = prevLast.getDay();
@@ -39,9 +44,12 @@ const renderCalendar = () => {
 
   const firstDateIndex = dates.indexOf(1);
   const lastDateIndex = dates.lastIndexOf(TLDate);
-
+  
+  
   formattedDates.value = dates.map((day, i) => {
     const isThisMonth = i >= firstDateIndex && i <= lastDateIndex;
+
+    // 오늘 날짜인지 확인하는 로직.
     const isToday =
       isThisMonth &&
       date.value.getFullYear() === new Date().getFullYear() &&
@@ -70,7 +78,9 @@ const goToday = () => {
   renderCalendar();
 };
 
+
 onMounted(renderCalendar);
+
 </script>
 
 
