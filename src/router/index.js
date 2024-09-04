@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Community from "@/views/Community.vue";
-import PlantShare from "@/views/PlantShare.vue";
+import PlantShare from "@/views/Market.vue";
 import GardenDiary from "@/views/GardenDiary.vue";
 import LoginView from "@/views/LoginView.vue"; // 로그인 페이지 import
 import SignupView from "@/views/SignupView.vue"; // 회원가입 페이지 import
 import MarketAddPost from "@/views/MarketAddPost.vue";
+import MarketView from "@/views/Market.vue";
+import Market from "@/views/Market.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,9 +22,9 @@ const router = createRouter({
       component: Community, // 커뮤니티 페이지
     },
     {
-      path: "/plant-share",
-      name: "PlantShare",
-      component: PlantShare, // 식물분양 페이지
+      path: "/market",
+      name: "Market",
+      component: Market, // 식물분양 페이지
     },
     {
       path: "/garden-diary",
@@ -40,7 +42,7 @@ const router = createRouter({
       component: SignupView, // 회원가입 페이지
     },
     {
-      path: "/addpost",
+      path: "/market/addpost",
       name: "Addpost",
       component: MarketAddPost, // 분양 게시글 등록 페이지
     },
