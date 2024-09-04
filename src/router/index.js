@@ -4,6 +4,7 @@ import PlantShare from "@/views/PlantShare.vue";
 import GardenDiary from "@/views/GardenDiary.vue";
 import LoginView from "@/views/LoginView.vue"; // 로그인 페이지 import
 import SignupView from "@/views/SignupView.vue"; // 회원가입 페이지 import
+import MarketAddPost from "@/views/MarketAddPost.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,11 @@ const router = createRouter({
       path: "/signup",
       name: "Signup",
       component: SignupView, // 회원가입 페이지
+    },
+    {
+      path: "/addpost",
+      name: "Addpost",
+      component: MarketAddPost, // 분양 게시글 등록 페이지
     },
   ],
 });
