@@ -16,7 +16,7 @@ const router = useRouter();  // router 사용 설정
 // 회원가입 요청 처리 함수
 const signup = async (userInfo) => {
   try {
-    const response = await axios.post('http://localhost:8090/auth/signup', userInfo);  // 서버에 회원가입 요청 전송
+    const response = await axios.post('http://localhost:8080/auth/signup', userInfo);  // 서버에 회원가입 요청 전송
     if (response.data.success) {
       // 회원가입 성공 시 로그인 페이지로 리다이렉트
       alert('회원가입이 성공적으로 완료되었습니다.');

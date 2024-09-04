@@ -41,7 +41,7 @@
   export default {
     setup() {
       const router = useRouter(); 
-      
+
       const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
       const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
   
@@ -68,7 +68,7 @@
           console.log('토큰 : ', tokentest); // 토큰확인
 
           try {
-            const response = await fetch('http://localhost:8090/market/addpost', {
+            const response = await fetch('http://localhost:8080/market/addpost', {
               method: 'POST',
               body: formData,
               headers: {
