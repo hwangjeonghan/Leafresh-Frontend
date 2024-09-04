@@ -1,3 +1,4 @@
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -10,12 +11,9 @@ const imageUrl = ref('');  // 프로필 이미지 URL을 저장할 상태
 // 로그아웃 메서드 정의
 const logout = async () => {
   try {
-    // 로그아웃 API 호출
     await axios.post('http://localhost:8080/auth/logout');
-    // 로그아웃 성공 시, 토큰 제거 및 상태 업데이트
     localStorage.removeItem('accessToken');
-    setLoginState(false);  // 전역 상태로 관리되는 로그인 상태 변경
-    // 로그인 페이지로 리다이렉트
+    setLoginState(false);
     router.push('/login');
   } catch (error) {
     console.error('로그아웃 오류:', error);
@@ -31,10 +29,17 @@ const fetchUserProfile = async () => {
       const response = await axios.get('http://localhost:8080/user/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      imageUrl.value = response.data.imageUrl;  // 사용자 정보에서 프로필 이미지 URL 가져옴
+      const ftpImagePath = response.data.imageUrl;
+      imageUrl.value = `http://localhost:8080/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
+      if (error.response && error.response.status === 401) {
+        // 401 오류가 발생하면 로그아웃 처리
+        logout();
+      }
     }
+  } else {
+    console.error('토큰이 존재하지 않습니다.');
   }
 };
 
@@ -48,7 +53,6 @@ onMounted(() => {
 
 // isLoggedIn 상태를 감시하여 UI 업데이트
 watch(isLoggedIn, (newValue) => {
-  console.log('로그인 상태 변경:', newValue);
   if (newValue) {
     fetchUserProfile();  // 로그인 상태가 true로 변경되면 사용자 정보 로드
   } else {
@@ -56,6 +60,7 @@ watch(isLoggedIn, (newValue) => {
   }
 });
 </script>
+
 
 <template>
   <div class="header_container">
@@ -65,7 +70,7 @@ watch(isLoggedIn, (newValue) => {
       </div>
       <div class="header_item header_profile">
         <!-- 프로필 이미지 표시 -->
-        <img v-if="imageUrl" :src="`http://localhost:8080/ftp/image?path=${encodeURIComponent(imageUrl)}`" alt="프로필 아이콘" class="profile-icon" />
+        <img v-if="imageUrl" :src="imageUrl" alt="프로필 아이콘" class="profile-icon" />
         <span v-else>프로필 아이콘</span>
       </div>
       <div class="header_item col">
@@ -81,6 +86,9 @@ watch(isLoggedIn, (newValue) => {
     </div>
   </div>
 </template>
+
+
+
 
 <style scoped>
 a {
@@ -159,8 +167,8 @@ a {
 }
 
 .profile-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  border-radius: 70%;
 }
 </style>
