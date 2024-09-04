@@ -72,31 +72,44 @@ const nextMonth = () => {
   date.value.setMonth(date.value.getMonth() + 1);
   renderCalendar();
 };
-
-const goToday = () => {
-  date.value = new Date();
-  renderCalendar();
-};
+// today 버튼지움
+// const goToday = () => {
+//   date.value = new Date();
+//   renderCalendar();
+// };
 
 
 onMounted(renderCalendar);
 
 </script>
 
-
 <template>
-  <section class="cal">
-    <div class="header">
-      <button class="nav-btn go-prev" @click="prevMonth">&lt;</button>
-      <div class="year-month">{{ yearMonth }}</div>
-      <button class="nav-btn go-next" @click="nextMonth">&gt;</button>
-      <button class="nav-btn go-today" @click="goToday">Today</button>
+  <section class="calender_container">
+    <div class="calender_header">
+        
+        <div clas="heaer_column1">
+          <div class="button_space"></div>
+          <div class="button-container">
+            <button class="nav-btn go-prev" @click="prevMonth">&lt;</button>
+            <button class="nav-btn go-next" @click="nextMonth">&gt;</button>
+          </div>
+        </div>
+
+        <div class="heaer_column2">
+          <div class="year-month_space" ></div>
+   
+          <div class="year-month">{{ yearMonth }}</div>
+        
+        </div>
+  
     </div>
+
+
     <div class="main">
       <div class="days">
         <div class="day">SUN</div>
         <div class="day">MON</div>
-        <div class="day">TUE</div>
+        <div class="day">TUE</div> 
         <div class="day">WED</div>
         <div class="day">THU</div>
         <div class="day">FRI</div>
@@ -117,54 +130,138 @@ onMounted(renderCalendar);
 </template>
 
 <style scoped>
-.cal {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F1F1F1 100%);
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+.calender_container {
+  background: rgba(242, 217, 187, 0.8); /* #F2D9BB 색상에 투명도 80% 적용 */
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.header {
+
+.calender_header{
   display: flex;
+  width: 100%;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  flex-direction: column;
+
 }
+
+.header_column1 {
+  flex: 1;
+}
+.header_column2 {
+  flex: 1;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* 버튼을 수직 중앙 정렬 */
+  gap: 10px; /* 버튼 간의 간격 */
+}
+
+.nav-btn {
+  width: 20px; /* 버튼 너비 */
+  height: 20px; /* 버튼 높이 */
+  background-color: #F7F8FC; /* 버튼 배경색 */
+  color: rgba(242, 217, 187, 0.8); 
+  border: none;
+  border-radius: 50%; /* 원형 버튼 */
+  font-size: 20px; /* 텍스트 크기 */
+  display: flex; /* 텍스트를 중앙 정렬하기 위해 flex 사용 */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer; /* 클릭 시 포인터 커서 */
+  transition: background-color 0.3s, transform 0.2s; /* 부드러운 호버 효과 */
+}
+
+.nav-btn:hover {
+  background-color: #904F00; /* 호버 시 배경색 변화 */
+  transform: scale(1.1); /* 호버 시 버튼 확대 */
+}
+
+.nav-btn:focus {
+  outline: none; /* 포커스 시 기본 윤곽선 제거 */
+}
+
+
+
+.button_space, .year-month_space {
+  flex: 1;
+}
+
+
+.year-month {
+  align-self: flex-start;
+  font-family: 'Lato', sans-serif;
+  font-size: 1.0em;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  color: #000;
+ 
+}
+
 
 .main {
-  background: #FFF;
-  border-radius: 10px;
-  padding: 10px;
+border-radius: 10px;
+margin-left: 10px;
 }
 
 .days {
   display: grid;
+  font-family: 'Nunito', sans-serif;
+  color: #904F00;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-weight: bold;
   padding-bottom: 10px;
-}
+} 
+
 
 .dates {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
+  font-family: 'Nunito', sans-serif;
+
 }
 
-.date {
-  padding: 10px;
-  border-radius: 5px;
+.date span {
+    display: inline-block;
+    width: 30px;  /* 모든 날짜의 크기를 동일하게 설정 */
+    height: 30px; /* 모든 날짜의 크기를 동일하게 설정 */
+    line-height: 30px; /* 텍스트를 중앙에 수직으로 배치 */
+    text-align: center; /* 텍스트를 중앙에 수평으로 배치 */
+    border-radius: 50%; /* 원형 모양을 위한 설정 */
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.date.today {
-  background-color: #FFDD57;
+
+.date.today span {
+    color: white; /* 텍스트 색상을 흰색으로 설정하여 배경과 대비되도록 함 */
+    background-color: #1C8C0B; /* 원 안을 초록색(#1C8C0B)으로 채움 */
+    border: 2px solid #1C8C0B; /* 동그라미 테두리 색상 */
+    border-radius: 50%; /* 동그라미 모양으로 만듦 */
+    padding: 5px; /* 텍스트와 테두리 사이의 간격을 조정 */
+    display: inline-block; /* 요소가 인라인 컨텍스트에서 제대로 표시되도록 함 */
+    width: 30px; /* 원의 크기를 설정 */
+    height: 30px; /* 원의 크기를 설정 */
+    text-align: center; /* 텍스트를 중앙에 배치 */
+    line-height: 30px; /* 텍스트를 중앙에 수직으로 배치 */
 }
 
-.date.this {
-  color: #000;
+/* 해당월이 아닌 날짜들을 다른 색으로 처리 */
+span.other{
+  color: #B0B3B7;
 }
 
-.date.other {
-  color: #CCC;
-}
 </style>
+
