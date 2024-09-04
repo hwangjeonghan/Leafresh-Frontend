@@ -1,11 +1,13 @@
 <template>
-  <div>
-    <LoginForm @login="login" />
-    <!-- 회원가입 버튼 추가 -->
-    <div class="signup-container">
-      <p>계정이 없으신가요?</p>
-      <!-- router-link를 사용하여 회원가입 페이지로 이동 -->
-      <router-link to="/signup" class="signup-button">회원가입</router-link>
+  <div class="login-page">
+    <div class="login-container">
+      <LoginForm @login="login" />
+      <!-- 회원가입 버튼 추가 -->
+      <div class="signup-container">
+        <p>계정이 없으신가요?</p>
+        <!-- router-link를 사용하여 회원가입 페이지로 이동 -->
+        <router-link to="/signup" class="signup-button">회원가입</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -28,7 +30,9 @@ const login = async (credentials) => {
       // 토큰을 로컬 스토리지에 저장
       localStorage.setItem('accessToken', response.data.accessToken);
       // 로그인 성공 시, 대시보드로 리다이렉트
-      router.push('/');
+      router.push('/').then(() => {
+        location.reload(); // 페이지 새로고침
+      });
     } else {
       alert('로그인 실패: 유효한 토큰이 없습니다.');
     }
@@ -62,12 +66,27 @@ const fetchProtectedData = async () => {
     alert('데이터를 불러오는 중 오류가 발생했습니다.');
   }
 };
-
-// 필요 시 다른 곳에서 fetchProtectedData 메소드를 호출하여 보호된 데이터 가져오기
-// 예: fetchProtectedData();
 </script>
 
 <style scoped>
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f2d9bb;
+}
+
+.login-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
 .signup-container {
   margin-top: 20px;
   text-align: center;
@@ -76,16 +95,23 @@ const fetchProtectedData = async () => {
 .signup-button {
   display: inline-block;
   margin-top: 10px;
-  padding: 10px 20px;
+  padding: 12px 30px;
   background-color: #1ab546;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
   text-decoration: none;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .signup-button:hover {
   background-color: #0b4f1e;
+}
+
+.signup-container p {
+  margin-bottom: 10px;
+  color: #333;
 }
 </style>
