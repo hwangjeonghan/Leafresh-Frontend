@@ -75,7 +75,7 @@ watch(isLoggedIn, (newValue) => {
       </div>
       <div class="header_item col">
         <router-link to="/community" class="header_navigator point">커뮤니티</router-link>
-        <router-link to="/plant-share" class="header_navigator point">식물분양</router-link>
+        <router-link to="/market" class="header_navigator point">식물분양</router-link>
         <router-link to="/garden-diary" class="header_navigator point">원예일지</router-link>
       </div>
       <div class="header_item">
