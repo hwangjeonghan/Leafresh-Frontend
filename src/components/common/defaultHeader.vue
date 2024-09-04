@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -7,11 +6,16 @@ import { isLoggedIn, setLoginState } from '../../stores/useLoginState.js';
 
 const router = useRouter();
 const imageUrl = ref('');  // 프로필 이미지 URL을 저장할 상태
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+console.log('API_BASE_URL:', API_BASE_URL);
 
 // 로그아웃 메서드 정의
 const logout = async () => {
   try {
-    await axios.post('http://localhost:8080/auth/logout');
+    const token = localStorage.getItem('accessToken');  // 토큰을 로컬 스토리지에서 가져오기
+    await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     localStorage.removeItem('accessToken');
     setLoginState(false);
     router.push('/login');
@@ -26,16 +30,16 @@ const fetchUserProfile = async () => {
   const token = localStorage.getItem('accessToken');
   if (token) {
     try {
-      const response = await axios.get('http://localhost:8080/user/me', {
+      const response = await axios.get(`${API_BASE_URL}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const ftpImagePath = response.data.imageUrl;
-      imageUrl.value = `http://localhost:8080/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
+      imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
       if (error.response && error.response.status === 401) {
         // 401 오류가 발생하면 로그아웃 처리
-        logout();
+        await logout();
       }
     }
   } else {
@@ -61,7 +65,6 @@ watch(isLoggedIn, (newValue) => {
 });
 </script>
 
-
 <template>
   <div class="header_container">
     <div class="header_text_container col">
@@ -86,9 +89,6 @@ watch(isLoggedIn, (newValue) => {
     </div>
   </div>
 </template>
-
-
-
 
 <style scoped>
 a {
