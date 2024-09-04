@@ -22,7 +22,7 @@ const router = useRouter(); // router 사용 설정
 // login 메소드 정의
 const login = async (credentials) => {
   try {
-    const response = await axios.post('http://localhost:8090/auth/login', credentials); // 서버에 로그인 요청 전송
+    const response = await axios.post('http://localhost:8080/auth/login', credentials); // 서버에 로그인 요청 전송
     console.log('응답 데이터:', response.data); // 디버깅용 콘솔 출력
 
     // 응답 데이터에 accessToken이 존재하는지 확인
