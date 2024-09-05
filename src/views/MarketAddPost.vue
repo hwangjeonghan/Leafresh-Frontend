@@ -102,6 +102,7 @@ const submitForm = async () => {
   align-items: center;
   height: 100vh;
   overflow: auto;
+  background-color: #ffe4cb;
 }
 
 .postAdd-container {

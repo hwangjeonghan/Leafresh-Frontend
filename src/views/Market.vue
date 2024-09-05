@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';  // vue-router 사용을 위해 import
 import MarketAddPost from "@/views/MarketAddPost.vue";
+import MarketDetail from './MarketDetail.vue';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const router = useRouter();
@@ -34,6 +35,10 @@ const fetchMarkets = async () => {
   }
 }
 
+const detailPost = (id) => {
+    router.push(`/market/detail/${id}`);
+}
+
 onMounted(() => {
   fetchMarkets();
 })
@@ -44,7 +49,7 @@ onMounted(() => {
   <div class="share_container">
     <div class="share_text">
       <div v-if="markets.length > 0" class="market-list">
-        <div v-for="(market, index) in markets.slice().reverse()" :key="index" class="market-item">
+        <div v-for="(market, index) in markets.slice().reverse()" :key="index" class="market-item" @click="detailPost(market.marketId)">
           <div class="market_image_box">
             <p class="market-category">{{ market.marketCategory }}</p>
             <img :src="market.imageUrl" alt="Market Image" class="market-image" />
@@ -79,14 +84,14 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f2d9bb;
+  background-color: #ffe4cb;
   overflow: auto;
 }
 
 .share_container {
   width: 100%;
   height: 100%;
-  background-color: #f2d9bb;
+  background-color: #ffe4cb;
   display: flex;
   justify-content: space-between;
 }
