@@ -1,5 +1,7 @@
 <script setup>
 import Calender from './calender.vue';
+import Todo from './todo.vue';
+
 </script>
 <template>
 
@@ -18,6 +20,8 @@ import Calender from './calender.vue';
         <div class="caleder_todo"> 
 
            <Calender />
+           <Todo />
+
 
 
 
