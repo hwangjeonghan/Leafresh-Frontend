@@ -7,6 +7,7 @@ import SignupView from "@/views/SignupView.vue"; // 회원가입 페이지 impor
 import MarketAddPost from "@/views/MarketAddPost.vue";
 import MarketView from "@/views/Market.vue";
 import Market from "@/views/Market.vue";
+import FeedAdd from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,11 @@ const router = createRouter({
       path: "/market/addpost",
       name: "Addpost",
       component: MarketAddPost, // 분양 게시글 등록 페이지
+    },
+    {
+      path: "/garden-diary/feed-add",
+      name: "FeedAdd",
+      component: FeedAdd, // 피드 추가 페이지
     },
   ],
 });

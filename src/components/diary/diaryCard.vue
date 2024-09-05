@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 
 const myObject = ref ([
-    {id:1,image: "https://image.ajunews.com/content/image/2021/04/01/20210401172848819682.jpg"},
+    {id:1,image: "https://dh.aks.ac.kr/Edu/wiki/images/3/3a/%ED%94%BC%EC%B9%B4.jpg"},
     {id:2,image: "https://t1.daumcdn.net/cfile/tistory/99BE76495AE75A240C"},
     {id:3,image:"https://image2.gnsister.com/images/document/1681895991772_1b44852f515e42acba77a17ed691bc64.jpg?originalImageWidth=400&originalImageHeight=300"},
     {id:4,image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfpqnBBMppxMDIJKvAV81cSI9y6GKg0YvFBQ&s" },
