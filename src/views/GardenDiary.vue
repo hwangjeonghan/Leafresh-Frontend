@@ -25,6 +25,8 @@ const components = {
       <Schedule />
     </div>
 
+    <!-- 헤어라인 div로 구현 -->
+
     <ul class="diary_card_nav">
       <li class="nav-item">
         <a class="nav-link" :class="{ active: activeComponent === 'Feed' }" @click="activeComponent = 'Feed'">피드</a>
@@ -32,10 +34,12 @@ const components = {
       <li class="nav-item">
         <a class="nav-link" :class="{ active: activeComponent === 'Garden' }" @click="activeComponent = 'Garden'">반려정원</a>
       </li>
-      <!-- <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" :class="{ active: activeComponent === 'Adoption' }" @click="activeComponent = 'Adoption'">분양중</a>
-      </li> -->
+      </li>
     </ul>
+
+    <div class="hairline"></div>
 
     <!-- 선택된 컴포넌트만 교체 -->
     <div class="Card">
@@ -45,6 +49,7 @@ const components = {
 </template>
 
 <style scoped>
+
 .diary_container {
   width: 100%;
   height: 100%;
@@ -57,7 +62,16 @@ const components = {
 .profile,
 .schedule,
 .card {
+  width: 95%;
   margin: 10px 0;
+}
+
+/* 헤어라인 div 스타일 */
+.hairline {
+  width: 95%; /* 선 길이 */
+  height: 1px; /* 얇은 선 */
+  margin: 20px 0; /* 상하 여백 */
+  border: #A68B6A solid 2px;
 }
 
 .nav-tabs {
@@ -71,6 +85,7 @@ const components = {
 }
 
 .nav-link {
+  font-family: "GothicA1-Light";
   color: #000;
   font-weight: bold;
   font-size: 18px;
@@ -81,20 +96,17 @@ const components = {
 }
 
 .nav-link.active {
-  color: #000;
-  border-bottom: 2px solid #000;
+  color: #A68B6A;
 }
 
 .nav-link:hover {
-  color: #000;
-  border-bottom: 2px solid #ccc;
+  color: #A68B6A;
 }
 
 .diary_card_nav {
-  font-family: "GothicA1-Light";
-  font-size: 16px;
-  color: #000;
   display: flex;
   flex-direction: row;
+  width: 95%;
+  justify-content: space-around;
 }
 </style>

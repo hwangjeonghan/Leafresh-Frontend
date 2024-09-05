@@ -19,9 +19,6 @@ const handlerCardClick = (id) => {
 
 </script>
 <template>
-
- 
-<h2>여기 네비게이션 탭을 통해 Feed, Garden 을 왔다갔다 해야함</h2>
    
   <div class="p-3 m-0 border-0 bd-example m-0 border-0">
         <ul style="list-style-type: none; padding: 0;">
