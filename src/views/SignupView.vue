@@ -11,12 +11,14 @@ import { useRouter } from 'vue-router';  // vue-router 사용을 위해 import
 import SignupForm from '../components/SignupForm.vue';  // SignupForm 컴포넌트 import
 import axios from 'axios';  // axios import
 
+// 환경 변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const router = useRouter();  // router 사용 설정
 
 // 회원가입 요청 처리 함수
 const signup = async (userInfo) => {
   try {
-    const response = await axios.post('http://localhost:8080/auth/signup', userInfo);  // 서버에 회원가입 요청 전송
+    const response = await axios.post(`${API_BASE_URL}/auth/signup`, userInfo);  // 서버에 회원가입 요청 전송
     if (response.data.success) {
       // 회원가입 성공 시 로그인 페이지로 리다이렉트
       alert('회원가입이 성공적으로 완료되었습니다.');
@@ -41,8 +43,8 @@ const signup = async (userInfo) => {
 }
 
 .signup-container {
- 
- 
+  background: #fff; /* 배경색 추가 */
+  padding: 40px; /* 패딩 추가 */
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   max-width: 500px;

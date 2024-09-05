@@ -71,8 +71,8 @@ const confirmPasswordError = ref('');
 // Vue Router 사용을 위한 router 설정
 const router = useRouter();
 
-// API URL 설정
-const API_BASE_URL = 'http://localhost:8080';
+// 환경 변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 이미지 업로드 처리 함수
 const handleFileUpload = (event) => {
@@ -163,7 +163,9 @@ const handleSubmit = async () => {
   };
 
   try {
-    await axios.post(`${API_BASE_URL}/auth/signup`, userInfo);
+    await axios.post(`${API_BASE_URL}/auth/signup`, userInfo, {
+      headers: { 'Content-Type': 'application/json' },
+    });
     alert('회원가입이 성공적으로 완료되었습니다.');
     router.push('/login');  // 회원가입 성공 후 로그인 페이지로 이동
   } catch (error) {

@@ -19,10 +19,13 @@ import axios from 'axios'; // axios import
 
 const router = useRouter(); // router 사용 설정
 
+// 환경 변수에서 API URL 가져오기
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // login 메소드 정의
 const login = async (credentials) => {
   try {
-    const response = await axios.post('http://localhost:8080/auth/login', credentials); // 서버에 로그인 요청 전송
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials); // 서버에 로그인 요청 전송
     console.log('응답 데이터:', response.data); // 디버깅용 콘솔 출력
 
     // 응답 데이터에 accessToken이 존재하는지 확인
@@ -54,7 +57,7 @@ const fetchProtectedData = async () => {
     }
 
     // 보호된 API에 요청을 보낼 때, Authorization 헤더에 토큰 포함
-    const response = await axios.get('http://localhost:8080/protected-endpoint', {
+    const response = await axios.get(`${API_BASE_URL}/protected-endpoint`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
