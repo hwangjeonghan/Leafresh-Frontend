@@ -1,6 +1,7 @@
 <script setup>
 import Profile from "@/components/diary/diaryProfile.vue";
 import Schedule from "@/components/diary/diarySchedule.vue";
+import FeedCard from "@/components/feed/feedCard.vue"
 import Card from "@/components/diary/diaryCard.vue";
 
 
@@ -23,6 +24,7 @@ import Card from "@/components/diary/diaryCard.vue";
     
 
     <div class="Card">
+      <FeedCard/>
       <Card />
     </div>
     
