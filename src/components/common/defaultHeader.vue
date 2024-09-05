@@ -9,9 +9,6 @@ const imageUrl = ref('');  // 프로필 이미지 URL을 저장할 상태
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 console.log('API_BASE_URL:', API_BASE_URL);
 
-// 기본 프로필 이미지 URL
-const defaultProfileImage = '/images/person.png';  // 기본 프로필 이미지 경로를 설정하세요.
-
 // 로그아웃 메서드 정의
 const logout = async () => {
   try {
@@ -39,9 +36,7 @@ const fetchUserProfile = async () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const ftpImagePath = response.data.imageUrl;
-      imageUrl.value = ftpImagePath 
-        ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`
-        : defaultProfileImage;  // 프로필 이미지가 없으면 기본 이미지 사용
+      imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
       if (error.response && error.response.status === 401) {
@@ -80,11 +75,7 @@ watch(isLoggedIn, (newValue) => {
       </div>
       <div class="header_item header_profile">
         <!-- 프로필 이미지 표시 -->
-        <img
-          :src="imageUrl || defaultProfileImage"
-          alt="프로필 아이콘"
-          :class="{ 'default-profile-icon': imageUrl === '' || imageUrl === defaultProfileImage, 'profile-icon': imageUrl !== '' && imageUrl !== defaultProfileImage }"
-        />
+        <img v-if="imageUrl" :src="imageUrl" alt="프로필 아이콘" class="profile-icon" />
       </div>
       <div class="header_item col">
         <router-link to="/community" class="header_navigator point">커뮤니티</router-link>
