@@ -7,6 +7,7 @@ import MarketAddPost from "@/views/MarketAddPost.vue";
 import Market from "@/views/Market.vue";
 import FeedAdd from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
 import MarketDetail from "@/views/MarketDetail.vue";
+import Chat from '@/views/chat.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,12 @@ const router = createRouter({
       path: "/market/detail/:id",
       name: "MarketPostDetail",
       component: MarketDetail, // 분양 게시글 조회 페이지
+    },
+    {
+      path: '/chat/:id',
+      name: 'Chat',
+      component: Chat,
+      props: true, // 경로 파라미터를 props로 컴포넌트에 전달
     },
   ],
 });
