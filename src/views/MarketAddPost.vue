@@ -85,7 +85,7 @@ const submitForm = async () => {
       const result = await response.json();
       console.log('성공:', result);
       alert('게시글이 등록되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
-      router.push('/plant-share'); // 게시글이 등록되고 나면 /plant-share로 리다이렉트 시켜줌
+      router.push('/market'); // 게시글이 등록되고 나면 /plant-share로 리다이렉트 시켜줌
     } catch (error) {
       console.error('오류:', error);
     }
@@ -101,7 +101,7 @@ const submitForm = async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: auto; /* 화면을 벗어나면 스크롤 활성화 */
+  overflow: auto;
 }
 
 .postAdd-container {
@@ -111,8 +111,8 @@ const submitForm = async () => {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   max-width: 500px;
   width: 100%;
-  max-height: 90vh; /* 컨테이너의 최대 높이를 설정 */
-  overflow-y: auto; /* 수직 스크롤 활성화 */
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
 }
 
@@ -129,8 +129,7 @@ const submitForm = async () => {
 }
 
 .input-group input,
-.input-group select,
-.input-group textarea {
+.input-group select {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -138,6 +137,18 @@ const submitForm = async () => {
   font-size: 1rem;
   box-sizing: border-box;
   transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group textarea {
+  width: 100%;
+  height: 250px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
 }
 
 .input-group input:focus,
@@ -161,7 +172,7 @@ const submitForm = async () => {
 .submit-button {
   width: 100%;
   padding: 12px;
-  background-color: #1ab546;
+  background-color: #ff822f;
   border: none;
   color: white;
   font-size: 1.2rem;
@@ -171,7 +182,7 @@ const submitForm = async () => {
 }
 
 .submit-button:hover {
-  background-color: #148838;
+  background-color: #c76524;
   transform: translateY(-2px);
 }
 
