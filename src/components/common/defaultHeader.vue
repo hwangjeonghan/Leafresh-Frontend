@@ -35,10 +35,8 @@ const fetchUserProfile = async () => {
       const response = await axios.get(`${API_BASE_URL}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  // 프로필 이미지 URL 가져오는 부분 예시 수정
       const ftpImagePath = response.data.imageUrl;
-      imageUrl.value = `${API_BASE_URL.replace('http:', 'https:')}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
-
+      imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
       if (error.response && error.response.status === 401) {
