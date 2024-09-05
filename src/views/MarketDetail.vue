@@ -7,7 +7,8 @@
       <div class="market_content_box">{{ market.post.marketContent }}</div>
       <!-- <img :src="market.imageUrl" alt="Market Image" /> -->
       <div>
-        <router-link to="/market/addpost" class="market_chat">채팅하기</router-link>
+         <!-- 채팅하기 버튼 -->
+         <router-link :to="{ name: 'Chat', params: { id: market.post.marketId } }" class="market_chat">채팅하기</router-link>
       </div>
     </div>
     <div v-else>
