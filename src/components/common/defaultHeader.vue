@@ -16,7 +16,9 @@ const logout = async () => {
     await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    // 로컬 스토리지에서 accessToken과 refreshToken 모두 삭제
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     setLoginState(false);
     router.push('/login');
   } catch (error) {
