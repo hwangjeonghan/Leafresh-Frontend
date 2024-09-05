@@ -51,7 +51,6 @@ import Calender from './calender.vue';
 
 /* Line 9 */
 .line_9 {
-  width: 875px;
   height: 0px;
   left: 432px; /* 원래 left 속성 유지 */
   top: 360px; /* 원래 top 속성 유지 */
