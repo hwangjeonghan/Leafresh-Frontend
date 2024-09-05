@@ -43,8 +43,6 @@ const signup = async (userInfo) => {
 }
 
 .signup-container {
-  background: #fff; /* 배경색 추가 */
-  padding: 40px; /* 패딩 추가 */
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   max-width: 500px;
