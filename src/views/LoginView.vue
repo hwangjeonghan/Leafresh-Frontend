@@ -28,7 +28,7 @@ const login = async (credentials) => {
     const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials); // 서버에 로그인 요청 전송
     console.log('응답 데이터:', response.data); // 디버깅용 콘솔 출력
 
-    // 응답 데이터에 accessToken이 존재하는지 확인
+    // 응답 데이터에 accessToken과 refreshToken이 존재하는지 확인
     if (response.data.accessToken && response.data.refreshToken) {
       // 액세스 토큰과 리프레시 토큰을 로컬 스토리지에 저장
       localStorage.setItem('accessToken', response.data.accessToken);
@@ -42,38 +42,7 @@ const login = async (credentials) => {
     }
   } catch (error) {
     console.error('로그인 오류:', error);
-    alert('서버 오류가 발생했습니다.');
-  }
-};
-
-// 보호된 API 요청 예시
-const fetchProtectedData = async () => {
-  try {
-    const accessToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 액세스 토큰 가져오기
-    const refreshToken = localStorage.getItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 가져오기
-
-    if (!accessToken) {
-      alert('인증 토큰이 없습니다. 다시 로그인 해주세요.');
-      router.push('/login'); // 토큰이 없으면 로그인 페이지로 이동
-      return;
-    }
-
-    // 보호된 API에 요청을 보낼 때, Authorization 헤더에 액세스 토큰 포함
-    const response = await axios.get(`${API_BASE_URL}/protected-endpoint`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    console.log('보호된 데이터 응답:', response.data); // 응답 데이터 출력
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      // 401 Unauthorized 에러가 발생하면 토큰 재발급 시도
-      await refreshAccessToken();
-    } else {
-      console.error('보호된 데이터 요청 오류:', error);
-      alert('데이터를 불러오는 중 오류가 발생했습니다.');
-    }
+    alert('로그인에 실패했습니다. 다시 시도해 주세요.');
   }
 };
 
@@ -88,8 +57,10 @@ const refreshAccessToken = async () => {
       return;
     }
 
-    const response = await axios.post(`${API_BASE_URL}/auth/check-token`, {
-      refreshToken: refreshToken,
+    const response = await axios.post(`${API_BASE_URL}/auth/check-token`, {}, {
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
     });
 
     if (response.data.accessToken) {
@@ -104,6 +75,31 @@ const refreshAccessToken = async () => {
     alert('세션이 만료되었습니다. 다시 로그인 해주세요.');
     router.push('/login');
   }
+};
+
+// 액세스 토큰이 만료될 경우 자동으로 재발급 시도
+const handleTokenExpiration = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) {
+    alert('로그인이 필요합니다.');
+    router.push('/login');
+    return;
+  }
+
+  // 토큰이 만료된 경우
+  if (!isValidToken(accessToken)) {
+    await refreshAccessToken();
+  }
+};
+
+// 페이지 로드 시 토큰 만료 여부를 확인하고 재발급 시도
+handleTokenExpiration();
+
+// 토큰 유효성 검사 함수
+const isValidToken = (token) => {
+  // 단순히 토큰의 유효 기간을 검증하는 로직을 구현할 수 있습니다.
+  // 여기서는 예제로 토큰이 비어있지 않은지만 확인
+  return token && token !== '';
 };
 </script>
 
