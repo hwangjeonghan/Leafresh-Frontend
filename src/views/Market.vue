@@ -18,17 +18,22 @@ const fetchMarkets = async () => {
         'Authorization': 'Bearer ' + token,
       }
     });
-    
-    const ftpImagePath = response.formData.imageUrl;
-    imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
+    const result = await response.json();
+    markets.value = result;
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`서버 응답 오류 : ${errorData.message || '알수없는 오류'}`);
     }
 
-    const result = await response.json();
-    markets.value = result;
+    // 게시글 이미지 경로를 하나하나 꺼내옴
+    markets.value.forEach(market => {
+      const imagePath = market.marketImage;
+      market.imageUrl = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
+    });
+
+    console.log('imagePath ',imagePath);
+    console.log('이미지url ', imageUrl);
     console.log('게시글 전체조회 성공', result);
   } catch (error) {
     console.error('오류:', error);
@@ -47,18 +52,17 @@ onMounted(() => {
 <template>
 <div class="market-page">
   <div class="share_container">
-    <div class="share_text">
       <div v-if="markets.length > 0" class="market-list">
         <div v-for="(market, index) in markets.slice().reverse()" :key="index" class="market-item" @click="detailPost(market.marketId)">
           <div class="market_image_box">
-            <p class="market-category">{{ market.marketCategory }}</p>
             <img :src="market.imageUrl" alt="Market Image" class="market-image" />
           </div>
           <div class="market_text_box">
+            <p class="market-category">{{ market.marketCategory }}</p>
             <p class="market-title">{{ market.marketTitle }}</p>
-            <p class="market-content">{{ market.marketContent }}</p>
-            <!-- <p>작성자: {{ market.userNickname }}</p>
-            <p>상태: {{ market.marketStatus ? '분양 중' : '분양 완료' }}</p>
+            <p class="market-content">{{ market.userNickname }}</p>
+            <!-- <p class="market-content">{{ market.marketContent }}</p> -->
+            <!-- <p>상태: {{ market.marketStatus ? '분양 중' : '분양 완료' }}</p>
             <p>게시일: {{ market.marketCreatedAt }}</p> -->
           </div>
         </div>
@@ -68,13 +72,10 @@ onMounted(() => {
         <p>현재 등록된 게시글이 없습니다.</p>
       </div>
 
-      <div>
-        <router-link to="/market/addpost" class="addPost_btn">포스트 등록</router-link>
+      <div class="market_btn_box">
+        <router-link to="/market/addpost" class="addPost_btn">+</router-link>
       </div>
-    </div>
   </div>
-  
-
 </div>
 </template>
 
@@ -84,29 +85,38 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #ffe4cb;
-  overflow: auto;
+  width: 100%;
+  background-color: #f9fff8;
+  overflow: hidden;
+  font-family: "GothicA1-Light";
 }
 
 .share_container {
-  width: 100%;
-  height: 100%;
-  background-color: #ffe4cb;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f9fff8;
   display: flex;
+  flex-direction: column; /* 아이템을 세로로 정렬합니다. */
+  align-items: center; /* 아이템을 가로로 중앙 정렬합니다. */
   justify-content: space-between;
 }
 
-.share_text {
-  font-family: "GothicA1-Light";
-  font-size: 20px;
-  color: #b3b3b3;
+.market-list {
+  width: 90vw;
+  max-width: 100%;
+  height: auto;
+  margin: 3vw 0 3vw 10vw;
+  display: flex;
+  flex-direction: column; /* 아이템을 세로로 배치 */
+  overflow-y: auto; /* 세로 스크롤 가능 */
 }
 
-.market-list {
-  width: 600px;
-  max-width: 800px;
-  height: 500px;
-  margin: 10px 350px auto;
+.market-list::-webkit-scrollbar {
+  display: none; /* 스크롤바 숨기기 */
+}
+
+.market_btn_box {
+  width: 10%;
 }
 
 .market-list::-webkit-scrollbar {
@@ -114,63 +124,71 @@ onMounted(() => {
 }
 
 .market-item {
+  width: 50vw;
   background-color: white;
-  border-radius: 10px;
-  height: 150px;
-  padding: 18px;
-  margin-bottom: 10px;
+  border-radius: 1vw;
+  height: 10vw;
+  padding: 2vw;
+  margin-bottom: 1vw;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #656565;
   display: flex;
 }
 
 .market-category {
-  font-size: 18px;
+  font-size: 1.5vw;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 1vw;
   color: #d0d0d0;
 }
 
 .market-title {
-  font-size: 24px;
+  font-size: 2vw;
   font-weight: bold;
   margin-bottom: 10px;
   color: #848484;
 }
 
 .market-content {
-  font-size: 18px;
+  font-size: 1.5vw;
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-bottom: 1.5vw;
   color: #848484;
 }
 
 .market-image {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-  justify-content: center;
+  width: 70%; /* 부모 컨테이너에 맞추기 */
+  height: auto; /* 비율 유지하면서 크기 조절 */
+  object-fit: cover; /* 이미지가 박스에 맞게 잘림 */
+  border-radius: 1vw; /* 이미지의 모서리를 둥글게 */
+  /* justify-content: center; 
+  align-items: center;  */
 }
 
 .market_image_box {
   width: 25%;
-  margin-right: 20px;
+  height: auto;
+  margin-right: 2vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 중앙 정렬 */
 }
 
 .market_text_box {
   width: 75%;
-  margin-top: 5px;
+  margin-top: 1vw;
 }
 
 .addPost_btn {
-  margin-top: 20px;
-  padding: 10px 20px;
+  padding: 1vw 2vw;
   background-color: #1ab546;
   color: white;
-  border-radius: 5px;
+  border-radius: 1vw;
   text-decoration: none;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
+  position: fixed;
+  right: 2vw;
+  bottom: 2vw;
 }
 
 .addPost_btn:hover {
@@ -181,7 +199,7 @@ onMounted(() => {
 /* 반응형 안됨...수정필요....wait... */
 @media (max-width: 1200px) {
   .market-list {
-    width: 90%;
+    width: 90vw;
   }
 }
 
@@ -205,47 +223,23 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .market-list {
-    width: 90%;
-    margin: 10px auto;
-  }
-
-  .market-item {
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-  }
-
-  .market_image_box {
-    width: 100%;
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-
-  .market_text_box {
-    width: 100%;
-    margin-top: 0;
-  }
-
-  .addPost_btn {
-    position: static;
-    display: block;
-    margin: 20px auto;
+  .market-btn_box {
+    width: 20vw;
   }
 }
 
 @media (max-width: 480px) {
   .market-category, .market-title, .market-content {
-    font-size: 16px;
+    font-size: 4vw;
   }
 
   .market-item {
-    padding: 10px;
-    margin-bottom: 5px;
+    padding: 5vw;
+    margin-bottom: 2vw;
   }
 
   .addPost_btn {
-    padding: 8px 16px;
+    padding: 3vw 6vw;
   }
 }
 </style>

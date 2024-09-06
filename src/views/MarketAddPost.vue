@@ -1,6 +1,5 @@
 <template>
   <div class="postAdd-page">
-    <h1>분양 보내기</h1>
     <div class="postAdd-container">
       <div class="post-form">
         <form @submit.prevent="submitForm">
@@ -11,22 +10,18 @@
               <option v-for="category in categories" :key="category">{{ category }}</option>
             </select>
           </div>
-  
           <div class="input-group">
             <label for="title">제목</label>
             <input type="text" v-model="post.marketTitle" />
           </div>
-  
           <div class="input-group">
             <label for="content">내용</label>
             <textarea v-model="post.marketContent"></textarea>
           </div>
-  
           <div class="input-group">
             <label for="image">사진</label>
             <input type="file" @change="onFileChange" />
           </div>
-  
           <button type="submit" class="submit-button">등록</button>
         </form>
       </div>
@@ -37,6 +32,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';  // vue-router 사용을 위해 import
+import axios from 'axios';
 
 const router = useRouter(); 
 
@@ -44,14 +40,40 @@ const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
+const postImage = ref(null);
 const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
 
 const isFormValid = computed(() => {
-  return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && post.value.marketImage;
+  return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value;
 });
 
 const onFileChange = (event) => {
-  post.value.marketImage = event.target.files[0];
+  postImage.value = event.target.files[0]; // 파일 정보 저장
+};
+
+// 이미지 업로드 함수
+const uploadPostImage = async () => {
+  if (!postImage.value) return '';
+
+  const formData = new FormData();
+  formData.append('file', postImage.value);
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    console.log('서버 응답:', response.data); 
+
+    const uploadedImagePath = response.data.split(': ')[1].trim(); // 백엔드에서 받은 파일 경로
+    console.log('이미지 업로드 성공:', uploadedImagePath);
+
+    return uploadedImagePath;
+  } catch (error) {
+    console.error('이미지 업로드 오류:', error);
+    alert('이미지 업로드에 실패했습니다.');
+    throw error; // 이미지 업로드 실패 시 예외 발생
+  }
 };
 
 const submitForm = async () => {
@@ -59,16 +81,27 @@ const submitForm = async () => {
   console.log('유효성 : ', isFormValid.value);
 
   if (isFormValid.value) {
-    const formData = new FormData();
-    formData.append('category', post.value.marketCategory);
-    formData.append('title', post.value.marketTitle);
-    formData.append('content', post.value.marketContent);
-    formData.append('image', post.value.marketImage);
-
-    const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
-    console.log('토큰 : ', token); // 토큰확인
-
     try {
+      const uploadedImagePath = await uploadPostImage(); // 이미지 업로드 후 경로 받아옴
+      
+      if (!uploadedImagePath) {
+        throw new Error('이미지 업로드 경로를 받지 못했습니다.');
+      }
+
+      const formData = new FormData();
+      formData.append('category', post.value.marketCategory);
+      formData.append('title', post.value.marketTitle);
+      formData.append('content', post.value.marketContent);
+      formData.append('image', uploadedImagePath);
+      console.log('이미지 경로 잘 나오는지', uploadedImagePath);
+
+      // // FormData에 어떤 값이 들어갔는지 콘솔에서 확인
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}: ${value}`);
+      // }
+
+      const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
+      console.log('토큰 : ', token); // 토큰확인
       const response = await fetch(`${API_BASE_URL}/market/addpost`, {
         method: 'POST',
         body: formData,
@@ -85,13 +118,13 @@ const submitForm = async () => {
       const result = await response.json();
       console.log('성공:', result);
       alert('게시글이 등록되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
-      router.push('/market'); // 게시글이 등록되고 나면 /plant-share로 리다이렉트 시켜줌
+      router.push('/market'); // 게시글이 등록되고 나면 /market로 리다이렉트 시켜줌
     } catch (error) {
       console.error('오류:', error);
     }
   } else {
     alert('입력이 완료되지 않았습니다.');
-  }
+  } 
 };
 </script>
 
@@ -102,7 +135,7 @@ const submitForm = async () => {
   align-items: center;
   height: 100vh;
   overflow: auto;
-  background-color: #ffe4cb;
+  background-color: #f9fff8;
 }
 
 .postAdd-container {
