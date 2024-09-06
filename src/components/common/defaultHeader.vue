@@ -39,7 +39,8 @@ const fetchUserProfile = async () => {
       });
       const ftpImagePath = response.data.imageUrl;
       username.value = response.data.userNickname; // 유저 이름 저장
-      imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
+      imageUrl.value = `${API_BASE_URL.replace('http:', 'https:')}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
+
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
       if (error.response && error.response.status === 401) {
