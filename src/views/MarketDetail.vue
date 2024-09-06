@@ -2,7 +2,17 @@
 <div class="market_detail_page">
     <div class="market_detail_container">
     <div v-if="market">
-      <div class="market_category_box"> {{ market.post.marketCategory }} </div>
+      <div class="market_detail_header">
+        <div class="market_category_box"> {{ market.post.marketCategory }} </div>
+        <div class="market_post_info_box">
+          <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
+            <p>{{ market.post.marketStatus ? '분양중' : '분양 완료' }}</p>
+          </div>
+          <div class="market_created_box">
+            <p class="market_created_at">{{ market.post.displayDate }}</p>
+          </div>
+        </div>
+      </div>
       <div class="market_title_box">{{ market.post.marketTitle }} </div>
       <div class="market_content_box">{{ market.post.marketContent }}</div>
       <div class="market_content_box">{{ market.post.userNickname }}</div>
@@ -44,11 +54,25 @@ const fetchMarketDetails = async () => {
     }
     // 백에서 응답받은 데이터를 가져옴
     const result = await response.json();
-    console.log(result);
     market.value = result;
     const imagePath = result.post.marketImage; // url 경로 가져옴
     marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
 
+    if (market.value && market.value.post) {
+      const createdDate = new Date(result.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
+      const today = new Date();
+      const timeDiff = today - createdDate; // 밀리초 차이
+      const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // 일(day)로 변환
+
+      if (dayDiff === 0) {
+        market.value.post.displayDate = '오늘';
+      } else if (dayDiff === 1) {
+        market.value.post.displayDate = '어제';
+      } else {
+        market.value.post.displayDate = `${dayDiff}일 전`;
+      }
+    }
+    
     console.log('게시글 상세조회 성공', result);
     console.log('이미지 경로 : ', marketImage.value);
   } catch (error) {
@@ -84,13 +108,22 @@ onMounted(() => {
   /* max-height: 90vh; */
   height: 600px;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   background: #fff;
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  text-align: center;
+  /* text-align: center; */
+}
+
+.market_created_box {
+  width: 3vw;
+  text-align: right;
+  font-size: 1.5vw;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #bdbdbd;
 }
 
 .market_chat {
@@ -133,5 +166,41 @@ onMounted(() => {
   max-height: 300px; /* 최대 높이 설정 */
   object-fit: cover; /* 이미지가 박스에 맞게 잘림 */
   border-radius: 8px; /* 이미지의 모서리를 둥글게 */
+}
+
+.market_status_box_true {
+  margin: 0 0 1.8vw 0;
+  width: 4vw;
+  text-align: center;
+  padding: 0.7vw;
+  background-color: #ffb357;
+  color: white;
+  border-radius: 1vw;
+}
+
+.market_status_box_false {
+  margin: 0 0 1.8vw 0;
+  width: 4.5vw;
+  text-align: center;
+  padding: 0.7vw;
+  background-color: #b6b6b6;
+  color: white;
+  border-radius: 1vw;
+}
+
+.market_status_box_true,
+.market_status_box_false {
+  margin-right: 10px; /* status 박스와 created 박스 간의 간격 */
+}
+
+.market_detail_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 아이템을 가로로 중앙 정렬합니다. */
+}
+
+.market_post_info_box {
+  align-items: center;
+  padding-left: 5vw;
 }
 </style>
