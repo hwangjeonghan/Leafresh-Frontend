@@ -19,6 +19,7 @@ const fetchMarkets = async () => {
       }
     });
     const result = await response.json();
+    console.log('조회결과 : ', result);
     markets.value = result;
 
     if (!response.ok) {
@@ -30,11 +31,20 @@ const fetchMarkets = async () => {
     markets.value.forEach(market => {
       const imagePath = market.marketImage;
       market.imageUrl = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
-    });
+      
+      const createdDate = new Date(market.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
+      const today = new Date();
+      const timeDiff = today - createdDate; // 밀리초 차이
+      const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // 일(day)로 변환
 
-    console.log('imagePath ',imagePath);
-    console.log('이미지url ', imageUrl);
-    console.log('게시글 전체조회 성공', result);
+      if (dayDiff === 0) {
+        market.displayDate = '오늘';
+      } else if (dayDiff === 1) {
+        market.displayDate = '어제';
+      } else {
+        market.displayDate = `${dayDiff}일 전`;
+      }
+    });
   } catch (error) {
     console.error('오류:', error);
   }
@@ -58,12 +68,15 @@ onMounted(() => {
             <img :src="market.imageUrl" alt="Market Image" class="market-image" />
           </div>
           <div class="market_text_box">
+            <div :class="market.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
+              <p>{{ market.marketStatus ? '분양중' : '분양 완료' }}</p>
+            </div>
             <p class="market-category">{{ market.marketCategory }}</p>
             <p class="market-title">{{ market.marketTitle }}</p>
             <p class="market-content">{{ market.userNickname }}</p>
-            <!-- <p class="market-content">{{ market.marketContent }}</p> -->
-            <!-- <p>상태: {{ market.marketStatus ? '분양 중' : '분양 완료' }}</p>
-            <p>게시일: {{ market.marketCreatedAt }}</p> -->
+          </div>
+          <div class="market_created_box">
+            <p class="market_created_at">{{ market.displayDate }}</p>
           </div>
         </div>
       </div>
@@ -135,6 +148,26 @@ onMounted(() => {
   display: flex;
 }
 
+.market_status_box_true {
+  margin: 0 0 1.8vw 0;
+  width: 4vw;
+  text-align: center;
+  padding: 0.7vw;
+  background-color: #ffb357;
+  color: white;
+  border-radius: 1vw;
+}
+
+.market_status_box_false {
+  margin: 0 0 1.8vw 0;
+  width: 4.5vw;
+  text-align: center;
+  padding: 0.7vw;
+  background-color: #b6b6b6;
+  color: white;
+  border-radius: 1vw;
+}
+
 .market-category {
   font-size: 1.5vw;
   font-weight: bold;
@@ -178,6 +211,15 @@ onMounted(() => {
 .market_text_box {
   width: 75%;
   margin-top: 1vw;
+}
+
+.market_created_box {
+  width: 10%;
+  text-align: right;
+  font-size: 1.5vw;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #bdbdbd;
 }
 
 .addPost_btn {
