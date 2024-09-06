@@ -12,46 +12,41 @@ const myObject = ref ([
     {id:4,image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJHKe0ZZOLjpQjO8TAqTV0Q20hkeoi1HUmJQ&s" },
 ])
 
-// 상세조회
-const handlerCardClick = (id) => {
-    // 상세조회(아직 미완성)
-    console.log(`Card with ID ${id} clicked`);
-}
-
 // 피드 추가 페이지로 이동
 const goToFeedAdd = () => {
     router.push('/garden-diary/feed-add'); // 피드 추가 페이지로 이동
 }
 
+const goToFeedDetail = (id) => {
+  router.push(`/garden-diary/feed-detail/${id}`);
+};
+
 </script>
 
 <template>
-  <div class="p-3 m-0 border-0 bd-example m-0 border-0">
-        <ul style="list-style-type: none; padding: 0;">
-                <li v-for="(card, index) in myObject"
-                :key="card.id" 
-                @click="handlerCardClick(card.id)"
-                style="display: inline-block; margin: 10px; padding: 10px; width: 18rem;">
-                
-                    <div class="card" style="width: 100%;">
-                        
-                        <a>
-                            <img :src="card.image" alt="" class="card-img-top" 
-                            style="width: 100%; height: 100%; aspect-ratio: 1; object-fit: cover;">
-                        </a>
-
-                    </div>
-
-                </li>
-        </ul>
-
-        <!-- 피드 추가 버튼 -->
-        <div style="text-align: center; margin-top: 20px;">
-            <button @click="goToFeedAdd" class="btn btn-primary">
-                피드 추가
-            </button>
-        </div>
-    </div>
-
-</template>
+    <div class="p-3 m-0 border-0 bd-example m-0 border-0">
+          <ul style="list-style-type: none; padding: 0;">
+                  <li v-for="(card, index) in myObject"
+                  :key="card.id" 
+                  @click="goToFeedDetail(card.id)"
+                  style="display: inline-block; margin: 10px; padding: 10px; width: 18rem;">
+                  
+                      <div class="card" style="width: 100%;">
+                          <a>
+                              <img :src="card.image" alt="" class="card-img-top" 
+                              style="width: 100%; height: 100%; aspect-ratio: 1; object-fit: cover;">
+                          </a>
+                      </div>
+                  </li>
+          </ul>
+  
+          <!-- 피드 추가 버튼 -->
+          <div style="text-align: center; margin-top: 20px;">
+              <button @click="goToFeedAdd" class="btn btn-primary">
+                  피드 추가
+              </button>
+          </div>
+      </div>
+  </template>
+  
 

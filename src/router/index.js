@@ -7,6 +7,7 @@ import MarketAddPost from "@/views/MarketAddPost.vue";
 import Market from "@/views/Market.vue";
 import FeedAdd from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
 import MarketDetail from "@/views/MarketDetail.vue";
+import FeedDetail from "@/views/FeedDetail.vue";
 import Chat from '@/views/chat.vue';
 
 const router = createRouter({
@@ -28,9 +29,22 @@ const router = createRouter({
       component: Market, // 식물분양 페이지
     },
     {
-      path: "/garden-diary",
+      path: "/garden-diary/:username", // 유저 이름 경로 포함
       name: "GardenDiary",
-      component: GardenDiary, // 원예일지 페이지
+      component: GardenDiary,
+      props: true, // 경로 파라미터를 props로 컴포넌트에 전달
+    },
+    {
+      path: "/garden-diary/feed-add/:username", // 유저 이름 경로 포함
+      name: "FeedAdd",
+      component: FeedAdd,
+      props: true, // props로 전달
+    },
+    {
+      path: "/garden-diary/feed-detail/:username/:id", // 유저 이름 및 피드 ID 포함
+      name: "FeedDetail",
+      component: FeedDetail,
+      props: true,
     },
     {
       path: "/login",
@@ -46,11 +60,6 @@ const router = createRouter({
       path: "/market/addpost",
       name: "Addpost",
       component: MarketAddPost, // 분양 게시글 등록 페이지
-    },
-    {
-      path: "/garden-diary/feed-add",
-      name: "FeedAdd",
-      component: FeedAdd, // 피드 추가 페이지
     },
     {
       path: "/market/detail/:id",
