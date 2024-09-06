@@ -52,7 +52,6 @@ const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 가져오기
 
     if (!refreshToken) {
-      alert('로그인이 필요합니다.');
       router.push('/login');
       return;
     }
@@ -81,7 +80,6 @@ const refreshAccessToken = async () => {
 const handleTokenExpiration = async () => {
   const accessToken = localStorage.getItem('accessToken');
   if (!accessToken) {
-    alert('로그인이 필요합니다.');
     router.push('/login');
     return;
   }
