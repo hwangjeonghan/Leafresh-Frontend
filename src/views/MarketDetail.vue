@@ -1,22 +1,26 @@
 <template>
 <div class="market_detail_page">
     <div class="market_detail_container">
-    <div v-if="market">
+    <div v-if="market" class="market_detail_box">
       <div class="market_detail_header">
-        <div class="market_category_box"> {{ market.post.marketCategory }} </div>
+        <div>
+          <div class="market_category_box"> {{ market.post.marketCategory }} </div>
+          <div class="market_content_box">{{ market.post.userNickname }}</div>
+        </div>
         <div class="market_post_info_box">
           <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
             <p>{{ market.post.marketStatus ? '분양중' : '분양 완료' }}</p>
           </div>
           <div class="market_created_box">
-            <p class="market_created_at">{{ market.post.displayDate }}</p>
+            <p class="market_created_at" style="text-align: right;">{{ market.post.displayDate }}</p>
           </div>
         </div>
       </div>
+
+      <img class="market_image_box" :src="marketImage" alt="Market Image" />
       <div class="market_title_box">{{ market.post.marketTitle }} </div>
       <div class="market_content_box">{{ market.post.marketContent }}</div>
-      <div class="market_content_box">{{ market.post.userNickname }}</div>
-      <img class="market_image_box" :src="marketImage" alt="Market Image" />
+      
       <div>
          <!-- 채팅하기 버튼 -->
          <router-link :to="{ name: 'Chat', params: { id: market.post.marketId } }" class="market_chat">채팅하기</router-link>
@@ -103,12 +107,12 @@ onMounted(() => {
 
 .market_detail_container {
   background-color: #f9fff8;
-  max-width: 500px;
+  max-width: 40vw;
   width: 100%;
   /* max-height: 90vh; */
   height: 600px;
   display: flex;
-  /* justify-content: center; */
+  justify-content: center;
   background: #fff;
   padding: 40px;
   border-radius: 16px;
@@ -116,14 +120,19 @@ onMounted(() => {
   overflow-y: auto;
   /* text-align: center; */
 }
+.market_detail_box {
+  width: 100%;
+}
 
 .market_created_box {
-  width: 3vw;
+  width: 4.5vw;
   text-align: right;
-  font-size: 1.5vw;
+  font-size: 1.2vw;
   font-weight: bold;
   margin-bottom: 10px;
   color: #bdbdbd;
+  text-align: right;
+  font-size: 0.95em;
 }
 
 .market_chat {
@@ -141,12 +150,15 @@ onMounted(() => {
 .market_category_box {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 1.4vw;
+  margin-top: 0.8vw;
   color: #d0d0d0;
+  text-align: left;
+  flex: 1;
 }
 
 .market_title_box {
-  font-size: 24px;
+  font-size: 2.2em;
   font-weight: bold;
   margin-bottom: 15px;
   color: #848484;
@@ -160,47 +172,52 @@ onMounted(() => {
 }
 
 .market_image_box {
-  width: 100%; /* 부모 컨테이너에 맞추기 */
+  width: 40vw; /* 부모 컨테이너에 맞추기 */
   height: auto; /* 비율 유지하면서 크기 조절 */
-  max-width: 300px; /* 최대 너비 설정 */
-  max-height: 300px; /* 최대 높이 설정 */
+  max-width: 100%; /* 최대 너비 설정 */
+  max-height: 40vh; /* 최대 높이 설정 */
   object-fit: cover; /* 이미지가 박스에 맞게 잘림 */
   border-radius: 8px; /* 이미지의 모서리를 둥글게 */
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #d1d1d1;
+  margin-bottom: 1.3vw;
 }
 
 .market_status_box_true {
-  margin: 0 0 1.8vw 0;
+  margin: 0 0 1.5vw 0;
   width: 4vw;
   text-align: center;
   padding: 0.7vw;
   background-color: #ffb357;
   color: white;
   border-radius: 1vw;
+  font-size: 1em;
 }
 
 .market_status_box_false {
-  margin: 0 0 1.8vw 0;
+  margin: 0 0 vw 0;
   width: 4.5vw;
   text-align: center;
   padding: 0.7vw;
   background-color: #b6b6b6;
   color: white;
   border-radius: 1vw;
-}
-
-.market_status_box_true,
-.market_status_box_false {
-  margin-right: 10px; /* status 박스와 created 박스 간의 간격 */
+  font-size: 1em;
 }
 
 .market_detail_header {
   display: flex;
   justify-content: space-between;
   align-items: center; /* 아이템을 가로로 중앙 정렬합니다. */
+  width: 100%;
+  margin-bottom: 1vw;
 }
 
 .market_post_info_box {
-  align-items: center;
+  align-items: flex-end;
+  text-align: right;
   padding-left: 5vw;
 }
 </style>
