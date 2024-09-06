@@ -2,7 +2,6 @@
   <form @submit.prevent="submitFeed">
     <div class="input-group">
       <label for="feedContent" class="feedContents">피드 내용</label>
-      <!-- .feedContent 클래스를 추가 -->
       <textarea v-model="feedContent" placeholder="피드 내용을 입력하세요" required class="feedContent"></textarea>
     </div>
     <div class="input-group">
@@ -38,9 +37,6 @@ const submitFeed = () => {
     content: feedContent.value,
     image: feedImage.value,
   };
-
-  // 부모 컴포넌트로 피드 정보 전달
-  emit('addFeed', feedData);
 };
 </script>
 

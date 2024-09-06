@@ -2,10 +2,12 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+
 import { isLoggedIn, setLoginState } from '../../stores/useLoginState.js';
 
 const router = useRouter();
 const imageUrl = ref('');  // 프로필 이미지 URL을 저장할 상태
+const username = ref('');  // 유저 이름을 저장할 상태
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 console.log('API_BASE_URL:', API_BASE_URL);
 
@@ -36,6 +38,7 @@ const fetchUserProfile = async () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const ftpImagePath = response.data.imageUrl;
+      username.value = response.data.userNickname; // 유저 이름 저장
       imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`;
     } catch (error) {
       console.error('사용자 정보 로드 오류:', error);
@@ -47,6 +50,8 @@ const fetchUserProfile = async () => {
   } else {
     console.error('토큰이 존재하지 않습니다.');
   }
+  console.log(username.value);
+
 };
 
 // 페이지 로드 시 토큰 확인하여 로그인 상태 설정
@@ -80,7 +85,8 @@ watch(isLoggedIn, (newValue) => {
       <div class="header_item col">
         <router-link to="/community" class="header_navigator point">커뮤니티</router-link>
         <router-link to="/market" class="header_navigator point">식물분양</router-link>
-        <router-link to="/garden-diary" class="header_navigator point">원예일지</router-link>
+        <!-- username을 포함한 동적 경로로 이동 -->
+        <router-link :to="`/garden-diary/${username}`" class="header_navigator point">원예일지</router-link>
       </div>
       <div class="header_item">
         <!-- 로그인 상태에 따라 로그인/로그아웃 버튼 표시 -->

@@ -1,12 +1,43 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // useRouter 사용
+import axios from 'axios';
+
 import FeedCard from "@/components/feed/feedCard.vue";
 import GardenCard from "@/components/diary/diaryCard.vue";
 import Profile from "@/components/diary/diaryProfile.vue";
 import Schedule from "@/components/diary/diarySchedule.vue";
 
-// 보여줄 컴포넌트 상태 관리
+const router = useRouter();
 const activeComponent = ref('Feed');
+const accessToken = localStorage.getItem('accessToken');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// 로그인된 사용자의 피드 데이터를 가져오는 함수
+const fetchUserFeed = async () => {
+  if (!accessToken) {
+    router.push('/login'); // 토큰이 없으면 로그인 페이지로 리다이렉트
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/user/me/feed`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    // 사용자의 피드 목록 저장하는 로직 추가
+  } catch (error) {
+    console.error('피드 로드 오류:', error);
+  }
+};
+
+// 로그인 상태 확인 및 리다이렉트 처리
+onMounted(() => {
+  if (!accessToken) {
+    router.push('/login'); // 로그인이 되어 있지 않으면 로그인 페이지로 리다이렉트
+  } else {
+    fetchUserFeed(); // 로그인 되어 있으면 피드를 로드
+  }
+});
 
 // 각 컴포넌트를 미리 등록
 const components = {
@@ -15,7 +46,6 @@ const components = {
   // Adoption: Adoption,
 };
 </script>
-
 <template>
   <div class="diary_container">
     <div class="profile">

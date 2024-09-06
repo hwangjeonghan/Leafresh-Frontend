@@ -2,7 +2,6 @@
     <div class="feed-page">
       <div class="feed-container">
         <FeedForm @addFeed="addFeed" />
-  
         <!-- 다이어리 목록으로 돌아가기 버튼 -->
         <div style="margin-top: 20px;">
           <button @click="goBackToDiary" class="btn btn-secondary">
@@ -21,13 +20,13 @@
   // 환경 변수에서 API URL 가져오기
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const router = useRouter();  // router 사용 설정
+  const username = ref(route.params.username); // URL에서 유저 이름을 가져옴
   
   // 피드 추가 요청 처리 함수
   const addFeed = async (feedInfo) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/feeds`, feedInfo);  // 서버에 피드 추가 요청 전송
       if (response.data.success) {
-        // 피드 추가 성공 시 가든 다이어리 페이지로 리다이렉트
         alert('피드가 성공적으로 등록되었습니다.');
         router.push('/garden-diary');
       } else {
