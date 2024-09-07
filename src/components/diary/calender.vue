@@ -72,11 +72,6 @@ const nextMonth = () => {
   date.value.setMonth(date.value.getMonth() + 1);
   renderCalendar();
 };
-// today 버튼지움
-// const goToday = () => {
-//   date.value = new Date();
-//   renderCalendar();
-// };
 
 
 onMounted(renderCalendar);
@@ -109,12 +104,16 @@ onMounted(renderCalendar);
       <div class="days">
         <div class="day">SUN</div>
         <div class="day">MON</div>
-        <div class="day">TUE</div> 
+        <div class="day">TUE</div>  
         <div class="day">WED</div>
         <div class="day">THU</div>
         <div class="day">FRI</div>
         <div class="day">SAT</div>
       </div>
+      
+      
+
+
       <div class="dates">
         <div
           v-for="(date, index) in formattedDates"
