@@ -20,6 +20,10 @@
       <img class="market_image_box" :src="marketImage" alt="Market Image" />
       <div class="market_title_box">{{ market.post.marketTitle }} </div>
       <div class="market_content_box">{{ market.post.marketContent }}</div>
+      <div class="market_btn_box">
+        <button @click="modifyPost(market.post.marketId)">수정하기</button>
+        <button @click="deletePost(market.post.marketId)">삭제하기</button>
+      </div>
       
       <div>
          <!-- 채팅하기 버튼 -->
@@ -34,10 +38,11 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
+const router = useRouter();
 const marketId = ref(route.params.id);
 const market = ref(null);
 const marketImage = ref('');
@@ -92,6 +97,41 @@ watch(() => route.params.id, (newId) => {
 onMounted(() => {
   fetchMarketDetails();
 });
+
+const modifyPost = (id) => {
+    router.push(`/market/modify/${id}`);
+}
+
+const deletePost = async (id) => {
+  if (!id) {
+    console.error('삭제할 게시글 ID가 없습니다.');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('accessToken');
+    const response = await fetch(`${API_BASE_URL}/market/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`삭제 오류: ${errorData.message || '알 수 없는 오류'}`);
+    }
+
+    // 삭제 성공 시
+    console.log('게시글 삭제 성공');
+    router.push('/market'); // 삭제 후 리스트 페이지로 리다이렉트
+  } catch (error) {
+    console.error('오류:', error);
+    alert('삭제 중 오류가 발생했습니다.');
+  }
+}
+
+
 </script>
 
 <style scoped>
