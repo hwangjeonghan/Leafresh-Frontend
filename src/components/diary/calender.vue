@@ -13,6 +13,14 @@ const renderYearMonth = ()=>{
   return `${date.value.getFullYear()}년 ${date.value.getMonth() + 1}월`;
 }
 
+// emit 함수 정의
+const emit = defineEmits(['open-modal']);
+
+// 모달 호출 이벤트 발생
+const emitDateClick = (day) => {
+  emit('open-modal', day);  // 클릭한 날짜를 상위로 emit
+};
+
 const renderCalendar = () => {
   const viewYear = date.value.getFullYear();
   const viewMonth = date.value.getMonth();
@@ -113,19 +121,23 @@ onMounted(renderCalendar);
       
       
 
+    <!-- 날짜클릭 이벤트 추가 -->
 
       <div class="dates">
         <div
           v-for="(date, index) in formattedDates"
           :key="index"
-          class="date"
-          :class="{ today: date.isToday }"
-        >
-          <span :class="date.class">{{ date.day }}</span>
+          :class="['date', { today: date.isToday }]"
+          
+          @click="emitDateClick(date.day)"
+        > 
+          <span>{{ date.day }}</span>
         </div>
       </div>
     </div>
   </section>
+
+
 </template>
 
 <style scoped>
