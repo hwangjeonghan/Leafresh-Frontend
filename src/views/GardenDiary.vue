@@ -16,30 +16,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const loginState = useUserstore(); // Pinia 스토어에서 로그인된 사용자 정보 가져오기
 
-// 로그인된 사용자의 피드 데이터를 가져오는 함수
-const fetchUserFeed = async () => {
-  if (!accessToken) {
-    router.push("/login"); // 토큰이 없으면 로그인 페이지로 리다이렉트
-    return;
-  }
-
-  try {
-    const response = await axios.get(`${API_BASE_URL}/user/me/feed`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    // 사용자의 피드 목록 저장하는 로직 추가
-  } catch (error) {
-    console.error("피드 로드 오류:", error);
-  }
-};
-
 // 로그인 상태 확인 및 리다이렉트 처리
 onMounted(() => {
   if (!accessToken) {
     router.push("/login"); // 로그인이 되어 있지 않으면 로그인 페이지로 리다이렉트
   } else {
-    fetchUserFeed(); // 로그인 되어 있으면 피드를 로드
-    console.log(`현재 유저: ${loginState.username}`); // Pinia에서 username 사용
+    console.log(`현재 유저: ${loginState.userNickname}`); // Pinia에서 username 사용
   }
 });
 
