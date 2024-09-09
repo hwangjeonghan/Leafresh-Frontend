@@ -62,19 +62,24 @@ const goToGardenDiary = () => {
           >식물분양</router-link
         >
         <!-- username을 포함한 동적 경로로 이동 -->
-        <button @click="goToGardenDiary">원예일지</button>
-      </div>
-      <div class="header_item">
-        <!-- 로그인 상태에 따라 로그인/로그아웃 버튼 표시 -->
         <router-link
-          v-if="!loginState.isLoggedIn"
-          to="/login"
-          class="header_menu point"
-          >로그인</router-link
+          v-if="loginState.isLoggedIn"
+          :to="`/garden-diary/${loginState.userNickname}`"
+          class="header_navigator point"
+          >원예일지</router-link
         >
-        <button v-else @click="loginState.logout" class="header_menu point">
-          로그아웃
-        </button>
+      </div>
+      <div class="footer_item">
+        <div class="footer_upper">
+          What's Leafresh
+        </div>
+        <div class="footer_middle">
+          <div>공지사항</div>
+          <div>이벤트</div>
+        </div>
+        <div class="footer_under">
+          All rights reserved. © Leafresh.
+        </div>
       </div>
     </div>
   </div>
@@ -114,6 +119,14 @@ a {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.footer_item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   align-items: center;
 }
 
@@ -160,5 +173,21 @@ a {
   width: 150px;
   height: 150px;
   border-radius: 70%;
+}
+
+.footer_upper,
+.footer_middle,
+.footer_under {
+  font-family: "ghanachoco";
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.footer_middle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around; /* 두 항목 사이에 간격 추가 */
+  width: 100%; /* 컨테이너 전체 너비 사용 */
 }
 </style>
