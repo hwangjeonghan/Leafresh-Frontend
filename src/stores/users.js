@@ -32,6 +32,7 @@ export const useUserstore = defineStore("useUserstore", () => {
         });
 
         const userData = response.data;
+        console.log('Fetched user data:', userData); // 사용자 데이터 로그 확인
 
         // FTP 이미지 경로를 가져와 API를 통해 접근 가능한 URL로 변환
         const ftpImagePath = userData.imageUrl
@@ -75,7 +76,19 @@ export const useUserstore = defineStore("useUserstore", () => {
     role.value = profile.role;
     imageUrl.value = profile.imageUrl;  // 업데이트된 이미지 URL 사용
     userReportCount.value = profile.userReportCount;
+  
+    console.log('User Profile Set:', {
+      userId: userId.value,
+      userName: userName.value,
+      userNickname: userNickname.value,
+      email: email.value,
+      userPhoneNumber: userPhoneNumber.value,
+      role: role.value,
+      imageUrl: imageUrl.value,
+      userReportCount: userReportCount.value
+    });
   };
+  
 
   // 로그아웃 메서드 정의
   const logout = async () => {
