@@ -5,12 +5,6 @@
       <p>Today's Date: {{ todayDate }}</p>
 
     <!-- 할 일 목록 표시 -->
-    <ul>
-      <li v-for="todo in todos" :key="todo.todoId">
-        {{ todo.todoContent }}
-        
-      </li>
-    </ul>
 
     <ul>
         <li v-for="todo in todos" :key="todo.todoId">
@@ -19,45 +13,41 @@
         </li>
       </ul>
 
+ </div> 
 
-    <!-- 할 일 추가 버튼 (모달 오픈 버튼) -->
-    <button @click="openModal">Add Todo</button>
 
-    <!-- 모달 -->
-    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h2>Add New Todo</h2>
-        <input v-model="newTodoContent" placeholder="New todo" />
-        <button @click="addTodo">Save</button>
-        <button @click="closeModal">Cancel</button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { defineProps } from 'vue';
 import axios from 'axios';
+
+
 
 // 반응성 변수를 정의한다. 
 const todos = ref([]);  // 할 일 목록을 저장하는 배열
 const newTodoContent = ref('');  // 새로운 할 일 내용을 저장
-const isModalOpen = ref(false);  // 모달 표시 여부
-const todayDate = ref('');  // 오늘 날짜를 저장
+
+const todayDate = ref('');  // 오늘 날짜
+const clickedDate = ref(null); // 클릭한 날짜를 저장하는 변수 추가
+
+// 선택된 날짜를 상위 컴포넌트에서 받는다
+const props = defineProps({
+  selectedDate: {
+    type: [Date, null], // Date 또는 null 타입
+    default: null
+  }
+})
 
 
 // 백엔드 연결을 위한 env 파일을 정의한다. 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// 오늘 날짜를 포맷하여 저장
-const formatTodayDate = () => {
-  const date = new Date();
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options) + '일';
-};
 
-// 오늘 날짜를 setup 함수에서 설정
-todayDate.value = formatTodayDate();
+
+// 오늘 날짜를 포맷하여 저장
+todayDate.value = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '일';
 
 
 
@@ -82,44 +72,7 @@ const fetchTodos = async () => {
 
 }
 
-// 새로운 할일을 추가한다.
-// 0. 모달창을 통해 사용자가 할일을 입력할 수 있는 페이지를 띠운다.
-// 1. 사용자가 할일을 입력했는지 확인한다.
-// 2. 할 일을 자알 입력했다면 axios.put 을 통해 서버로 할일을 보낸다.
-// 3. 서버로 보낸 할일을 목록에 반영한다.
-// 
-
- const addTodo = async () => {
-  if(!newTodoContent.value.trim()) {
-    console.log('입력된 todo가 없습니다.?_?');
-    return;
-  }
-
-
-  try{
-      const response = await axios.post(`${API_BASE_URL}/garden-diary/todo/create`, {
-      todoContent: newTodoContent.value,
-      todoCreateAt: new Date().toISOString(),
-      userId: 1, // 유저 ID는 임의로 1로 설정
-    });
-
-    if (response.data && response.data.todoIndex) {
-      todos.value.push(response.data.todoIndex); // 새로 추가된 할 일 목록에 반영
-      newTodoContent.value = ''; // 입력 필드를 초기화
-      closeModal(); // 할 일 추가 후 모달 닫기
-  }
-
-  }catch(error){
-
-    console.error('새로운 거 추가하다 에러났지롱', error);
-
-  }
-
-};
-
 // 체크박스에 따라 할일 목록의 상태를 업데이트 한다.
-
-
 
 const updateTodoStatus = async (todo) => {
 const newStatus = todo.todoStatus === 'Y' ? 'N' : 'Y'; // 상태 토글
@@ -136,24 +89,10 @@ try {
 
 
 
-
-
-
- 
-// 모달 열고 닫기
-const openModal = () => {  
- isModalOpen.value = true;
-};
-
-const closeModal = () => {
-isModalOpen.value = false;
-};
-
 // 컴포넌트가 마운트될 때 전체 할 일 목록을 불러옴
 onMounted(() => {
 fetchTodos();
 });
-
 
 
 </script>
