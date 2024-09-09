@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 
 export const useUserstore = defineStore("useUserstore", () => {
+  const router = useRouter(); // 라우터 설정 추가
   // 사용자 정보 상태
   const userId = ref(null);
   const userName = ref("");
@@ -107,6 +109,7 @@ export const useUserstore = defineStore("useUserstore", () => {
       localStorage.removeItem("refreshToken");
       clearUserProfile(); // 사용자 정보 초기화
       setLoginState(false); // 로그인 상태 변경
+      router.push('/login');
     } catch (error) {
       console.error("로그아웃 오류:", error);
       alert("서버 오류가 발생했습니다.");
