@@ -60,6 +60,10 @@ export const useUserStore = defineStore("userStore", () => {
     isLoggedIn.value = false;
   };
 
+  const setLoginState = (state) => {
+    isLoggedIn.value = state;
+  };
+
   return {
     userId,
     userName,
@@ -72,5 +76,6 @@ export const useUserStore = defineStore("userStore", () => {
     isLoggedIn,
     fetchUserProfile,
     clearUserProfile,
+    setLoginState,
   };
 });
