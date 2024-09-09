@@ -96,7 +96,7 @@ const components = {
 
 /* 헤어라인 div 스타일 */
 .hairline {
-  width: 95%; /* 선 길이 */
+  width: 85%; /* 선 길이 */
   height: 1px; /* 얇은 선 */
   margin: 20px 0; /* 상하 여백 */
   border: #a68b6a solid 2px;
