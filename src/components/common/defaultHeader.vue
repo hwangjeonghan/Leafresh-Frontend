@@ -31,10 +31,12 @@ watch(
 
 // 원예일지로 이동하는 함수
 const goToGardenDiary = () => {
-  if (loginState.isLoggedIn) {
-    router.push(`/garden-diary/${loginState.userNickname}`); // 로그인된 유저의 이름을 기반으로 페이지 이동
+  if (!isLoggedIn.value) {
+    router.push('/login');
+  } else if (!userProfileExists.value) { // 프로필이 없는 경우
+    router.push('/profile/registration'); // 프로필 등록 페이지로 이동
   } else {
-    router.push("/login"); // 로그인되어 있지 않으면 로그인 페이지로 이동
+    router.push('/garden-diary/:username'); // 프로필이 있는 경우 원예일지 페이지로 이동
   }
 };
 </script>

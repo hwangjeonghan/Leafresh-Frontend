@@ -18,6 +18,7 @@ export const useUserstore = defineStore("useUserstore", () => {
   
   // 로그인 여부
   const isLoggedIn = ref(false);
+  const userProfileExists = ref(false);
 
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
@@ -53,6 +54,10 @@ export const useUserstore = defineStore("useUserstore", () => {
         });
 
         isLoggedIn.value = true; // 로그인 상태로 설정
+
+           // 프로필 존재 여부 확인
+           await checkUserProfileExists();
+
       } catch (error) {
         console.error("사용자 정보를 가져오는 데 실패했습니다.", error);
         isLoggedIn.value = false; // 오류 시 로그인 상태 false
@@ -65,6 +70,20 @@ export const useUserstore = defineStore("useUserstore", () => {
     } else {
       console.error("토큰이 존재하지 않습니다.");
       isLoggedIn.value = false;
+    }
+  };
+
+  // 프로필 존재 여부 확인 함수
+  const checkUserProfileExists = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/profile/check`, {
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+        },
+      });
+      userProfileExists.value = response.data.exists; // 프로필 존재 여부 업데이트
+    } catch (error) {
+      console.error("프로필 존재 여부 확인 실패:", error);
     }
   };
 
@@ -147,6 +166,7 @@ export const useUserstore = defineStore("useUserstore", () => {
     fetchUserProfile,
     setUserProfile,
     clearUserProfile,
+    userProfileExists,
     setLoginState,
     logout,
   };

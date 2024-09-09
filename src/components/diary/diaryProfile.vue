@@ -29,6 +29,8 @@
 
 <script setup="setup">
     import {ref, onMounted} from 'vue';
+    import axios from 'axios';
+    import {useRouter} from 'vue-router';
 
     const profileImage = ref('https://via.placeholder.com/150'); // 프로필 이미지 URL
     const username = ref('the_leafresh'); // 사용자 이름
@@ -38,9 +40,27 @@
     const bioTitle = ref('자연을 사랑하는 식집사'); // 프로필 제목
     const bioDescription = ref('식물 관련 정보를 함께 나눠요!\n희귀식물 00 아가들 분양중..'); // 프로필 설명
 
-    onMounted(() => {
-        // 데이터 fetch 또는 기타 초기화 작업을 수행할 수 있습니다.
+    const router = useRouter();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    onMounted(async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/profile/check`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
     });
+
+    if (!response.data.exists) {
+      alert('프로필이 존재하지 않습니다. 프로필을 먼저 등록해주세요.');
+      router.push('/profile/registration'); // 프로필 등록 페이지로 이동
+    }
+  } catch (error) {
+    console.error('프로필 확인 오류:', error);
+    alert('프로필을 확인하는 중 오류가 발생했습니다.');
+    router.push('/login'); // 오류 발생 시 로그인 페이지로 이동
+  }
+});
 </script>
 
 <style scoped="scoped">

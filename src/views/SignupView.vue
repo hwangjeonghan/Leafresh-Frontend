@@ -167,7 +167,7 @@ const handleSubmit = async () => {
       headers: { 'Content-Type': 'application/json' },
     });
     alert('회원가입이 성공적으로 완료되었습니다.');
-    router.push('/profile-registration');  // 회원가입 성공 후 로그인 페이지로 이동
+    router.push('/login');  // 회원가입 성공 후 로그인 페이지로 이동
   } catch (error) {
     console.error('회원가입 오류:', error);
     alert('회원가입에 실패했습니다.');
