@@ -1,157 +1,181 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Chat with {{ chatPartnerName }}</h2>
+      <h2>채팅방</h2>
+      <button @click="closeChat">X</button>
     </div>
     <div class="chat-messages">
-      <div v-for="message in messages" :key="message.id" class="message">
-        <div v-if="message.senderId === currentUserId">
-          You: {{ message.content }}
-        </div>
-        <div v-else>{{ chatPartnerName }}: {{ message.content }}</div>
+      <div
+        v-for="msg in messages"
+        :key="msg.id"
+        class="chat-message"
+        :class="{ 'sent': msg.senderId === userStore.userId, 'received': msg.senderId !== userStore.userId }"
+      >
+        <strong>{{ msg.name }}:</strong> {{ msg.message }}
       </div>
     </div>
-
-    <form @submit.prevent="sendMessage">
-      <input
-        v-model="newMessage"
-        type="text"
-        placeholder="Type your message..."
-        required
-      />
-      <button type="submit">Send</button>
-    </form>
+    <div class="chat-input">
+      <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
+      <button @click="sendMessage">전송</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
-import Stomp from "stompjs";
-import SockJS from "sockjs-client";
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useUserstore } from '@/stores/users'; // 사용자 스토어 가져오기
+import { Client } from '@stomp/stompjs';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const socket = new SockJS(`${API_BASE_URL}/ws`); // WebSocket 연결
-const stompClient = Stomp.over(socket); // STOMP 클라이언트
+const route = useRoute();
+const userStore = useUserstore(); // 사용자 스토어 인스턴스
+const messages = ref([]);
+const newMessage = ref("");
+const client = ref(null);
+const chatRoomId = ref(route.params.id);
 
-const messages = ref([]); // 메시지 배열
-const newMessage = ref(""); // 새 메시지 입력 필드
-const chatPartnerName = ref(""); // 채팅 상대 이름
-const route = useRoute(); // 현재 라우트 정보
-const roomId = ref(route.params.roomId); // 현재 채팅방 ID
-
-const currentUserId = 1; // 현재 로그인한 사용자 ID를 실제로 가져와야 함
-const recipientUserId = 2; // 채팅 상대의 사용자 ID를 실제로 가져와야 함
-
-// WebSocket 연결 및 구독 설정
-const connect = () => {
-  stompClient.connect({}, (frame) => {
-    console.log('Connected: ' + frame);
-
-    // roomId가 없는 경우를 처리하기 위해 validRoomId 설정
-    const validRoomId = roomId.value ? roomId.value : "defaultRoomId";
-
-    // 메시지 구독 경로에 roomId 사용
-    stompClient.subscribe(`/topic/messages/${validRoomId}`, (message) => {
-      const msg = JSON.parse(message.body);
-      messages.value.push(msg);  // 메시지를 배열에 추가
-    });
-  }, (error) => {
-    console.error('STOMP 프로토콜 오류: ', error);
+const connection = () => {
+  client.value = new Client({
+    brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
+    onConnect: () => {
+      console.log('STOMP 연결 성공');
+      client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
+        messages.value.push(JSON.parse(message.body));
+      });
+    },
+    onStompError: (frame) => {
+      console.error('STOMP 오류:', frame.headers['message']);
+    }
   });
-};
 
-// 메시지 전송 함수
+  client.value.activate();
+}
+
 const sendMessage = () => {
-  if (newMessage.value.trim()) {
-    // roomId가 없는 경우 "defaultRoomId"로 설정
-    const validRoomId = roomId.value ? roomId.value : "defaultRoomId"; 
+  console.log('User ID:', userStore.userId.value);
+  console.log('User Name:', userStore.userName.value);
 
-    const messageToSend = {
-      senderId: currentUserId,    // 보낸 사람 ID
-      recipientId: recipientUserId,  // 받는 사람 ID
-      content: newMessage.value,  // 메시지 내용
+  if (newMessage.value) {
+    const messagePayload = {
+      id: userStore.userId,
+      name: userStore.userName,
+      message: newMessage.value,
+      chatRoomId: chatRoomId.value,
+      senderId: userStore.userId
     };
-
-      // 실제 전송되는 데이터를 콘솔에 출력
-      console.log("전송되는 메시지:", JSON.stringify(messageToSend));
-
-    // WebSocket을 통해 메시지 전송
-    stompClient.send(
-      `/app/chat`, // 엔드포인트 수정
-      {},
-      JSON.stringify(messageToSend)
-    );
-
-    // 전송된 메시지를 messages 배열에 추가 (자신이 보낸 메시지에 대한 로컬 반영)
-    messages.value.push({
-      senderId: currentUserId,
-      content: newMessage.value,
+    console.log("전송할 메시지: ", messagePayload);
+    client.value.publish({
+      destination: '/pub/message',
+      body: JSON.stringify(messagePayload)
     });
-
-    newMessage.value = ""; // 입력 필드 초기화
+    newMessage.value = "";
+  } else {
+    console.log("메시지를 입력해주세요.");
   }
-};
+}
 
-// 컴포넌트가 마운트될 때 WebSocket 연결
-onMounted(() => {
-  chatPartnerName.value = route.params.chatPartnerName || "채팅 상대 이름"; // URL 파라미터에서 채팅 상대 이름 가져오기
-  connect();  // 컴포넌트가 마운트된 후에 connect 호출
+const closeChat = () => {
+  client.value.deactivate(); // WebSocket 연결 종료
+}
+
+onMounted(async () => {
+  await userStore.fetchUserProfile(); // 사용자 정보 로드
+  connection();
 });
 
-// 컴포넌트가 언마운트될 때 WebSocket 연결 해제
 onUnmounted(() => {
-  if (stompClient.connected) {
-    stompClient.disconnect();
-    console.log("WebSocket disconnected");
+  if (client.value) {
+    client.value.deactivate();
   }
+});
+
+watch(() => route.params.id, (newId) => {
+  chatRoomId.value = newId;
+  console.log('Updated chat room ID:', chatRoomId.value);
+  // WebSocket 재연결 필요 시 처리
 });
 </script>
 
 <style scoped>
 .chat-container {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: #f9f9f9;
 }
 
 .chat-header {
-  background-color: #007bff;
-  color: white;
+  background-color: #f1f1f1;
   padding: 10px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
 }
 
 .chat-messages {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  border-bottom: 1px solid #ddd;
-}
-
-.message {
-  margin-bottom: 10px;
-}
-
-form {
+  background-color: #fff;
   display: flex;
+  flex-direction: column;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  max-width: 80%;
+}
+
+.chat-message.sent {
+  align-self: flex-end;
+  background-color: #d1e7dd;
+  text-align: right;
+}
+
+.chat-message.received {
+  align-self: flex-start;
+  background-color: #f8d7da;
+  text-align: left;
+}
+
+.chat-input {
   padding: 10px;
-  background-color: white;
   border-top: 1px solid #ddd;
+  display: flex;
 }
 
-input {
+.chat-input input {
   flex: 1;
-  padding: 10px;
+  padding: 5px;
   border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
+.chat-input button {
+  margin-left: 10px;
+  padding: 5px 10px;
   border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}
+
+.chat-header button {
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
   cursor: pointer;
 }
 </style>
