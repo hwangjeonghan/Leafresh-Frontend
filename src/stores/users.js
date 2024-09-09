@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
 
-export const useUserStore = defineStore("userStore", () => {
+export const useLoginState = defineStore("useLoginState", () => {
   // 사용자 정보 상태
   const userId = ref(null);
   const userName = ref("");
