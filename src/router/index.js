@@ -32,13 +32,11 @@ const router = createRouter({
       path: "/garden-diary/:username", // 유저 이름 경로 포함
       name: "GardenDiary",
       component: GardenDiary,
-      props: true, // 경로 파라미터를 props로 컴포넌트에 전달
     },
     {
-      path: "/garden-diary/feed-add/:username", // 유저 이름 경로 포함
+      path: "/garden-diary/feed-add", // 유저 이름 경로 포함
       name: "FeedAdd",
       component: FeedAdd,
-      props: true, // props로 전달
     },
     {
       path: "/garden-diary/feed-detail/:username/:id", // 유저 이름 및 피드 ID 포함

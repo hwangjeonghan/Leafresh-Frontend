@@ -2,7 +2,12 @@
   <form @submit.prevent="submitFeed">
     <div class="input-group">
       <label for="feedContent" class="feedContents">피드 내용</label>
-      <textarea v-model="feedContent" placeholder="피드 내용을 입력하세요" required class="feedContent"></textarea>
+      <textarea
+        v-model="feedContent"
+        placeholder="피드 내용을 입력하세요"
+        required
+        class="feedContent"
+      ></textarea>
     </div>
     <div class="input-group">
       <label for="feedImage">피드 이미지 업로드</label>
@@ -14,9 +19,14 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
+import { useUserstore } from '@/stores/users'; // Pinia 스토어에서 유저 정보를 가져오기
 
+// 피드 데이터 상태
 const feedContent = ref('');
 const feedImage = ref(null);
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // API URL
+const loginState = useUserstore(); // 로그인된 유저 정보 가져오기
 
 // 이미지 업로드 처리 함수
 const handleFileUpload = (event) => {
@@ -26,17 +36,62 @@ const handleFileUpload = (event) => {
   }
 };
 
-// 피드 등록 폼 제출 처리 함수
-const submitFeed = () => {
+// 이미지 업로드 함수
+const uploadImageToFTP = async () => {
+  if (!feedImage.value) return '';
+
+  const formData = new FormData();
+  formData.append('file', feedImage.value);
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    const uploadedImagePath = response.data.split(': ')[1].trim(); // 경로만 추출
+    return uploadedImagePath;
+  } catch (error) {
+    console.error('이미지 업로드 오류:', error);
+    throw new Error('이미지 업로드 실패');
+  }
+};
+
+// 피드 등록 함수
+const submitFeed = async () => {
   if (!feedContent.value || !feedImage.value) {
     alert('모든 필드를 채워주세요.');
     return;
   }
 
-  const feedData = {
-    content: feedContent.value,
-    image: feedImage.value,
-  };
+  try {
+    // 이미지 FTP 서버에 업로드
+    const uploadedImageUrl = await uploadImageToFTP();
+
+    // 피드 데이터 준비
+    const feedData = {
+      feedContent: feedContent.value,
+      feedImage: uploadedImageUrl, // 업로드된 이미지 URL
+      userId: loginState.userId, // 유저 ID 추가
+      userName: loginState.userName, // 유저 이름 추가
+      userNickname: loginState.userNickname, // 유저 닉네임 추가
+    };
+
+    // 피드 데이터를 백엔드에 전송 (JSON 형식)
+    const response = await axios.post(`${API_BASE_URL}/feeds`, feedData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.status === 200) {
+      alert('피드가 성공적으로 등록되었습니다.');
+    } else {
+      alert('피드 등록 실패: ' + response.data.message);
+    }
+  } catch (error) {
+    console.error('피드 등록 오류:', error);
+    alert('서버 오류가 발생했습니다.');
+  }
 };
 </script>
 

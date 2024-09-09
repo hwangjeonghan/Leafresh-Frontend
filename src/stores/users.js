@@ -1,11 +1,8 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // 라우터 가져오기
 
 export const useUserstore = defineStore("useUserstore", () => {
-  const router = useRouter(); // 라우터 인스턴스 생성
-
   // 사용자 정보 상태
   const userId = ref(null);
   const userName = ref("");
@@ -15,19 +12,21 @@ export const useUserstore = defineStore("useUserstore", () => {
   const role = ref("");
   const imageUrl = ref("");
   const userReportCount = ref(0);
+  const token = ref(''); // JWT 토큰 저장
   
   // 로그인 여부
   const isLoggedIn = ref(false);
 
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
+    const localToken = localStorage.getItem("accessToken");
+    if (localToken) {
+      token.value = localToken; // 토큰을 Pinia 상태에 저장
       try {
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         const response = await axios.get(`${API_BASE_URL}/user/me`, {
           headers: {
-            Authorization: `Bearer ${token}`, // 토큰을 헤더에 포함
+            Authorization: `Bearer ${token.value}`, // 토큰을 헤더에 포함
           },
         });
 
@@ -62,10 +61,11 @@ export const useUserstore = defineStore("useUserstore", () => {
       }
     } else {
       console.error("토큰이 존재하지 않습니다.");
+      isLoggedIn.value = false;
     }
   };
 
-  // 사용자 정보를 설정하는 함수 추가
+  // 사용자 정보를 설정하는 함수
   const setUserProfile = (profile) => {
     userId.value = profile.userId;
     userName.value = profile.userName;
@@ -73,28 +73,27 @@ export const useUserstore = defineStore("useUserstore", () => {
     email.value = profile.email;
     userPhoneNumber.value = profile.userPhoneNumber;
     role.value = profile.role;
-    imageUrl.value = profile.imageUrl;  // 업데이트된 이미지 URL 사용
+    imageUrl.value = profile.imageUrl;
     userReportCount.value = profile.userReportCount;
   };
 
-  // 로그아웃 메서드 정의
+  // 로그아웃 메서드
   const logout = async () => {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-      const token = localStorage.getItem("accessToken"); // 토큰을 로컬 스토리지에서 가져오기
+      const localToken = localStorage.getItem("accessToken");
       await axios.post(
         `${API_BASE_URL}/auth/logout`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localToken}` },
         }
       );
-      // 로컬 스토리지에서 accessToken과 refreshToken 모두 삭제
+      // 로컬 스토리지에서 토큰 삭제
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      setLoginState(false); // 로그인 상태 변경
       clearUserProfile(); // 사용자 정보 초기화
-      router.push("/login");
+      setLoginState(false); // 로그인 상태 변경
     } catch (error) {
       console.error("로그아웃 오류:", error);
       alert("서버 오류가 발생했습니다.");
@@ -114,6 +113,7 @@ export const useUserstore = defineStore("useUserstore", () => {
     isLoggedIn.value = false;
   };
 
+  // 로그인 상태 설정 함수
   const setLoginState = (state) => {
     isLoggedIn.value = state;
   };
@@ -132,6 +132,6 @@ export const useUserstore = defineStore("useUserstore", () => {
     setUserProfile,
     clearUserProfile,
     setLoginState,
-    logout, // 로그아웃 함수 추가
+    logout,
   };
 });
