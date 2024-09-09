@@ -2,13 +2,13 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useLoginState } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
 
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Pinia 스토어 인스턴스 생성
-const loginState = useLoginState();
+const loginState = useUserstore();
 
 // 로그아웃 메서드 정의
 const logout = async () => {
