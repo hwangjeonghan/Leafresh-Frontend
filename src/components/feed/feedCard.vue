@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Vue Router import
-import { useLoginState } from "@/stores/users.js"; // Pinia 스토어 import
+import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 import
 
 const router = useRouter(); // router 인스턴스 사용 설정
-const loginState = useLoginState(); // Pinia 스토어에서 로그인된 유저 정보 가져오기
+const loginState = useUserstore(); // Pinia 스토어에서 로그인된 유저 정보 가져오기
 
 const myObject = ref([
   {

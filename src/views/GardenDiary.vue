@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router"; // useRouter 사용
 import axios from "axios";
-import { useLoginState } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
 
 import FeedCard from "@/components/feed/feedCard.vue";
 import GardenCard from "@/components/diary/diaryCard.vue";
@@ -14,7 +14,7 @@ const activeComponent = ref("Feed");
 const accessToken = localStorage.getItem("accessToken");
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const loginState = useLoginState(); // Pinia 스토어에서 로그인된 사용자 정보 가져오기
+const loginState = useUserstore(); // Pinia 스토어에서 로그인된 사용자 정보 가져오기
 
 // 로그인된 사용자의 피드 데이터를 가져오는 함수
 const fetchUserFeed = async () => {
