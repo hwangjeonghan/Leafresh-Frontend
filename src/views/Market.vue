@@ -63,16 +63,17 @@ onMounted(() => {
 <div class="market-page">
   <div class="share_container">
       <div v-if="markets.length > 0" class="market-list">
-        <div v-for="(market, index) in markets.filter(market => market.marketVisibleScope !== 'MARKET_DELETE').slice().reverse()"
-                    :key="index" class="market-item" @click="detailPost(market.marketId)">
+        <div v-for="(market, index) in markets.filter(market => market.marketVisibleScope !== 'MARKET_DELETE').slice().reverse()" :key="index" class="market-item" @click="detailPost(market.marketId)">
           <div class="market_image_box">
             <img :src="market.imageUrl" alt="Market Image" class="market-image" />
           </div>
           <div class="market_text_box">
-            <div :class="market.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
-              <p>{{ market.marketStatus ? '분양중' : '분양 완료' }}</p>
+            <div class="market_status_category">
+              <div :class="market.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
+                <p style="font-size: 1em;">{{ market.marketStatus ? '분양중' : '분양 완료' }}</p>
+              </div>
+              <p class="market-category">{{ market.marketCategory }}</p>
             </div>
-            <p class="market-category">{{ market.marketCategory }}</p>
             <p class="market-title">{{ market.marketTitle }}</p>
             <p class="market-content">{{ market.userNickname }}</p>
           </div>
@@ -125,6 +126,12 @@ onMounted(() => {
   overflow-y: auto; /* 세로 스크롤 가능 */
 }
 
+.market_status_category {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .market-list::-webkit-scrollbar {
   display: none; /* 스크롤바 숨기기 */
 }
@@ -142,7 +149,7 @@ onMounted(() => {
   background-color: white;
   border-radius: 1vw;
   height: 10vw;
-  padding: 2vw;
+  padding: 1vw;
   margin-bottom: 1vw;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-color: #656565;
@@ -150,41 +157,48 @@ onMounted(() => {
 }
 
 .market_status_box_true {
-  margin: 0 0 1.8vw 0;
-  width: 4vw;
+  display: flex;
   text-align: center;
-  padding: 0.7vw;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1vw 1vw 0;
+  width: 5vw;
+  height: 2.5vh;
   background-color: #ffb357;
   color: white;
   border-radius: 1vw;
 }
 
 .market_status_box_false {
-  margin: 0 0 1.8vw 0;
-  width: 4.5vw;
+  display: flex;
   text-align: center;
-  padding: 0.7vw;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1vw 1vw 0;
+  width: 5.5vw;
+  height: 2.5vh;
   background-color: #b6b6b6;
   color: white;
+
   border-radius: 1vw;
 }
 
 .market-category {
-  font-size: 1.5vw;
+  font-size: 1.3vw;
   font-weight: bold;
-  margin-bottom: 1vw;
+  margin-bottom: 0.8vh;
   color: #d0d0d0;
 }
 
 .market-title {
-  font-size: 2vw;
+  font-size: 1.5em;
   font-weight: bold;
   margin-bottom: 10px;
   color: #848484;
 }
 
 .market-content {
-  font-size: 1.5vw;
+  font-size: 1em;
   line-height: 1.5;
   margin-bottom: 1.5vw;
   color: #848484;
@@ -210,16 +224,22 @@ onMounted(() => {
 }
 
 .market_text_box {
-  width: 75%;
-  margin-top: 1vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start; /* 왼쪽 정렬 */
+  margin-top: 0.5vw;
+  width: 100%; /* 가로를 꽉 채우도록 설정 */
 }
 
 .market_created_box {
-  width: 10%;
+  width: 10vw;
   text-align: right;
-  font-size: 1.5vw;
+  font-size: 1.2vw;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 1vw;
+  margin-right: 1vw;
+  margin-top: 1vh;
   color: #bdbdbd;
 }
 
