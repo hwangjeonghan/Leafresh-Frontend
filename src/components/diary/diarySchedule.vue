@@ -1,12 +1,17 @@
 <script setup>
 import Calender from './calender.vue';
 import Todo from './todo.vue';
+import TodoForm from './todoform.vue';
 import TodayTodo from './todayTodo.vue';
-import { todos, isModalOpen, clickedDate, newTodoContent, openModal, closeModal, addTodo } from '@/assets/todo'; // todo.js에서 가져옴
+import { todos, isModalOpen, newTodoContent, openModal, closeModal, addTodo } from '@/assets/todo'; // todo.js에서 가져옴
+import { computed } from 'vue';
+import { useTodoStore } from '@/stores/todoStore';
 
+const todoStore = useTodoStore();
+// Pinia 스토어에서 클릭된 날짜 가져오기
+const clickedDate = computed(() => todoStore.clickedDate);
 
-
-
+ 
 </script>
 
 <template>
@@ -20,18 +25,20 @@ import { todos, isModalOpen, clickedDate, newTodoContent, openModal, closeModal,
     <div class="schedule_container">
         <!-- Calender 컴포넌트에서 날짜 클릭 이벤트를 받아서 처리 -->
         <div class="calender_box">
-          <Calender @open-modal="openModal" /> 
+          <Calender /> 
         </div>
 
         <div class="today_todo_box">
           <TodayTodo />
 
+          
+          <button @click="openModal" >
+            할일추가
+          </button>
+          
+
         </div>
     
-
-
-    
-      
     </div>
 
 
@@ -40,8 +47,8 @@ import { todos, isModalOpen, clickedDate, newTodoContent, openModal, closeModal,
     <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h2>Add New Todo</h2>
-        <h2>{{ clickedDate }} 일 </h2> <!-- 클릭한 날짜 표시 -->
-        <input v-model="newTodoContent" placeholder="New todo" />
+        <TodoForm />
+        <input v-model="newTodoContent" placeholder="New todo" class="todo_input"/>
         <button @click="addTodo">Save</button>
         <button @click="closeModal">Cancel</button>
       </div>
@@ -78,7 +85,6 @@ import { todos, isModalOpen, clickedDate, newTodoContent, openModal, closeModal,
 
 
 
-
 /* 모달 스타일 */
 .modal-overlay {
   position: fixed;
@@ -107,5 +113,16 @@ import { todos, isModalOpen, clickedDate, newTodoContent, openModal, closeModal,
 
 .modal-content input {
   width: 100%;
+}
+
+
+.todo_input {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
 }
 </style>

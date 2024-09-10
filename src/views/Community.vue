@@ -1,8 +1,12 @@
-<script setup></script>
+<script setup>
+
+</script>
+
 
 <template>
   <div class="commuity_container">
     <div class="commuity_text">커뮤니티 페이지 입니다.</div>
+
   </div>
 </template>
 
