@@ -25,20 +25,31 @@
         <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
       </div>
       
-      <div>
-         <!-- 채팅하기 버튼 -->
-         <router-link :to="{ name: 'Chat', params: { id: market.post.marketId } }" class="market_chat">채팅하기</router-link>
+     <!-- 원형 채팅하기 버튼 -->
+     <button @click="openChatModal" class="market_chat_circle">채팅하기</button>
+      </div>
+      <div v-else>
+        <p>Loading...</p>
       </div>
     </div>
-    <div v-else>
-      <p>Loading...</p>
+
+    <!-- 모달 창 (v-if로 표시 여부 제어) -->
+    <div v-if="isChatModalOpen" class="chat-modal">
+      <div class="chat-modal-content">
+        <!-- Chat.vue 컴포넌트를 모달 내에 렌더링 -->
+        <ChatComponent :roomId="market.post.marketId" @close="closeChatModal" />
+      </div>
     </div>
   </div>
-</div>
 </template>
+
+
+
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import  ChatComponent from './Chat.vue';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
@@ -46,6 +57,17 @@ const router = useRouter();
 const marketId = ref(route.params.id);
 const market = ref(null);
 const marketImage = ref('');
+const isChatModalOpen = ref(false); // 모달 창 열림 상태
+
+// 모달 열기
+const openChatModal = () => {
+  isChatModalOpen.value = true;
+};
+
+// 모달 닫기
+const closeChatModal = () => {
+  isChatModalOpen.value = false;
+};
 
 const fetchMarketDetails = async () => {
   try {
@@ -325,13 +347,63 @@ const deletePost = async (id) => {
   padding-left: 5vw;
 }
 
+.market_chat_circle {
+  width: 60px;
+  height: 60px;
+  background-color: #1ab546;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.market_chat_circle:hover {
+  background-color: #17a43c;
+}
+
+/* 모달 스타일 */
+.chat-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.chat-modal-content {
+  background-color: white;
+  border-radius: 16px;
+  padding: 20px;
+  width: 450px;
+  max-width: 100%;
+  height: 80vh;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
 .market_btn_box {
   display: flex;
   justify-content: flex-end;
   margin-top: 3.5vh;
 }
 
-.market_btn_edit{
+.market_btn_edit {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
   padding: 0.6vw;
@@ -352,7 +424,7 @@ const deletePost = async (id) => {
   transform: translateY(0);
 }
 
-.market_btn_delete{
+.market_btn_delete {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
   padding: 0.6vw;
@@ -371,5 +443,6 @@ const deletePost = async (id) => {
 .market_btn_delete:active {
   transform: translateY(0);
 }
+
 
 </style>
