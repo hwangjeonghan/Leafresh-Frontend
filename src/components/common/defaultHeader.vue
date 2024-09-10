@@ -36,7 +36,7 @@ const goToGardenDiary = () => {
   } else if (!userProfileExists.value) { // 프로필이 없는 경우
     router.push('/profile/registration'); // 프로필 등록 페이지로 이동
   } else {
-    router.push('/garden-diary/:username'); // 프로필이 있는 경우 원예일지 페이지로 이동
+    router.push('/garden-diary/${loginState.userNickname}'); // 프로필이 있는 경우 원예일지 페이지로 이동
   }
 };
 </script>
