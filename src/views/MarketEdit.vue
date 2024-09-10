@@ -22,26 +22,55 @@
               <label for="image">사진</label>
               <input type="file" @change="onFileChange" />
             </div>
-            <button type="submit" class="submit-button">등록</button>
+            <button type="submit" class="submit-button">수정완료</button>
           </form>
         </div>
       </div>
     </div>
 </template>
-    
+
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';  // vue-router 사용을 위해 import
+import { ref, computed, onMounted, watch, reactive } from 'vue';
+import { useRoute, useRouter } from 'vue-router';  // vue-router 사용을 위해 import
 import axios from 'axios';
   
 const router = useRouter(); 
-  
+const route = useRoute();
+const post = reactive({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
+const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
+
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  
-const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
 const postImage = ref(null);
-const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
+
+const postId = route.params.id;
+
+watch(post, (newPost) => {
+  if (newPost.marketCategory) {
+    console.log('데이터가 로드되었습니다:', newPost);
+  }
+}, { immediate: true });
+
+// db에 저장된 데이터 불러옴
+const fetchPostData = async () => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const response = await axios.get(`${API_BASE_URL}/market/detail/${postId}`,{
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    Object.assign(post, response.data.post);
+
+  } catch (error) {
+    console.error('데이터 가져오기 오류:', error);
+    post.value = { marketCategory: '', marketTitle: '', marketContent: '', marketImage: null };
+  }
+};
+
+onMounted(() => {
+  fetchPostData();
+});
   
 const isFormValid = computed(() => {
   return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value;
@@ -124,7 +153,7 @@ const submitForm = async () => {
   } 
 };
 </script>
-  
+
 <style scoped>
 .postAdd-page {
   display: flex;
@@ -233,4 +262,4 @@ const submitForm = async () => {
   }
 }
 </style>
-  
+
