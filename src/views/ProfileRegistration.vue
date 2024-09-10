@@ -23,6 +23,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useUserstore } from '@/stores/users.js';
 
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -30,6 +31,7 @@ const profileTitle = ref('');
 const profileDescription = ref('');
 const profileTitleError = ref('');
 const profileDescriptionError = ref('');
+const loginState = useUserstore();
 
 // 프로필 정보 제출 처리 함수
 const handleProfileSubmit = async () => {
@@ -49,7 +51,7 @@ const handleProfileSubmit = async () => {
       }
     );
     alert('프로필이 성공적으로 등록되었습니다.');
-    router.push('/garden-diary/:username'); // 프로필 등록 후 원예 일지로 이동
+    router.push('/garden-diary/${loginState.userNickname}'); // 프로필 등록 후 원예 일지로 이동
   } catch (error) {
     console.error('프로필 등록 오류:', error);
     alert('프로필 등록에 실패했습니다.');
