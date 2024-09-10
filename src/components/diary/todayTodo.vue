@@ -3,12 +3,15 @@
     <h1 class="todo-header">Todo List</h1>
 
     <div class="today_todolist">
-      <ul>
+      <div class="todo_box">
+        <ul>
         <li v-for="todo in todos" :key="todo.id" class="todo-item">
           <input type="checkbox" class="todo-checkbox">
           <span class="todo-content">{{ todo.todoContent }}</span>
         </li>
       </ul>
+      </div>
+      
     </div>
   </div>
 </template>
@@ -91,5 +94,9 @@
  
 }
 
+.todo_box{
+  width: 400px;
+  height: 100px;
+}
 
 </style>
