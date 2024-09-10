@@ -51,11 +51,13 @@ const router = createRouter({
       path: "/login",
       name: "Login",
       component: LoginView, // 로그인 페이지
+      meta: { transition: "fade" },
     },
     {
       path: "/signup",
       name: "Signup",
       component: SignupView, // 회원가입 페이지
+      meta: { transition: "fade" },
     },
     {
       path: "/market/addpost",
