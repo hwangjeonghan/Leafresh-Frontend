@@ -2,7 +2,7 @@
   <div class="chat-container">
     <div class="chat-header">
       <h2>채팅방</h2>
-      <button @click="closeChat">X</button>
+      <button @click="$emit('close')">X</button> <!-- 모달 닫기 -->
     </div>
     <div class="chat-messages" ref="chatMessages">
       <div
@@ -40,6 +40,7 @@ const newMessage = ref("");
 const client = ref(null);
 const chatRoomId = ref(route.params.id);
 const chatMessages = ref(null); // 채팅 메시지 컨테이너 참조
+const roomId = ref(null); // roomid를 받아옴
 
 const loadMessages = () => {
   const savedMessages = JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
