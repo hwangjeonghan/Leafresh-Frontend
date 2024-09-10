@@ -78,7 +78,9 @@ const goToGardenDiary = () => {
         <div class="footer_middle">
           <div class="footer_middle_item">공지사항</div>
           <div class="footer_middle_item">이벤트</div>
-          <div class="footer_middle_item">leafresh</div>
+          <router-link to="/leafresh/info">
+            <div class="footer_middle_item">leafresh</div>
+          </router-link>
         </div>
         <div class="footer_under">
           All rights reserved. © Leafresh.
