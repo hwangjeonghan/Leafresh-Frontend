@@ -76,8 +76,8 @@ const goToGardenDiary = () => {
           What's Leafresh
         </div>
         <div class="footer_middle">
-          <div>공지사항</div>
-          <div>이벤트</div>
+          <div class="footer_middle_item">공지사항</div>
+          <div class="footer_middle_item">이벤트</div>
         </div>
         <div class="footer_under">
           All rights reserved. © Leafresh.
@@ -177,9 +177,7 @@ a {
   border-radius: 70%;
 }
 
-.footer_upper,
-.footer_middle,
-.footer_under {
+.footer_upper {
   font-family: "ghanachoco";
   font-size: 14px;
   color: #fff;
@@ -191,6 +189,25 @@ a {
   flex-direction: row;
   justify-content: space-around; /* 두 항목 사이에 간격 추가 */
   width: 100%; /* 컨테이너 전체 너비 사용 */
+}
+
+.footer_middle_item {
+  font-family: "ghanachoco";
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.footer_middle_item:hover {
+  color: #a68b6a;
+}
+
+.footer_under{
+  font-family: "ghanachoco";
+  font-size: 12px;
+  color: #b3b3b3;
+  text-align: center;
 }
 </style>
 
