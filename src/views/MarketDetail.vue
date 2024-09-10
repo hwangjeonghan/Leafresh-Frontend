@@ -1,32 +1,70 @@
 <template>
-<div class="market_detail_page">
+  <div class="market_detail_page">
     <div class="market_detail_container">
-    <div v-if="market" class="market_detail_box">
-      <div class="market_detail_header">
-        <div class="market_text_box">
-          <div class="market_category_box"> {{ market.post.marketCategory }} </div>
-          <div class="market_content_box">{{ market.post.userNickname }}</div>
-        </div>
-        <div class="market_post_info_box">
-          <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'" @click="updateMarketStatus(market.post.marketId, market.post.marketStatus)">
-            <p>{{ market.post.marketStatus ? '분양중' : '분양 완료' }}</p>
+      <div v-if="market" class="market_detail_box">
+        <div class="market_detail_header">
+          <div class="market_text_box">
+            <div class="market_category_box">
+              {{ market.post.marketCategory }}
+            </div>
+            <div class="market_content_box">{{ market.post.userNickname }}</div>
           </div>
-          <div class="market_created_box">
-            <p class="market_created_at" style="text-align: right;">{{ market.post.displayDate }}</p>
+          <div class="market_post_info_box">
+            <div
+              :class="
+                market.post.marketStatus
+                  ? 'market_status_box_true'
+                  : 'market_status_box_false'
+              "
+              @click="
+                updateMarketStatus(
+                  market.post.marketId,
+                  market.post.marketStatus
+                )
+              "
+            >
+              <p>{{ market.post.marketStatus ? "분양중" : "분양 완료" }}</p>
+            </div>
+            <div class="market_created_box">
+              <p class="market_created_at" style="text-align: right">
+                {{ market.post.displayDate }}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <img class="market_image_box" :src="marketImage" alt="Market Image" />
-      <div class="market_title_box">{{ market.post.marketTitle }} </div>
-      <div class="market_content_box">{{ market.post.marketContent }}</div>
-      <div class="market_btn_box">
-        <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
-        <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
-      </div>
-      
-     <!-- 원형 채팅하기 버튼 -->
-     <button @click="openChatModal" class="market_chat_circle">채팅하기</button>
+        <img class="market_image_box" :src="marketImage" alt="Market Image" />
+        <div class="market_title_box">{{ market.post.marketTitle }}</div>
+        <div class="market_content_box">{{ market.post.marketContent }}</div>
+        <div class="market_btn_box">
+          <button
+            class="market_btn_edit"
+            @click="editPost(market.post.marketId)"
+          >
+            수정하기
+          </button>
+          <button
+            class="market_btn_delete"
+            @click="deletePost(market.post.marketId)"
+          >
+            삭제하기
+          </button>
+        </div>
+
+        <!-- 원형 채팅하기 버튼 -->
+        <button @click="openChatModal" class="market_chat_circle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12c0 1.72.55 3.31 1.47 4.6L2 22l5.4-1.48C8.69 21.45 10.28 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.71 0-3.3-.53-4.6-1.47l-1.24.37.39-1.23C5.53 15.3 4 13.36 4 11c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm-1-9h2v2h-2zm0 4h2v2h-2z"
+            />
+          </svg>
+        </button>
       </div>
       <div v-else>
         <p>Loading...</p>
@@ -43,20 +81,17 @@
   </div>
 </template>
 
-
-
-
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import  ChatComponent from './Chat.vue';
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import ChatComponent from "./Chat.vue";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
 const router = useRouter();
 const marketId = ref(route.params.id);
 const market = ref(null);
-const marketImage = ref('');
+const marketImage = ref("");
 const isChatModalOpen = ref(false); // 모달 창 열림 상태
 
 // 모달 열기
@@ -71,23 +106,30 @@ const closeChatModal = () => {
 
 const fetchMarketDetails = async () => {
   try {
-    const token = localStorage.getItem('accessToken');
-    const response = await fetch(`${API_BASE_URL}/market/detail/${marketId.value}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token,
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(
+      `${API_BASE_URL}/market/detail/${marketId.value}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`서버 응답 오류 : ${errorData.message || '알수없는 오류'}`);
+      throw new Error(
+        `서버 응답 오류 : ${errorData.message || "알수없는 오류"}`
+      );
     }
     // 백에서 응답받은 데이터를 가져옴
     const result = await response.json();
     market.value = result;
     const imagePath = result.post.marketImage; // url 경로 가져옴
-    marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
+    marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(
+      imagePath
+    )}`;
 
     if (market.value && market.value.post) {
       const createdDate = new Date(result.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
@@ -96,25 +138,29 @@ const fetchMarketDetails = async () => {
       const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // 일(day)로 변환
 
       if (dayDiff === 0) {
-        market.value.post.displayDate = '오늘';
+        market.value.post.displayDate = "오늘";
       } else if (dayDiff === 1) {
-        market.value.post.displayDate = '어제';
+        market.value.post.displayDate = "어제";
       } else {
         market.value.post.displayDate = `${dayDiff}일 전`;
       }
     }
-    
-    console.log('게시글 상세조회 성공', result);
-    console.log('이미지 경로 : ', marketImage.value);
-  } catch (error) {
-    console.error('오류:', error);
-  }
-}
 
-watch(() => route.params.id, (newId) => {
-  marketId.value = newId;
-  fetchMarketDetails();
-}, { immediate: true });
+    console.log("게시글 상세조회 성공", result);
+    console.log("이미지 경로 : ", marketImage.value);
+  } catch (error) {
+    console.error("오류:", error);
+  }
+};
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    marketId.value = newId;
+    fetchMarketDetails();
+  },
+  { immediate: true }
+);
 
 onMounted(() => {
   fetchMarketDetails();
@@ -123,56 +169,62 @@ onMounted(() => {
 // 분양중과 분양완료 상태만 바꿔서 백엔드에 저장함
 const updateMarketStatus = async (id, status) => {
   if (!id) {
-    console.error('게시글이 존재하지 않습니다. 다시 시도해주세요');
+    console.error("게시글이 존재하지 않습니다. 다시 시도해주세요");
     return;
   }
-  const confirmed = confirm('분양이 완료되셨다면 확인을 눌러주세요. 분양이 완료 될 경우 다시 되돌릴 수 없습니다.');
+  const confirmed = confirm(
+    "분양이 완료되셨다면 확인을 눌러주세요. 분양이 완료 될 경우 다시 되돌릴 수 없습니다."
+  );
 
   if (!confirmed) {
     // 사용자가 취소를 누르면 함수 종료
     return;
   }
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/market/update-status/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                status: status
-            })
-        });
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(`${API_BASE_URL}/market/update-status/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        status: status,
+      }),
+    });
 
-        console.log('확인');
+    console.log("확인");
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`서버 응답 오류 : ${errorData.message || '알 수 없는 오류'}`);
-        }
-
-        const result = await response.json();
-        console.log('상태 업데이트 성공:', result);
-        market.value.post.marketStatus = !status;
-        alert('상태가 업데이트되었습니다.');
-    } catch (error) {
-        console.error('오류:', error);
-        alert('상태 업데이트 중 오류가 발생했습니다.');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `서버 응답 오류 : ${errorData.message || "알 수 없는 오류"}`
+      );
     }
+
+    const result = await response.json();
+    console.log("상태 업데이트 성공:", result);
+    market.value.post.marketStatus = !status;
+    alert("상태가 업데이트되었습니다.");
+  } catch (error) {
+    console.error("오류:", error);
+    alert("상태 업데이트 중 오류가 발생했습니다.");
+  }
 };
 
 const editPost = (id) => {
-    router.push(`/market/modify/${id}`);
-}
+  router.push(`/market/modify/${id}`);
+};
 
 const deletePost = async (id) => {
   if (!id) {
-    console.error('삭제할 게시글 ID가 없습니다.');
+    console.error("삭제할 게시글 ID가 없습니다.");
     return;
   }
 
-  const confirmed = confirm('삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?');
+  const confirmed = confirm(
+    "삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?"
+  );
 
   if (!confirmed) {
     // 사용자가 취소를 누르면 함수 종료
@@ -180,29 +232,27 @@ const deletePost = async (id) => {
   }
 
   try {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     const response = await fetch(`${API_BASE_URL}/market/delete/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Authorization': 'Bearer ' + token,
+        Authorization: "Bearer " + token,
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`삭제 오류: ${errorData.message || '알 수 없는 오류'}`);
+      throw new Error(`삭제 오류: ${errorData.message || "알 수 없는 오류"}`);
     }
 
     // 삭제 성공 시
-    console.log('게시글 삭제 성공');
-    router.push('/market'); // 삭제 후 리스트 페이지로 리다이렉트
+    console.log("게시글 삭제 성공");
+    router.push("/market"); // 삭제 후 리스트 페이지로 리다이렉트
   } catch (error) {
-    console.error('오류:', error);
-    alert('삭제 중 오류가 발생했습니다.');
+    console.error("오류:", error);
+    alert("삭제 중 오류가 발생했습니다.");
   }
-}
-
-
+};
 </script>
 
 <style scoped>
@@ -348,26 +398,38 @@ const deletePost = async (id) => {
 }
 
 .market_chat_circle {
-  width: 60px;
-  height: 60px;
-  background-color: #1ab546;
+  width: 70px; /* 크기 */
+  height: 70px;
+  background-color: #28a745; /* 녹색 배경 */
   color: white;
-  border-radius: 50%;
+  border-radius: 50%; /* 완전한 원형 */
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  font-size: 16px;
+  position: fixed; /* 고정된 위치 */
+  right: 30px; /* 오른쪽 여백 */
+  bottom: 30px; /* 아래 여백 */
+  font-size: 24px; /* 아이콘 크기 */
   font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
+  border: none; /* 검은색 선(테두리) 제거 */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer; /* 마우스 커서 */
 }
 
 .market_chat_circle:hover {
-  background-color: #17a43c;
+  background-color: #218838; /* 어두운 초록색으로 전환 */
+  transform: translateY(-5px); /* 떠오르는 효과 */
+}
+
+.market_chat_circle:active {
+  transform: translateY(0); /* 클릭 시 원래 위치로 복귀 */
+}
+
+.market_chat_circle svg {
+  width: 32px; /* 아이콘 크기 */
+  height: 32px;
+  fill: white; /* 아이콘 색상 */
 }
 
 /* 모달 스타일 */
@@ -443,6 +505,4 @@ const deletePost = async (id) => {
 .market_btn_delete:active {
   transform: translateY(0);
 }
-
-
 </style>
