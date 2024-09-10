@@ -4,51 +4,32 @@
       <div v-if="market" class="market_detail_box">
         <div class="market_detail_header">
           <div class="market_text_box">
-            <div class="market_category_box">
-              {{ market.post.marketCategory }}
-            </div>
-            <div class="market_content_box">{{ market.post.userNickname }}</div>
+            <div class="market_category_box">{{ market.post.marketCategory }}</div>
+            <div class="market_title_box">{{ market.post.marketTitle }}</div>
           </div>
           <div class="market_post_info_box">
-            <div
-              :class="
-                market.post.marketStatus
-                  ? 'market_status_box_true'
-                  : 'market_status_box_false'
-              "
-              @click="
-                updateMarketStatus(
-                  market.post.marketId,
-                  market.post.marketStatus
-                )
-              "
-            >
+            <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'" @click="updateMarketStatus(market.post.marketId, market.post.marketStatus)">
               <p>{{ market.post.marketStatus ? "분양중" : "분양 완료" }}</p>
             </div>
             <div class="market_created_box">
-              <p class="market_created_at" style="text-align: right">
-                {{ market.post.displayDate }}
-              </p>
+              <p class="market_created_at" style="text-align: right">{{ market.post.displayDate }}</p>
             </div>
           </div>
         </div>
-
         <img class="market_image_box" :src="marketImage" alt="Market Image" />
-        <div class="market_title_box">{{ market.post.marketTitle }}</div>
         <div class="market_content_box">{{ market.post.marketContent }}</div>
         <div class="market_btn_box">
-          <button
-            class="market_btn_edit"
-            @click="editPost(market.post.marketId)"
-          >
-            수정하기
-          </button>
-          <button
-            class="market_btn_delete"
-            @click="deletePost(market.post.marketId)"
-          >
-            삭제하기
-          </button>
+          <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
+          <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
+          <button class="market_btn_list" @click="allPostList">글목록</button>
+        </div>
+
+        <div class="market_user_container">
+          <img :src="userImageUrl" alt="User Profile Image" class="user_image" />
+          <div class="user_info">
+            <p class="user_nickname">{{ userNickname }}</p>
+            <p class="user_phonenumber">{{ userPhoneNumber }}</p>
+          </div>
         </div>
 
         <!-- 원형 채팅하기 버튼 -->
@@ -85,14 +66,19 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ChatComponent from "./Chat.vue";
+import { useUserstore } from "@/stores/users.js"; // 로그인 한 사용자 정보를 가져오기 위해
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserstore();
 const marketId = ref(route.params.id);
 const market = ref(null);
 const marketImage = ref("");
 const isChatModalOpen = ref(false); // 모달 창 열림 상태
+const userNickname = ref('');
+const userImageUrl = ref('');
+const userPhoneNumber = ref('');
 
 // 모달 열기
 const openChatModal = () => {
@@ -104,12 +90,47 @@ const closeChatModal = () => {
   isChatModalOpen.value = false;
 };
 
+// 사용자 프로필 정보 가져오기
+const fetchUserProfile = async () => {
+  await userStore.fetchUserProfile();
+  userNickname.value = userStore.userNickname;
+  userImageUrl.value = userStore.userImageUrl;
+  userPhoneNumber.value = userStore.userPhoneNumber;
+};
+
+// 사용자 정보 변경 감지 및 반영
+watch(() => userStore.userNickname,
+  (newNickname) => {
+    if (newNickname) {
+      userNickname.value = newNickname;
+    }
+  },
+  { immediate: true }
+);
+
+watch(() => userStore.imageUrl,
+  (newImageUrl) => {
+    if (newImageUrl) {
+      userImageUrl.value = newImageUrl || 'https://via.placeholder.com/150';
+    }
+  },
+  { immediate: true }
+);
+
+watch(() => userStore.userPhoneNumber,
+  (newPhoneNumber) => {
+    if (newPhoneNumber) {
+      userPhoneNumber.value = newPhoneNumber;
+    }
+  },
+  { immediate: true }
+);
+
 const fetchMarketDetails = async () => {
   try {
     const token = localStorage.getItem("accessToken");
     const response = await fetch(
-      `${API_BASE_URL}/market/detail/${marketId.value}`,
-      {
+      `${API_BASE_URL}/market/detail/${marketId.value}`, {
         method: "GET",
         headers: {
           Authorization: "Bearer " + token,
@@ -119,17 +140,13 @@ const fetchMarketDetails = async () => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(
-        `서버 응답 오류 : ${errorData.message || "알수없는 오류"}`
-      );
+      throw new Error(`서버 응답 오류 : ${errorData.message || "알수없는 오류"}`);
     }
     // 백에서 응답받은 데이터를 가져옴
     const result = await response.json();
     market.value = result;
     const imagePath = result.post.marketImage; // url 경로 가져옴
-    marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(
-      imagePath
-    )}`;
+    marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
 
     if (market.value && market.value.post) {
       const createdDate = new Date(result.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
@@ -145,25 +162,20 @@ const fetchMarketDetails = async () => {
         market.value.post.displayDate = `${dayDiff}일 전`;
       }
     }
-
-    console.log("게시글 상세조회 성공", result);
-    console.log("이미지 경로 : ", marketImage.value);
   } catch (error) {
     console.error("오류:", error);
   }
 };
 
-watch(
-  () => route.params.id,
-  (newId) => {
+watch(() => route.params.id, (newId) => {
     marketId.value = newId;
-    fetchMarketDetails();
-  },
-  { immediate: true }
+    fetchMarketDetails()
+  }, { immediate: true }
 );
 
-onMounted(() => {
-  fetchMarketDetails();
+onMounted(async() => {
+  await fetchUserProfile();
+  await fetchMarketDetails();
 });
 
 // 분양중과 분양완료 상태만 바꿔서 백엔드에 저장함
@@ -172,9 +184,7 @@ const updateMarketStatus = async (id, status) => {
     console.error("게시글이 존재하지 않습니다. 다시 시도해주세요");
     return;
   }
-  const confirmed = confirm(
-    "분양이 완료되셨다면 확인을 눌러주세요. 분양이 완료 될 경우 다시 되돌릴 수 없습니다."
-  );
+  const confirmed = confirm("분양이 완료되셨다면 확인을 눌러주세요. 분양이 완료 될 경우 다시 되돌릴 수 없습니다.");
 
   if (!confirmed) {
     // 사용자가 취소를 누르면 함수 종료
@@ -186,10 +196,10 @@ const updateMarketStatus = async (id, status) => {
       method: "PUT",
       headers: {
         Authorization: "Bearer " + token,
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
       body: new URLSearchParams({
-        status: status,
+        status: !status,
       }),
     });
 
@@ -197,9 +207,7 @@ const updateMarketStatus = async (id, status) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(
-        `서버 응답 오류 : ${errorData.message || "알 수 없는 오류"}`
-      );
+      throw new Error(`서버 응답 오류 : ${errorData.message || "알 수 없는 오류"}`);
     }
 
     const result = await response.json();
@@ -212,6 +220,10 @@ const updateMarketStatus = async (id, status) => {
   }
 };
 
+const allPostList = () => {
+  router.push(`/market`);
+}
+
 const editPost = (id) => {
   router.push(`/market/modify/${id}`);
 };
@@ -222,9 +234,7 @@ const deletePost = async (id) => {
     return;
   }
 
-  const confirmed = confirm(
-    "삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?"
-  );
+  const confirmed = confirm("삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?");
 
   if (!confirmed) {
     // 사용자가 취소를 누르면 함수 종료
@@ -465,6 +475,23 @@ const deletePost = async (id) => {
   margin-top: 3.5vh;
 }
 
+.market_btn_list {
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  padding: 0.6vw;
+  background-color: #b3b3b3;
+  border: none;
+  color: white;
+  font-size: 0.8em;
+  border-radius: 10px;
+  margin-right: 0.3vw;
+}
+
+.market_btn_list:hover {
+  background-color: #797979;
+  transform: translateY(-2px);
+}
+
 .market_btn_edit {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
@@ -495,6 +522,7 @@ const deletePost = async (id) => {
   color: white;
   font-size: 0.8em;
   border-radius: 10px;
+  margin-right: 0.3vw;
 }
 
 .market_btn_delete:hover {
@@ -505,4 +533,42 @@ const deletePost = async (id) => {
 .market_btn_delete:active {
   transform: translateY(0);
 }
+
+.market_user_container {
+  display: flex;
+  align-items: center;
+  margin-top: 3vh;
+  height: 14vh;
+  padding: 1vw;
+  border: 1px solid #dcdcdc; /* 연한 회색 테두리 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 */
+  background-color: #fff; /* 배경색을 흰색으로 설정 */
+}
+
+.user_image {
+  width: 100px; /* 이미지 크기 */
+  height: 100px; /* 이미지 크기 */
+  border-radius: 50%; /* 동그라미 모양 */
+  object-fit: cover; /* 이미지 비율 유지 */
+  margin-right: 30px; /* 이미지와 텍스트 사이의 간격 */
+}
+
+.user_info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user_nickname {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 14px;
+}
+
+.user_phonenumber {
+  font-size: 14px;
+  color: #666;
+}
+
 </style>
