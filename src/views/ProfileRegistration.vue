@@ -156,3 +156,4 @@ const validateProfileInputs = () => {
         transform: translateY(0);
     }
 </style>
+
