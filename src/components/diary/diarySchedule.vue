@@ -1,17 +1,22 @@
 <script setup>
-import Calender from './calender.vue';
-import Todo from './todo.vue';
-import TodoForm from './todoform.vue';
-import TodayTodo from './todayTodo.vue';
-import { todos, isModalOpen, newTodoContent, openModal, closeModal, addTodo } from '@/assets/todo'; // todo.js에서 가져옴
-import { computed } from 'vue';
-import { useTodoStore } from '@/stores/todoStore';
+import Calender from "./calender.vue";
+import Todo from "./todo.vue";
+import TodoForm from "./todoform.vue";
+import TodayTodo from "./todayTodo.vue";
+import {
+  todos,
+  isModalOpen,
+  newTodoContent,
+  openModal,
+  closeModal,
+  addTodo,
+} from "@/assets/js/todo"; // todo.js에서 가져옴
+import { computed } from "vue";
+import { useTodoStore } from "@/stores/todoStore";
 
 const todoStore = useTodoStore();
 // Pinia 스토어에서 클릭된 날짜 가져오기
 const clickedDate = computed(() => todoStore.clickedDate);
-
- 
 </script>
 
 <template>
@@ -19,49 +24,41 @@ const clickedDate = computed(() => todoStore.clickedDate);
     <div class="garden_title">나의 정원일정</div>
     <div class="line_9"></div>
 
-    
     <!-- 캘린더 -->
 
     <div class="schedule_container">
-        <!-- Calender 컴포넌트에서 날짜 클릭 이벤트를 받아서 처리 -->
-        <div class="calender_box">
-          <Calender /> 
-        </div>
+      <!-- Calender 컴포넌트에서 날짜 클릭 이벤트를 받아서 처리 -->
+      <div class="calender_box">
+        <Calender />
+      </div>
 
-        <div class="today_todo_box">
-          <TodayTodo />
+      <div class="today_todo_box">
+        <TodayTodo />
 
-          
-          <button @click="openModal" >
-            할일추가
-          </button>
-          
-
-        </div>
-    
+        <button @click="openModal">할일추가</button>
+      </div>
     </div>
-
-
-
 
     <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h2>Add New Todo</h2>
         <TodoForm />
-        <input v-model="newTodoContent" placeholder="New todo" class="todo_input"/>
+        <input
+          v-model="newTodoContent"
+          placeholder="New todo"
+          class="todo_input"
+        />
         <button @click="addTodo">Save</button>
         <button @click="closeModal">Cancel</button>
       </div>
     </div>
-
-
   </div>
 </template>
 
 <style scoped>
 /* 나의 정원일정 */
 .garden_title {
-  font-family: 'Ghanachocolate', sans-serif;
+  font-family: "Ghanachocolate", sans-serif;
   font-size: 20px;
   background: linear-gradient(90deg, #f7e000, #ffb800);
   -webkit-background-clip: text;
@@ -71,7 +68,7 @@ const clickedDate = computed(() => todoStore.clickedDate);
 /* Line 9 */
 .line_9 {
   height: 0px;
-  border: 3px solid #F1DDC5;
+  border: 3px solid #f1ddc5;
 }
 
 .schedule_container {
@@ -80,10 +77,7 @@ const clickedDate = computed(() => todoStore.clickedDate);
   align-items: center;
   margin: 10px;
   gap: 20px;
-
 }
-
-
 
 /* 모달 스타일 */
 .modal-overlay {
@@ -114,7 +108,6 @@ const clickedDate = computed(() => todoStore.clickedDate);
 .modal-content input {
   width: 100%;
 }
-
 
 .todo_input {
   width: 100%;

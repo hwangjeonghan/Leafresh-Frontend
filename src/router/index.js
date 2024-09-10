@@ -8,11 +8,10 @@ import Market from "@/views/Market.vue";
 import FeedAdd from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
 import MarketDetail from "@/views/MarketDetail.vue";
 import FeedDetail from "@/views/FeedDetail.vue";
-import Chat from '@/views/Chat.vue';
+import Chat from "@/views/Chat.vue";
 import MarketEdit from "@/views/MarketEdit.vue";
-import ProfileRegistration from '@/views/ProfileRegistration.vue';
-import LeafreshInfo from '@/views/LeafreshInfo.vue'
-
+import ProfileRegistration from "@/views/ProfileRegistration.vue";
+import LeafreshInfo from "@/views/LeafreshInfo.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,11 +51,13 @@ const router = createRouter({
       path: "/login",
       name: "Login",
       component: LoginView, // 로그인 페이지
+      meta: { transition: "fade" },
     },
     {
       path: "/signup",
       name: "Signup",
       component: SignupView, // 회원가입 페이지
+      meta: { transition: "fade" },
     },
     {
       path: "/market/addpost",
@@ -74,23 +75,22 @@ const router = createRouter({
       component: MarketEdit, // 분양 게시글 수정 페이지
     },
     {
-      path: '/chat/:id',
-      name: 'Chat',
+      path: "/chat/:id",
+      name: "Chat",
       component: Chat,
       props: true, // 경로 파라미터를 props로 컴포넌트에 전달
     },
-    { 
-      path: '/profile/registration', 
-      name: 'ProfileRegistration',  
-      component: ProfileRegistration 
+    {
+      path: "/profile/registration",
+      name: "ProfileRegistration",
+      component: ProfileRegistration,
     },
-    { 
-      path: '/leafresh/info', 
-      name: 'LeafreshInfo',  
-      component: LeafreshInfo 
+    {
+      path: "/leafresh/info",
+      name: "LeafreshInfo",
+      component: LeafreshInfo,
     },
   ],
 });
 
 export default router;
-

@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
-import Weather from "@/components/common/weather.vue"
+import Weather from "@/components/common/weather.vue";
 
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -33,11 +33,12 @@ watch(
 // 원예일지로 이동하는 함수
 const goToGardenDiary = () => {
   if (!isLoggedIn.value) {
-    router.push('/login');
-  } else if (!userProfileExists.value) { // 프로필이 없는 경우
-    router.push('/profile/registration'); // 프로필 등록 페이지로 이동
+    router.push("/login");
+  } else if (!userProfileExists.value) {
+    // 프로필이 없는 경우
+    router.push("/profile/registration"); // 프로필 등록 페이지로 이동
   } else {
-    router.push('/garden-diary/${loginState.userNickname}'); // 프로필이 있는 경우 원예일지 페이지로 이동
+    router.push("/garden-diary/${loginState.userNickname}"); // 프로필이 있는 경우 원예일지 페이지로 이동
   }
 };
 </script>
@@ -81,11 +82,9 @@ const goToGardenDiary = () => {
           </router-link>
         </div>
         <div class="footer_upper">
-          <Weather/>
+          <Weather />
         </div>
-        <div class="footer_under">
-          All rights reserved. © Leafresh.
-        </div>
+        <div class="footer_under">All rights reserved. © Leafresh.</div>
       </div>
     </div>
   </div>
@@ -110,9 +109,17 @@ a {
   width: 320px;
   display: flex;
   justify-content: center;
-  background: #76b852;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #8DC26F, #76b852);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #8DC26F, #76b852); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #76b852; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .header_text_container {
@@ -209,11 +216,10 @@ background: linear-gradient(to right, #8DC26F, #76b852); /* W3C, IE 10+/ Edge, F
   color: #a68b6a;
 }
 
-.footer_under{
+.footer_under {
   font-family: "ghanachoco";
   font-size: 12px;
   color: #fff;
   text-align: center;
 }
 </style>
-
