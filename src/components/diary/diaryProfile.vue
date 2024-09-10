@@ -43,6 +43,11 @@
   const router = useRouter();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   
+  // Pinia store의 fetchUserProfile 메서드 호출
+  const fetchUserProfile = async () => {
+    await userStore.fetchUserProfile(); // 사용자 정보를 가져오는 메서드 호출
+  };
+  
   // watch를 사용하여 userStore의 상태 변화를 감지
   watch(
     () => userStore.userNickname,
@@ -50,17 +55,20 @@
       if (newNickname) {
         username.value = newNickname;
       }
-    }
+    },
+    { immediate: true } // 초기 로드 시에도 실행되도록 설정
   );
   
   watch(
     () => userStore.imageUrl,
     (newImageUrl) => {
       profileImage.value = newImageUrl || 'https://via.placeholder.com/150';
-    }
+    },
+    { immediate: true } // 초기 로드 시에도 실행되도록 설정
   );
   
   onMounted(async () => {
+    await fetchUserProfile(); // 컴포넌트가 로드될 때 사용자 정보 가져오기
     try {
       // 프로필 정보 가져오기
       const response = await axios.get(`${API_BASE_URL}/profile/info`, {
