@@ -73,11 +73,12 @@ const goToGardenDiary = () => {
       </div>
       <div class="footer_item">
         <div class="footer_upper">
-          What's Leafresh
+         
         </div>
         <div class="footer_middle">
           <div class="footer_middle_item">공지사항</div>
           <div class="footer_middle_item">이벤트</div>
+          <div class="footer_middle_item">leafresh</div>
         </div>
         <div class="footer_under">
           All rights reserved. © Leafresh.
@@ -193,7 +194,7 @@ a {
 
 .footer_middle_item {
   font-family: "ghanachoco";
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
   text-align: center;
   cursor: pointer;
