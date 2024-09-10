@@ -4,16 +4,16 @@
       <h2>채팅방</h2>
       <button @click="closeChat">X</button>
     </div>
-    <div class="chat-messages">
+    <div class="chat-messages" ref="chatMessages">
       <div
         v-for="msg in messages"
         :key="msg.id"
         class="chat-message-wrapper"
         :class="{ 'sent': msg.senderId === userStore.userId, 'received': msg.senderId !== userStore.userId }"
       >
-        <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
-          <img src="https://via.placeholder.com/40" alt="프로필 사진" />
-        </div>
+      <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
+        <img :src="userStore.imageUrl" alt="프로필 사진" />
+      </div>
         <div class="chat-message">
           <strong v-if="msg.senderId !== userStore.userId" class="sender-name">{{ msg.name }}</strong>
           <p>{{ msg.message }}</p>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserstore } from '@/stores/users'; // 사용자 스토어 가져오기
 import { Client } from '@stomp/stompjs';
@@ -39,6 +39,7 @@ const messages = ref([]);
 const newMessage = ref("");
 const client = ref(null);
 const chatRoomId = ref(route.params.id);
+const chatMessages = ref(null); // 채팅 메시지 컨테이너 참조
 
 const loadMessages = () => {
   const savedMessages = JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
@@ -58,6 +59,9 @@ const connection = () => {
         const newMessage = JSON.parse(message.body);
         messages.value.push(newMessage);
         saveMessages(); // 로컬 저장소에 메시지 저장
+        nextTick(() => {
+          scrollToBottom(); // 메시지가 추가된 후 스크롤을 맨 아래로
+        });
       });
     },
     onStompError: (frame) => {
@@ -96,6 +100,12 @@ const closeChat = () => {
   client.value.deactivate(); // WebSocket 연결 종료
 }
 
+const scrollToBottom = () => {
+  if (chatMessages.value) {
+    chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
+  }
+}
+
 onMounted(async () => {
   await userStore.fetchUserProfile(); // 사용자 정보 로드
   loadMessages(); // 현재 채팅방 메시지 불러오기
@@ -112,13 +122,16 @@ watch(() => route.params.id, (newId) => {
   chatRoomId.value = newId;
   console.log('Updated chat room ID:', chatRoomId.value);
   loadMessages(); // 새 채팅방 메시지 불러오기
-  // WebSocket 재연결 필요 시 처리
+  nextTick(() => {
+    scrollToBottom(); // 새로운 채팅방으로 이동 후 스크롤을 맨 아래로
+  });
 });
 </script>
 
 <style scoped>
 /* 기존 스타일 유지 */
 </style>
+
 
 
 <style scoped>
