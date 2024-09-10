@@ -89,14 +89,20 @@ const handleProfileUpdate = async () => {
       formData.append('file', newProfileImage.value);
 
       // 이미지 업로드
-      const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData);
-      newImageUrl = imageUploadResponse.data; // 업로드된 이미지 경로로 설정
+      const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+
+      // JSON 응답에서 업로드된 파일 경로를 가져옴
+      newImageUrl = imageUploadResponse.data.uploadedFilePath.trim();
     }
 
     // 프로필 업데이트 요청
     await axios.post(`${API_BASE_URL}/user/update`, {
       newNickname: newNickname.value,
-      newPassword: newPassword.value || null,
+      newPassword: newPassword.value ? newPassword.value : undefined,  // 빈 문자열이면 undefined
       newImageUrl: newImageUrl,
     }, {
       headers: {

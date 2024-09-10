@@ -20,7 +20,7 @@
           </div>
           <div class="input-group">
             <label for="image">사진</label>
-            <input type="file" @change="onFileChange" />
+            <input type="file" @change="handleImageUpload" />
           </div>
           <div class="input-group">
             <label for="visibleScope">공개범위</label>
@@ -29,7 +29,7 @@
               <option v-for="visibleScope in scopes" :key="visibleScope">{{ visibleScope }}</option>
             </select>
           </div>
-          <button type="submit" class="submit-button">분양 보내기</button>
+          <button type="submit" class="submit-button">등록</button>
         </form>
       </div>
     </div>
@@ -57,34 +57,8 @@ const isFormValid = computed(() => {
   return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value && post.value.marketVisibleScope;
 });
 
-const onFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    postImage.value = file;
-  }
-};
-
-// 이미지 업로드 함수
-const uploadPostImage = async () => {
-  if (!postImage.value) return '';
-
-  const formData = new FormData();
-  formData.append('file', postImage.value);
-
-  try {
-    const response = await axios.post(`${API_BASE_URL}/ftp/upload`, formData);
-
-    console.log('서버 응답: ', response.data);
-
-    const uploadedImagePath = response.data.split(': ')[1].trim(); // 백엔드에서 받은 파일 경로
-    console.log('이미지 업로드 성공:', uploadedImagePath);
-
-    return uploadedImagePath;
-  } catch (error) {
-    console.error('이미지 업로드 오류:', error);
-    alert('이미지 업로드에 실패했습니다.');
-    throw error; // 이미지 업로드 실패 시 예외 발생
-  }
+const handleImageUpload = (event) => {
+  postImage.value = event.target.files[0];
 };
 
 const findScopeEnum = (visibleScopeLabel) => {
@@ -97,10 +71,20 @@ const submitForm = async () => {
 
   if (isFormValid.value) {
     try {
-      const uploadedImagePath = await uploadPostImage(); // 이미지 업로드 후 경로 받아옴
-      
-      if (!uploadedImagePath) {
-        throw new Error('이미지 업로드 경로를 받지 못했습니다.');
+      let uploadedImagePath = '';  // 업로드된 이미지 경로를 저장할 변수
+
+      if (postImage.value) {
+        const formData = new FormData();
+        formData.append('file', postImage.value);
+
+        // 이미지 업로드
+        const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        });
+
+        uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim();
       }
 
       const formData = new FormData();
@@ -111,29 +95,24 @@ const submitForm = async () => {
 
       const selectedScopeEnum = findScopeEnum(post.value.marketVisibleScope);
       formData.append('visibleScope', selectedScopeEnum);
+      console.log('공개범위 : ', post.value.marketVisibleScope);
+      console.log('공개범위 : ', selectedScopeEnum);
 
       const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
       console.log('토큰 : ', token); // 토큰확인
 
-      const response = await fetch(`${API_BASE_URL}/market/addpost`, {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post(`${API_BASE_URL}/market/addpost`, formData, {
         headers: {
           'Authorization': 'Bearer ' + token,
         }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`서버 응답 오류 : ${errorData.message || '알수없는 오류'}`);
-      }
-
-      const result = await response.json();
-      console.log('성공:', result);
+      console.log('성공:', response.data);
       alert('게시글이 등록되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
       router.push('/market'); // 게시글이 등록되고 나면 /market로 리다이렉트 시켜줌
     } catch (error) {
       console.error('오류:', error);
+      alert('게시글 등록 중 오류가 발생했습니다.');
     }
   } else {
     alert('입력이 완료되지 않았습니다.');
