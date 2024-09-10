@@ -19,6 +19,7 @@ export const useUserstore = defineStore("useUserstore", () => {
   // 로그인 여부
   const isLoggedIn = ref(false);
 
+
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
     const localToken = localStorage.getItem("accessToken");
@@ -53,6 +54,7 @@ export const useUserstore = defineStore("useUserstore", () => {
         });
 
         isLoggedIn.value = true; // 로그인 상태로 설정
+
       } catch (error) {
         console.error("사용자 정보를 가져오는 데 실패했습니다.", error);
         isLoggedIn.value = false; // 오류 시 로그인 상태 false
@@ -67,6 +69,7 @@ export const useUserstore = defineStore("useUserstore", () => {
       isLoggedIn.value = false;
     }
   };
+
 
   // 사용자 정보를 설정하는 함수
   const setUserProfile = (profile) => {
@@ -151,3 +154,4 @@ export const useUserstore = defineStore("useUserstore", () => {
     logout,
   };
 });
+
