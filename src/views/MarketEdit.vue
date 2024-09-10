@@ -22,6 +22,13 @@
               <label for="image">사진</label>
               <input type="file" @change="onFileChange" />
             </div>
+            <div class="input-group">
+            <label for="visibleScope">공개범위</label>
+            <select v-model="post.marketVisibleScope">
+              <option disabled value="">게시글 공개범위를 선택하세요.</option>
+              <option v-for="visibleScope in scopes" :key="visibleScope">{{ visibleScope }}</option>
+            </select>
+          </div>
             <button type="submit" class="submit-button">수정완료</button>
           </form>
         </div>
@@ -36,8 +43,18 @@ import axios from 'axios';
   
 const router = useRouter(); 
 const route = useRoute();
-const post = reactive({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
+const post = reactive({ 
+    marketCategory: '', 
+    marketTitle: '', 
+    marketContent: '', 
+    marketImage: null, existingImagePath: '',
+    marketVisibleScope: null,
+    marketStatus: true
+});
 const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
+const scopes = {
+  'MARKET_PUBLIC': '전체공개',
+  'MARKET_ONLY_FOLLOWER': '내 팔로워에게만 공개'};
 
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -45,13 +62,6 @@ const postImage = ref(null);
 
 const postId = route.params.id;
 
-watch(post, (newPost) => {
-  if (newPost.marketCategory) {
-    console.log('데이터가 로드되었습니다:', newPost);
-  }
-}, { immediate: true });
-
-// db에 저장된 데이터 불러옴
 const fetchPostData = async () => {
   try {
     const token = localStorage.getItem('accessToken');
@@ -61,10 +71,13 @@ const fetchPostData = async () => {
         }
     });
     Object.assign(post, response.data.post);
+    post.existingImagePath = response.data.post.marketImage; // 기존에 있던 이미지 경로
+
+    console.log('데이터 잘 가져오는지: ', response.data.post);
 
   } catch (error) {
     console.error('데이터 가져오기 오류:', error);
-    post.value = { marketCategory: '', marketTitle: '', marketContent: '', marketImage: null };
+    post.value = { marketCategory: '', marketTitle: '', marketContent: '', marketImage: null, marketVisibleScope: null, existingImagePath: '' };
   }
 };
 
@@ -73,7 +86,10 @@ onMounted(() => {
 });
   
 const isFormValid = computed(() => {
-  return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value;
+  console.log(post.marketCategory);
+  console.log(post.existingImagePath);
+  console.log(post);
+  return post.marketCategory && post.marketTitle && post.marketContent && postImage && post.marketVisibleScope;
 });
   
 const onFileChange = (event) => {
@@ -106,30 +122,43 @@ const uploadPostImage = async () => {
   }
 };
   
+const findScopeEnum = (visibleScopeLabel) => {
+  return Object.keys(scopes).find(key => scopes[key] === visibleScopeLabel);
+};
+
 const submitForm = async () => {
   console.log('폼 제출 핸들러 응답');
   console.log('유효성 : ', isFormValid.value);
   
   if (isFormValid.value) {
     try {
-      const uploadedImagePath = await uploadPostImage(); // 이미지 업로드 후 경로 받아옴
-        
-      if (!uploadedImagePath) {
-        throw new Error('이미지 업로드 경로를 받지 못했습니다.');
-      }
-  
+        let uploadedImagePath = post.existingImagePath; // 기존 이미지 경로
+
+        if (postImage.value) { // 새로 등록한 이미지가 있으면
+            uploadedImagePath = await uploadPostImage(); // 이미지 업로드 후 경로 받아옴
+            if (!uploadedImagePath) {
+                throw new Error('이미지 업로드 경로를 받지 못했습니다.');
+            }
+        }
+   
       const formData = new FormData();
-      formData.append('category', post.value.marketCategory);
-      formData.append('title', post.value.marketTitle);
-      formData.append('content', post.value.marketContent);
+      formData.append('category', post.marketCategory);
+      formData.append('title', post.marketTitle);
+      formData.append('content', post.marketContent);
       formData.append('image', uploadedImagePath);
+      console.log('status잘 나오는지: ', post.marketStatus);
+      formData.append('status', post.marketStatus);
+      console.log('status 등록 전 상태 : ', post.marketStatus);
       console.log('이미지 경로 잘 나오는지', uploadedImagePath);
+
+      const selectedScopeEnum = findScopeEnum(post.marketVisibleScope);
+      formData.append('visibleScope', selectedScopeEnum);
   
       const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
       console.log('토큰 : ', token); // 토큰확인
   
-    const response = await fetch(`${API_BASE_URL}/market/addpost`, {
-        method: 'POST',
+    const response = await fetch(`${API_BASE_URL}/market/modify/${postId}`, {
+        method: 'PUT',
         body: formData,
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -143,7 +172,7 @@ const submitForm = async () => {
   
       const result = await response.json();
       console.log('성공:', result);
-      alert('게시글이 등록되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
+      alert('게시글이 수정되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
       router.push('/market'); // 게시글이 등록되고 나면 /market로 리다이렉트 시켜줌
     } catch (error) {
       console.error('오류:', error);

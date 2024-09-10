@@ -22,6 +22,13 @@
             <label for="image">사진</label>
             <input type="file" @change="onFileChange" />
           </div>
+          <div class="input-group">
+            <label for="visibleScope">공개범위</label>
+            <select v-model="post.marketVisibleScope">
+              <option disabled value="">게시글 공개범위를 선택하세요.</option>
+              <option v-for="visibleScope in scopes" :key="visibleScope">{{ visibleScope }}</option>
+            </select>
+          </div>
           <button type="submit" class="submit-button">등록</button>
         </form>
       </div>
@@ -39,12 +46,15 @@ const router = useRouter();
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null });
+const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null, marketVisibleScope: '' });
 const postImage = ref(null);
 const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
+const scopes = {
+  'MARKET_PUBLIC': '전체공개',
+  'MARKET_ONLY_FOLLOWER': '내 팔로워에게만 공개'};
 
 const isFormValid = computed(() => {
-  return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value;
+  return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value && post.value.marketVisibleScope;
 });
 
 const onFileChange = (event) => {
@@ -77,6 +87,10 @@ const uploadPostImage = async () => {
   }
 };
 
+const findScopeEnum = (visibleScopeLabel) => {
+  return Object.keys(scopes).find(key => scopes[key] === visibleScopeLabel);
+};
+
 const submitForm = async () => {
   console.log('폼 제출 핸들러 응답');
   console.log('유효성 : ', isFormValid.value);
@@ -94,7 +108,11 @@ const submitForm = async () => {
       formData.append('title', post.value.marketTitle);
       formData.append('content', post.value.marketContent);
       formData.append('image', uploadedImagePath);
-      console.log('이미지 경로 잘 나오는지', uploadedImagePath);
+
+      const selectedScopeEnum = findScopeEnum(post.value.marketVisibleScope);
+      formData.append('visibleScope', selectedScopeEnum);
+      console.log('공개범위 : ', post.value.marketVisibleScope);
+      console.log('공개범위 : ', selectedScopeEnum);
 
       const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
       console.log('토큰 : ', token); // 토큰확인
