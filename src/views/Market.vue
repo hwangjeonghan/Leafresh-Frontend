@@ -19,7 +19,6 @@ const fetchMarkets = async () => {
       }
     });
     const result = await response.json();
-    console.log('조회결과 : ', result);
     markets.value = result;
 
     if (!response.ok) {
