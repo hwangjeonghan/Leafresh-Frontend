@@ -29,7 +29,7 @@
               <option v-for="visibleScope in scopes" :key="visibleScope">{{ visibleScope }}</option>
             </select>
           </div>
-          <button type="submit" class="submit-button">등록</button>
+          <button type="submit" class="submit-button">분양 보내기</button>
         </form>
       </div>
     </div>
@@ -111,8 +111,6 @@ const submitForm = async () => {
 
       const selectedScopeEnum = findScopeEnum(post.value.marketVisibleScope);
       formData.append('visibleScope', selectedScopeEnum);
-      console.log('공개범위 : ', post.value.marketVisibleScope);
-      console.log('공개범위 : ', selectedScopeEnum);
 
       const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
       console.log('토큰 : ', token); // 토큰확인
