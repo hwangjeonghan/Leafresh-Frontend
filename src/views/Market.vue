@@ -63,7 +63,8 @@ onMounted(() => {
 <div class="market-page">
   <div class="share_container">
       <div v-if="markets.length > 0" class="market-list">
-        <div v-for="(market, index) in markets.slice().reverse()" :key="index" class="market-item" @click="detailPost(market.marketId)">
+        <div v-for="(market, index) in markets.filter(market => market.marketVisibleScope !== 'MARKET_DELETE').slice().reverse()"
+                    :key="index" class="market-item" @click="detailPost(market.marketId)">
           <div class="market_image_box">
             <img :src="market.imageUrl" alt="Market Image" class="market-image" />
           </div>

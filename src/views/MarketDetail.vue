@@ -21,7 +21,7 @@
       <div class="market_title_box">{{ market.post.marketTitle }} </div>
       <div class="market_content_box">{{ market.post.marketContent }}</div>
       <div class="market_btn_box">
-        <button @click="modifyPost(market.post.marketId)">수정하기</button>
+        <button @click="editPost(market.post.marketId)">수정하기</button>
         <button @click="deletePost(market.post.marketId)">삭제하기</button>
       </div>
       
@@ -98,13 +98,20 @@ onMounted(() => {
   fetchMarketDetails();
 });
 
-const modifyPost = (id) => {
+const editPost = (id) => {
     router.push(`/market/modify/${id}`);
 }
 
 const deletePost = async (id) => {
   if (!id) {
     console.error('삭제할 게시글 ID가 없습니다.');
+    return;
+  }
+
+  const confirmed = confirm('삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?');
+
+  if (!confirmed) {
+    // 사용자가 취소를 누르면 함수 종료
     return;
   }
 

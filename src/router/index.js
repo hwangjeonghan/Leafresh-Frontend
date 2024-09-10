@@ -9,7 +9,9 @@ import FeedAdd from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
 import MarketDetail from "@/views/MarketDetail.vue";
 import FeedDetail from "@/views/FeedDetail.vue";
 import Chat from '@/views/Chat.vue';
+import MarketEdit from "@/views/MarketEdit.vue";
 import ProfileRegistration from '@/views/ProfileRegistration.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +66,11 @@ const router = createRouter({
       path: "/market/detail/:id",
       name: "MarketPostDetail",
       component: MarketDetail, // 분양 게시글 조회 페이지
+    },
+    {
+      path: "/market/modify/:id",
+      name: "MarketEdit",
+      component: MarketEdit, // 분양 게시글 수정 페이지
     },
     {
       path: '/chat/:id',
