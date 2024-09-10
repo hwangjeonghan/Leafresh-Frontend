@@ -43,13 +43,13 @@ import EditProfileModal from './EditProfileModal.vue'; // 모달 컴포넌트 �
 
 const userStore = useUserstore();
 const profileExists = ref(true);
-const profileImage = ref('https://via.placeholder.com/150');
-const username = ref('Unknown User');
+const profileImage = ref(userStore.imageUrl || 'https://via.placeholder.com/150'); // Pinia 상태에서 가져옴
+const username = ref(userStore.userNickname || 'Unknown User'); // Pinia 상태에서 가져옴
 const followerPlants = ref(17);
 const salePlants = ref(5);
 const followers = ref('1만');
-const profileTitle = ref('자연을 사랑하는 식집사');
-const profileDescription = ref('식물 관련 정보를 함께 나눠요!\n희귀식물 00 아가들 분양중..');
+const profileTitle = ref(userStore.profileTitle || '자연을 사랑하는 식집사'); // Pinia 상태에서 가져옴
+const profileDescription = ref(userStore.profileDescription || '식물 관련 정보를 함께 나눠요!\n희귀식물 00 아가들 분양중..'); // Pinia 상태에서 가져옴
 
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -91,6 +91,24 @@ watch(
   { immediate: true }
 );
 
+// 프로필 타이틀 변경 감지 및 반영
+watch(
+  () => userStore.profileTitle,
+  (newProfileTitle) => {
+    profileTitle.value = newProfileTitle || '프로필 제목 없음';
+  },
+  { immediate: true }
+);
+
+// 프로필 설명 변경 감지 및 반영
+watch(
+  () => userStore.profileDescription,
+  (newProfileDescription) => {
+    profileDescription.value = newProfileDescription || '프로필 설명 없음';
+  },
+  { immediate: true }
+);
+
 onMounted(async () => {
   await fetchUserProfile();
   try {
@@ -101,8 +119,11 @@ onMounted(async () => {
     });
 
     const profileData = response.data;
-    profileTitle.value = profileData.profileTitle || '프로필 제목 없음';
-    profileDescription.value = profileData.profileDescription || '프로필 설명 없음';
+    userStore.setUserProfile({ // Pinia store 업데이트
+      ...userStore,
+      profileTitle: profileData.profileTitle || '프로필 제목 없음',
+      profileDescription: profileData.profileDescription || '프로필 설명 없음',
+    });
   } catch (error) {
     console.error('프로필 정보 가져오기 오류:', error);
     if (error.response && error.response.status === 404) {
