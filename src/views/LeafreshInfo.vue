@@ -7,7 +7,17 @@
 
     <!-- 이미지를 중앙 정렬하고 크기 조정 -->
     <div>
-      <img src="/images/leafresh_img.png" alt="Leafresh 이미지" class="intro-image">
+      <img 
+        src="/images/leafresh_img.png" 
+        alt="Leafresh 이미지" 
+        class="intro-image"
+        @click="showPopup = true"
+      >
+    </div>
+
+    <!-- 하츄핑이 튀어나오는 팝업 -->
+    <div v-if="showPopup" class="popup">
+      <img src="https://i.namu.wiki/i/_MD8e3O1UiC2tgaId4_QcE2ElIXfGrszNfVhR_qwp6nKcZ2W1GGtxx9tFnQagn82yP8Dt5iIgL42MKn9batI1NKdl_4f0JaZmL28Pr07dry0sgbMgfNOAN7vWkoOV1ne56a8GOA2qBeiFm0fWYDDrA.webp" alt="하츄핑" class="popup-image">
     </div>
 
     <!-- 프로젝트 소개 섹션 -->
@@ -67,6 +77,8 @@
 </template>
 
 <script setup>
+import { ref,watch } from 'vue';
+
 const teamMembers = [
   {
     name: "강형석",
@@ -105,6 +117,18 @@ const teamMembers = [
     job: ["프론트엔드", "문서화"]
   }
 ];
+
+// 하츄핑 팝업 상태 관리
+const showPopup = ref(false);
+
+// 하츄핑 3초 후 자동으로 사라지게 설정
+watch(showPopup, (newValue) => {
+  if (newValue) {
+    setTimeout(() => {
+      showPopup.value = false;
+    }, 3000); // 3초 후 팝업 사라짐
+  }
+});
 </script>
 
 <style scoped>
@@ -141,6 +165,24 @@ const teamMembers = [
   width: 50%; /* 이미지 크기 조정 */
   max-width: 600px;
   height: auto;
+}
+
+/* 하츄핑 팝업 스타일 */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-image {
+  width: 300px; /* 하츄핑 이미지 크기 조절 */
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* 섹션 스타일 */
