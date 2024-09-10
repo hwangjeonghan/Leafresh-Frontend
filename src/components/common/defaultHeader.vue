@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import Weather from "@/components/common/weather.vue"
 
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -72,15 +73,15 @@ const goToGardenDiary = () => {
         >
       </div>
       <div class="footer_item">
-        <div class="footer_upper">
-         
-        </div>
         <div class="footer_middle">
           <div class="footer_middle_item">공지사항</div>
           <div class="footer_middle_item">이벤트</div>
           <router-link to="/leafresh/info">
             <div class="footer_middle_item">leafresh</div>
           </router-link>
+        </div>
+        <div class="footer_upper">
+          <Weather/>
         </div>
         <div class="footer_under">
           All rights reserved. © Leafresh.
@@ -209,7 +210,7 @@ a {
 .footer_under{
   font-family: "ghanachoco";
   font-size: 12px;
-  color: #b3b3b3;
+  color: #fff;
   text-align: center;
 }
 </style>
