@@ -8,10 +8,16 @@
       <div
         v-for="msg in messages"
         :key="msg.id"
-        class="chat-message"
+        class="chat-message-wrapper"
         :class="{ 'sent': msg.senderId === userStore.userId, 'received': msg.senderId !== userStore.userId }"
       >
-        <strong>{{ msg.name }}:</strong> {{ msg.message }}
+        <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
+          <img src="https://via.placeholder.com/40" alt="프로필 사진" />
+        </div>
+        <div class="chat-message">
+          <strong v-if="msg.senderId !== userStore.userId" class="sender-name">{{ msg.name }}</strong>
+          <p>{{ msg.message }}</p>
+        </div>
       </div>
     </div>
     <div class="chat-input">
@@ -34,13 +40,24 @@ const newMessage = ref("");
 const client = ref(null);
 const chatRoomId = ref(route.params.id);
 
+const loadMessages = () => {
+  const savedMessages = JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
+  messages.value = savedMessages;
+}
+
+const saveMessages = () => {
+  localStorage.setItem(`messages_${chatRoomId.value}`, JSON.stringify(messages.value));
+}
+
 const connection = () => {
   client.value = new Client({
     brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
     onConnect: () => {
       console.log('STOMP 연결 성공');
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
-        messages.value.push(JSON.parse(message.body));
+        const newMessage = JSON.parse(message.body);
+        messages.value.push(newMessage);
+        saveMessages(); // 로컬 저장소에 메시지 저장
       });
     },
     onStompError: (frame) => {
@@ -75,11 +92,13 @@ const sendMessage = () => {
 }
 
 const closeChat = () => {
+  saveMessages(); // 채팅방 나가기 전에 메시지 저장
   client.value.deactivate(); // WebSocket 연결 종료
 }
 
 onMounted(async () => {
   await userStore.fetchUserProfile(); // 사용자 정보 로드
+  loadMessages(); // 현재 채팅방 메시지 불러오기
   connection();
 });
 
@@ -92,90 +111,152 @@ onUnmounted(() => {
 watch(() => route.params.id, (newId) => {
   chatRoomId.value = newId;
   console.log('Updated chat room ID:', chatRoomId.value);
+  loadMessages(); // 새 채팅방 메시지 불러오기
   // WebSocket 재연결 필요 시 처리
 });
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
+</style>
+
+
+<style scoped>
 .chat-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 450px;
+  height: 80vh;
   margin: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f0f0f0; /* 연한 회색 배경 */
 }
 
 .chat-header {
-  background-color: #f1f1f1;
-  padding: 10px;
+  background-color: #5E9C06; /* 카카오톡 스타일의 짙은 녹색 */
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ddd;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-message {
-  margin-bottom: 10px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  max-width: 80%;
-}
-
-.chat-message.sent {
-  align-self: flex-end;
-  background-color: #d1e7dd;
-  text-align: right;
-}
-
-.chat-message.received {
-  align-self: flex-start;
-  background-color: #f8d7da;
-  text-align: left;
-}
-
-.chat-input {
-  padding: 10px;
-  border-top: 1px solid #ddd;
-  display: flex;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.chat-input button {
-  margin-left: 10px;
-  padding: 5px 10px;
-  border: none;
-  background-color: #007bff;
   color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.chat-input button:hover {
-  background-color: #0056b3;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .chat-header button {
   background-color: transparent;
   border: none;
-  font-size: 16px;
+  color: #fff;
+  font-size: 20px;
   cursor: pointer;
+  transition: color 0.3s;
+}
+
+.chat-header button:hover {
+  color: #ddd;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: #ffffff; /* 메시지 영역의 배경색 하얀색 */
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-message-wrapper {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.chat-message-wrapper.sent {
+  justify-content: flex-end;
+}
+
+.chat-message-wrapper.received {
+  justify-content: flex-start;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* 프로필 사진을 원형으로 만듦 */
+}
+
+.chat-message {
+  background-color: #f7f7f7; /* 메시지 배경색 */
+  border-radius: 12px;
+  padding: 12px;
+  max-width: 70%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-message p {
+  margin: 0;
+  word-break: break-word;
+}
+
+.chat-message.sent {
+  background-color: #d1ffd1; /* 송신된 메시지의 배경색 (연한 초록색) */
+  color: #000;
+}
+
+.chat-message.received .sender-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #888; /* 발신자 이름의 색상 */
+}
+
+.chat-input {
+  padding: 12px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  background: #f9f9f9; /* 아주 연한 회색 배경 */
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.chat-input button {
+  margin-left: 12px;
+  padding: 10px 16px;
+  border: none;
+  background-color: #5E9C06; /* 전송 버튼 색상 카카오톡 스타일 */
+  color: #fff;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.chat-input button:hover {
+  background-color: #4d7a04; /* 버튼 hover 시 색상 변경 */
+  transform: scale(1.05); /* 버튼 확대 효과 */
+}
+
+.chat-input button:active {
+  transform: scale(1); /* 클릭 시 원래 크기로 복귀 */
 }
 </style>
