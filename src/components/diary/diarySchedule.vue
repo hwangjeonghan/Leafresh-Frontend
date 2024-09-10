@@ -48,8 +48,7 @@ const clickedDate = computed(() => todoStore.clickedDate);
       <div class="modal-content" @click.stop>
         <h2>Add New Todo</h2>
         <TodoForm />
-        <h2>{{ clickedDate }} 일 </h2>
-        <input v-model="newTodoContent" placeholder="New todo" />
+        <input v-model="newTodoContent" placeholder="New todo" class="todo_input"/>
         <button @click="addTodo">Save</button>
         <button @click="closeModal">Cancel</button>
       </div>
@@ -86,7 +85,6 @@ const clickedDate = computed(() => todoStore.clickedDate);
 
 
 
-
 /* 모달 스타일 */
 .modal-overlay {
   position: fixed;
@@ -115,5 +113,16 @@ const clickedDate = computed(() => todoStore.clickedDate);
 
 .modal-content input {
   width: 100%;
+}
+
+
+.todo_input {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
 }
 </style>
