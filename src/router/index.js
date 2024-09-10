@@ -79,7 +79,7 @@ const router = createRouter({
       props: true, // 경로 파라미터를 props로 컴포넌트에 전달
     },
     { 
-      path: '/profile-registration', 
+      path: '/profile/registration', 
       name: 'ProfileRegistration',  
       component: ProfileRegistration 
     },
@@ -87,3 +87,4 @@ const router = createRouter({
 });
 
 export default router;
+
