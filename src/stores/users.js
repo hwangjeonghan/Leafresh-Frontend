@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 
 export const useUserstore = defineStore("useUserstore", () => {
   const router = useRouter(); // 라우터 설정 추가
+
   // 사용자 정보 상태
   const userId = ref(null);
   const userName = ref("");
@@ -14,11 +15,12 @@ export const useUserstore = defineStore("useUserstore", () => {
   const role = ref("");
   const imageUrl = ref("");
   const userReportCount = ref(0);
+  const profileTitle = ref(""); // 프로필 타이틀 추가
+  const profileDescription = ref(""); // 프로필 설명 추가
   const token = ref(''); // JWT 토큰 저장
-  
+
   // 로그인 여부
   const isLoggedIn = ref(false);
-
 
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
@@ -27,19 +29,30 @@ export const useUserstore = defineStore("useUserstore", () => {
       token.value = localToken; // 토큰을 Pinia 상태에 저장
       try {
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-        const response = await axios.get(`${API_BASE_URL}/user/me`, {
+        
+        // 사용자 기본 정보 가져오기
+        const userResponse = await axios.get(`${API_BASE_URL}/user/me`, {
           headers: {
             Authorization: `Bearer ${token.value}`, // 토큰을 헤더에 포함
           },
         });
 
-        const userData = response.data;
+        const userData = userResponse.data;
         console.log('Fetched user data:', userData); // 사용자 데이터 로그 확인
 
         // FTP 이미지 경로를 가져와 API를 통해 접근 가능한 URL로 변환
         const ftpImagePath = userData.imageUrl
           ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(userData.imageUrl)}`
           : "";
+
+        // 프로필 정보 가져오기
+        const profileResponse = await axios.get(`${API_BASE_URL}/profile/info`, {
+          headers: {
+            Authorization: `Bearer ${token.value}`, // 토큰을 헤더에 포함
+          },
+        });
+
+        const profileData = profileResponse.data; // ProfileDTO로 반환된 데이터
 
         // 받아온 데이터를 상태에 저장
         setUserProfile({
@@ -51,6 +64,8 @@ export const useUserstore = defineStore("useUserstore", () => {
           role: userData.role.name,
           imageUrl: ftpImagePath,
           userReportCount: userData.userReportCount,
+          profileTitle: profileData.profileTitle || "프로필 제목 없음", // 프로필 타이틀 설정
+          profileDescription: profileData.profileDescription || "프로필 설명 없음", // 프로필 설명 설정
         });
 
         isLoggedIn.value = true; // 로그인 상태로 설정
@@ -70,7 +85,6 @@ export const useUserstore = defineStore("useUserstore", () => {
     }
   };
 
-
   // 사용자 정보를 설정하는 함수
   const setUserProfile = (profile) => {
     userId.value = profile.userId;
@@ -81,7 +95,9 @@ export const useUserstore = defineStore("useUserstore", () => {
     role.value = profile.role;
     imageUrl.value = profile.imageUrl;
     userReportCount.value = profile.userReportCount;
-  
+    profileTitle.value = profile.profileTitle; // 프로필 타이틀 설정
+    profileDescription.value = profile.profileDescription; // 프로필 설명 설정
+
     console.log('User Profile Set:', {
       userId: userId.value,
       userName: userName.value,
@@ -90,10 +106,11 @@ export const useUserstore = defineStore("useUserstore", () => {
       userPhoneNumber: userPhoneNumber.value,
       role: role.value,
       imageUrl: imageUrl.value,
-      userReportCount: userReportCount.value
+      userReportCount: userReportCount.value,
+      profileTitle: profileTitle.value, // 로그에 프로필 타이틀 추가
+      profileDescription: profileDescription.value, // 로그에 프로필 설명 추가
     });
   };
-  
 
   // 로그아웃 메서드
   const logout = async () => {
@@ -129,6 +146,8 @@ export const useUserstore = defineStore("useUserstore", () => {
     role.value = "";
     imageUrl.value = "";
     userReportCount.value = 0;
+    profileTitle.value = ""; // 프로필 타이틀 초기화
+    profileDescription.value = ""; // 프로필 설명 초기화
     isLoggedIn.value = false;
   };
 
@@ -146,6 +165,8 @@ export const useUserstore = defineStore("useUserstore", () => {
     role,
     imageUrl,
     userReportCount,
+    profileTitle, // 프로필 타이틀 추가
+    profileDescription, // 프로필 설명 추가
     isLoggedIn,
     fetchUserProfile,
     setUserProfile,
@@ -154,4 +175,3 @@ export const useUserstore = defineStore("useUserstore", () => {
     logout,
   };
 });
-

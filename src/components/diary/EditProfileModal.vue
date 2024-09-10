@@ -24,6 +24,16 @@
         <label for="newProfileImage">새로운 프로필 이미지:</label>
         <input type="file" id="newProfileImage" @change="handleImageUpload" class="input-field" />
       </div>
+      <!-- 프로필 타이틀 필드 추가 -->
+      <div class="input-group">
+        <label for="newProfileTitle">프로필 제목:</label>
+        <input type="text" id="newProfileTitle" v-model="newProfileTitle" class="input-field" />
+      </div>
+      <!-- 프로필 설명 필드 추가 -->
+      <div class="input-group">
+        <label for="newProfileDescription">프로필 설명:</label>
+        <textarea id="newProfileDescription" v-model="newProfileDescription" class="input-field"></textarea>
+      </div>
       <button class="submit-button" @click="handleProfileUpdate">업데이트</button>
     </div>
   </div>
@@ -50,6 +60,8 @@ const currentPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 const newProfileImage = ref(null);
+const newProfileTitle = ref('');  // 프로필 타이틀 상태 추가
+const newProfileDescription = ref('');  // 프로필 설명 상태 추가
 const passwordMismatch = ref(false);
 
 const handleProfileUpdate = async () => {
@@ -99,7 +111,7 @@ const handleProfileUpdate = async () => {
       newImageUrl = imageUploadResponse.data.uploadedFilePath.trim();
     }
 
-    // 프로필 업데이트 요청
+    // 사용자 정보 업데이트 요청
     await axios.post(`${API_BASE_URL}/user/update`, {
       newNickname: newNickname.value,
       newPassword: newPassword.value ? newPassword.value : undefined,  // 빈 문자열이면 undefined
@@ -110,10 +122,28 @@ const handleProfileUpdate = async () => {
       },
     });
 
+    // 프로필 정보 업데이트 요청
+    await axios.post(`${API_BASE_URL}/profile/modify`, {  // 여기를 수정하여 ProfileController에 요청합니다.
+      profileTitle: newProfileTitle.value,  // 추가된 프로필 타이틀 필드
+      profileDescription: newProfileDescription.value,  // 추가된 프로필 설명 필드
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+
+    // Pinia store에서 프로필 정보 업데이트
+    userStore.setUserProfile({
+      ...userStore, // 기존 프로필 정보 복사
+      userNickname: newNickname.value,
+      imageUrl: newImageUrl,
+      profileTitle: newProfileTitle.value,
+      profileDescription: newProfileDescription.value
+    });
+
     alert('프로필이 성공적으로 업데이트되었습니다.');
     props.closeModal();
     props.fetchUserProfile();
-
   } catch (error) {
     console.error('프로필 업데이트 오류:', error);
     alert('프로필 업데이트 중 오류가 발생했습니다.');
