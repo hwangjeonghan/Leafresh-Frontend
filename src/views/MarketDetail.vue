@@ -77,7 +77,7 @@ const market = ref(null);
 const marketImage = ref("");
 const isChatModalOpen = ref(false); // 모달 창 열림 상태
 const userNickname = ref('');
-const userImageUrl = ref('');
+const userImageUrl = ref('https://via.placeholder.com/150');
 const userPhoneNumber = ref('');
 
 // 모달 열기
@@ -93,9 +93,6 @@ const closeChatModal = () => {
 // 사용자 프로필 정보 가져오기
 const fetchUserProfile = async () => {
   await userStore.fetchUserProfile();
-  userNickname.value = userStore.userNickname;
-  userImageUrl.value = userStore.userImageUrl;
-  userPhoneNumber.value = userStore.userPhoneNumber;
 };
 
 // 사용자 정보 변경 감지 및 반영
