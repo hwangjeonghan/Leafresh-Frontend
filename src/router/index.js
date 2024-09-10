@@ -11,6 +11,7 @@ import FeedDetail from "@/views/FeedDetail.vue";
 import Chat from '@/views/Chat.vue';
 import MarketEdit from "@/views/MarketEdit.vue";
 import ProfileRegistration from '@/views/ProfileRegistration.vue';
+import LeafreshInfo from '@/views/LeafreshInfo.vue'
 
 
 const router = createRouter({
@@ -82,6 +83,11 @@ const router = createRouter({
       path: '/profile/registration', 
       name: 'ProfileRegistration',  
       component: ProfileRegistration 
+    },
+    { 
+      path: '/leafresh/info', 
+      name: 'LeafreshInfo',  
+      component: LeafreshInfo 
     },
   ],
 });
