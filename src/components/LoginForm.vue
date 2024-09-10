@@ -130,6 +130,10 @@ h2 {
   outline: none;
 }
 
+.input-group input::placeholder {
+  color: #999;
+}
+
 .submit-button {
   width: 100%;
   padding: 12px;
@@ -146,6 +150,7 @@ h2 {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border: none;
   color: white;
+  font-family: "GothicA1-Light";
   font-size: 1.2rem;
   border-radius: 8px;
   cursor: pointer;

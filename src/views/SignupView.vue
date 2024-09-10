@@ -1,16 +1,21 @@
 <template>
   <div class="signup-page">
     <div class="signup-container">
+      <div class="signup-header">
+        <RouterLink :to="`/login`">
+          <span class="material-icons">close</span>
+        </RouterLink>
+      </div>
       <div class="signup-form">
-        <h2>회원가입</h2>
+        <div class="signup-title">회원가입</div>
         <form @submit.prevent="handleSubmit">
+          <!-- Existing input fields here -->
           <div class="input-group" :class="{ 'input-error': nameError }">
             <label for="name">이름</label>
             <input
               type="text"
               v-model="userName"
               placeholder="이름을 입력하세요"
-              required="required"
             />
             <span v-if="nameError" class="error-message">{{ nameError }}</span>
           </div>
@@ -20,7 +25,6 @@
               type="text"
               v-model="userNickname"
               placeholder="닉네임을 입력하세요"
-              required="required"
             />
             <span v-if="nicknameError" class="error-message">{{
               nicknameError
@@ -32,7 +36,6 @@
               type="text"
               v-model="userPhoneNumber"
               placeholder="전화번호를 입력하세요"
-              required="required"
             />
             <span v-if="phoneNumberError" class="error-message">{{
               phoneNumberError
@@ -41,10 +44,9 @@
           <div class="input-group" :class="{ 'input-error': emailError }">
             <label for="email">이메일</label>
             <input
-              type="email"
+              type="text"
               v-model="userMailAdress"
               placeholder="이메일을 입력하세요"
-              required="required"
             />
             <span v-if="emailError" class="error-message">{{
               emailError
@@ -56,7 +58,6 @@
               type="password"
               v-model="userPassword"
               placeholder="비밀번호를 입력하세요"
-              required="required"
             />
             <span v-if="passwordError" class="error-message">{{
               passwordError
@@ -71,7 +72,6 @@
               type="password"
               v-model="confirmPassword"
               placeholder="비밀번호를 다시 입력하세요"
-              required="required"
             />
             <span v-if="confirmPasswordError" class="error-message">{{
               confirmPasswordError
@@ -92,6 +92,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2"; // SweetAlert2 라이브러리 임포트
 
 const userName = ref("");
 const userNickname = ref("");
@@ -100,7 +101,6 @@ const userMailAdress = ref("");
 const userPassword = ref("");
 const confirmPassword = ref("");
 const profileImage = ref(null);
-const imageUrl = ref("");
 
 const nameError = ref("");
 const nicknameError = ref("");
@@ -112,58 +112,99 @@ const confirmPasswordError = ref("");
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const handleImageUpload = (event) => {
-  profileImage.value = event.target.files[0];
+// Sweetalert2 토스트 설정 함수
+const showToast = (message, icon = "warning") => {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    icon: icon,
+    title: message,
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    background: "#fff",
+    color: "#333",
+    customClass: {
+      title: "custom-swal-title", // 제목의 커스텀 클래스를 지정
+    },
+  });
 };
 
+// 유효성 검사 및 첫 번째 오류만 표시
 const validateInputs = () => {
-  let isValid = true;
-
-  if (userName.value.length > 40) {
+  if (!userName.value) {
+    showToast("이름을 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (userName.value.length > 40) {
+    showToast("이름은 최대 40자까지 입력할 수 있습니다.");
     nameError.value = "이름은 최대 40자까지 입력할 수 있습니다.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     nameError.value = "";
   }
 
-  if (userNickname.value.length > 15) {
+  if (!userNickname.value) {
+    showToast("닉네임을 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (userNickname.value.length > 15) {
+    showToast("닉네임은 최대 15자까지 입력할 수 있습니다.");
     nicknameError.value = "닉네임은 최대 15자까지 입력할 수 있습니다.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     nicknameError.value = "";
   }
 
   const phoneNumberPattern = /^[0-9]{10,11}$/;
-  if (!phoneNumberPattern.test(userPhoneNumber.value)) {
+  if (!userPhoneNumber.value) {
+    showToast("전화번호를 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (!phoneNumberPattern.test(userPhoneNumber.value)) {
+    showToast("유효한 전화번호를 입력하세요.");
     phoneNumberError.value = "유효한 전화번호를 입력하세요.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     phoneNumberError.value = "";
   }
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(userMailAdress.value)) {
+  if (!userMailAdress.value) {
+    showToast("이메일을 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (!emailPattern.test(userMailAdress.value)) {
+    showToast("유효한 이메일 주소를 입력하세요.");
     emailError.value = "유효한 이메일 주소를 입력하세요.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     emailError.value = "";
   }
 
-  if (userPassword.value.length < 6 || userPassword.value.length > 20) {
+  if (!userPassword.value) {
+    showToast("비밀번호를 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (userPassword.value.length < 6 || userPassword.value.length > 20) {
+    showToast("비밀번호는 6자 이상, 20자 이하로 입력해야 합니다.");
     passwordError.value = "비밀번호는 6자 이상, 20자 이하로 입력해야 합니다.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     passwordError.value = "";
   }
 
-  if (userPassword.value !== confirmPassword.value) {
+  if (!confirmPassword.value) {
+    showToast("비밀번호 확인을 입력하세요.");
+    return false; // 첫 번째 오류 발견 시 바로 중단
+  } else if (userPassword.value !== confirmPassword.value) {
+    showToast("비밀번호가 일치하지 않습니다.");
     confirmPasswordError.value = "비밀번호가 일치하지 않습니다.";
-    isValid = false;
+    return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     confirmPasswordError.value = "";
   }
 
-  return isValid;
+  return true; // 모든 유효성 검사를 통과하면 true 반환
+};
+
+const handleImageUpload = (event) => {
+  profileImage.value = event.target.files[0];
 };
 
 const handleSubmit = async () => {
@@ -205,11 +246,11 @@ const handleSubmit = async () => {
         "Content-Type": "application/json",
       },
     });
-    alert("회원가입이 성공적으로 완료되었습니다.");
+    showToast("회원가입이 성공적으로 완료되었습니다.", "success");
     router.push("/login");
   } catch (error) {
     console.error("회원가입 오류:", error);
-    alert("회원가입에 실패했습니다.");
+    showToast("회원가입에 실패했습니다.", "error");
   }
 };
 </script>
@@ -220,19 +261,31 @@ const handleSubmit = async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: antiquewhite;
+  background-image: url("@/assets/images/background2.webp");
   overflow: auto;
 }
 
 .signup-container {
+  position: relative; /* Added to position child elements absolutely */
   background: #fff;
-  padding: 40px;
+  padding: 30px;
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   max-width: 500px;
   width: 100%;
   height: 95%;
   text-align: center;
+}
+
+.signup-header {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.signup-header .material-icons {
+  font-size: 24px;
+  cursor: pointer;
 }
 
 h2 {
@@ -247,10 +300,21 @@ h2 {
 }
 
 .input-group label {
+  font-family: "ghanachoco";
+  font-size: 16px;
+  color: #76b852; /* fallback for old browsers */
+  color: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  color: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #555;
+  margin-bottom: 0.8rem;
 }
 
 .input-group input {
@@ -258,6 +322,7 @@ h2 {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px !important;
+  font-family: "GothicA1-Light";
   font-size: 1rem;
   box-sizing: border-box;
   transition: border-color 0.3s, box-shadow 0.3s;
@@ -269,14 +334,16 @@ h2 {
   outline: none;
 }
 
+.input-group input::placeholder {
+  color: #999;
+}
+
 .input-error input {
   border-color: red;
 }
 
 .error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
+  display: none;
 }
 
 .submit-button {
@@ -295,6 +362,7 @@ h2 {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border: none;
   color: white;
+  font-family: "GothicA1-Light";
   font-size: 1.2rem;
   border-radius: 8px;
   cursor: pointer;
@@ -330,5 +398,26 @@ h2 {
     font-size: 1rem;
     padding: 10px;
   }
+}
+
+.signup-title {
+  font-family: "ghanachoco";
+  font-size: 24px;
+  color: #76b852; /* fallback for old browsers */
+  color: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  color: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  margin-bottom: 30px;
+}
+
+.material-icons {
+  color: #000;
 }
 </style>
