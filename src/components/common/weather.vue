@@ -23,11 +23,11 @@
           </div>
   
           <div v-else-if="weatherError" class="box-item">
-            <p>{{ weatherError }}</p>
+            <Loading/>
           </div>
   
           <div v-else class="box-item">
-            <p>날씨 데이터를 불러오는 중입니다...</p>
+            <Loading/>
           </div>
         </div>
       </div>
@@ -36,6 +36,8 @@
   
   <script setup>
 import { ref, onMounted, computed } from "vue";
+
+import Loading from "./loading.vue";
 
 // 주요 도시 목록과 좌표
 const cities = [

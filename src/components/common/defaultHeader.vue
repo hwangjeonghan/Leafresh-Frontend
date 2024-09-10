@@ -110,7 +110,9 @@ a {
   width: 320px;
   display: flex;
   justify-content: center;
-  background: linear-gradient(0deg, #1ab546, #0b4f1e);
+  background: #76b852;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #8DC26F, #76b852);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #8DC26F, #76b852); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .header_text_container {
