@@ -70,12 +70,12 @@ onMounted(() => {
           <div class="market_text_box">
             <div class="market_status_category">
               <div :class="market.marketStatus ? 'market_status_box_true' : 'market_status_box_false'">
-                <p style="font-size: 1em;">{{ market.marketStatus ? '분양중' : '분양 완료' }}</p>
+                <p style="font-size: 0.8em;">{{ market.marketStatus ? '분양중' : '분양 완료' }}</p>
               </div>
               <p class="market-category">{{ market.marketCategory }}</p>
             </div>
             <p class="market-title">{{ market.marketTitle }}</p>
-            <p class="market-content">{{ market.userNickname }}</p>
+            <!-- <p class="market-content">{{ market.userNickname }}</p> -->
           </div>
           <div class="market_created_box">
             <p class="market_created_at">{{ market.displayDate }}</p>
@@ -175,11 +175,10 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   margin: 0 1vw 1vw 0;
-  width: 5.5vw;
+  width: 6vw;
   height: 2.5vh;
   background-color: #b6b6b6;
   color: white;
-
   border-radius: 1vw;
 }
 
@@ -191,7 +190,7 @@ onMounted(() => {
 }
 
 .market-title {
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-weight: bold;
   margin-bottom: 10px;
   color: #848484;
