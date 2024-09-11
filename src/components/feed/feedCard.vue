@@ -113,6 +113,7 @@ const goToFeedDetail = (id) => {
   background-color: #f0f0f0;
   border-radius: 10px;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .card-img {

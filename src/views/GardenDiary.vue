@@ -54,7 +54,6 @@ onMounted(async () => {
   if (!accessToken) {
     router.push("/login"); // 로그인이 되어 있지 않으면 로그인 페이지로 리다이렉트
   } else {
-    console.log(`현재 유저: ${loginState.userNickname}`);
     await fetchUserFeeds(); // 피드 데이터를 비동기로 불러오기
   }
 });
