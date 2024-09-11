@@ -241,16 +241,25 @@ const handleSubmit = async () => {
       imageUrl: uploadedImagePath,
     };
 
-    await axios.post(`${API_BASE_URL}/auth/signup`, userInfo, {
+    const response = await axios.post(`${API_BASE_URL}/auth/signup`, userInfo, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+
     showToast("회원가입이 성공적으로 완료되었습니다.", "success");
     router.push("/login");
   } catch (error) {
-    console.error("회원가입 오류:", error);
-    showToast("회원가입에 실패했습니다.", "error");
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.message === "중복된 이메일 입니다"
+    ) {
+      showToast("중복된 이메일 입니다", "error");
+    } else {
+      console.error("회원가입 오류:", error);
+      showToast("회원가입에 실패했습니다.", "error");
+    }
   }
 };
 </script>
