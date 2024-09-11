@@ -8,7 +8,7 @@
             <div class="market_title_box">{{ market.post.marketTitle }}</div>
           </div>
           <div class="market_post_info_box">
-            <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'" @click="updateMarketStatus(market.post.marketId, market.post.marketStatus)">
+            <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'" @click="market.post.marketStatus ? updateMarketStatus(market.post.marketId, market.post.marketStatus) : showComplatedAlert">
               <p>{{ market.post.marketStatus ? "분양중" : "분양 완료" }}</p>
             </div>
             <div class="market_created_box">
@@ -18,17 +18,16 @@
         </div>
         <img class="market_image_box" :src="marketImage" alt="Market Image" />
         <div class="market_content_box">{{ market.post.marketContent }}</div>
-        <div class="market_btn_box">
+        <div class="market_btn_box" v-if="isUser">
           <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
           <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
-          <button class="market_btn_list" @click="allPostList">글목록</button>
         </div>
-
-        <div class="market_user_container">
-          <img :src="userImageUrl" alt="User Profile Image" class="user_image" />
+        <button class="market_btn_list" @click="allPostList">글목록</button>
+        <div class="market_user_container" v-if="userInfo">
+          <img :src="imageUrl" alt="User Profile Image" class="user_image" />
           <div class="user_info">
-            <p class="user_nickname">{{ userNickname }}</p>
-            <p class="user_phonenumber">{{ userPhoneNumber }}</p>
+            <p class="user_nickname">{{ userInfo.userNickname }}</p>
+            <p class="user_phonenumber">{{ userInfo.userPhoneNumber }}</p>
           </div>
         </div>
 
@@ -63,10 +62,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ChatComponent from "./Chat.vue";
-import { useUserstore } from "@/stores/users.js"; // 로그인 한 사용자 정보를 가져오기 위해
+import { useUserstore } from '@/stores/users.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
@@ -76,9 +75,8 @@ const marketId = ref(route.params.id);
 const market = ref(null);
 const marketImage = ref("");
 const isChatModalOpen = ref(false); // 모달 창 열림 상태
-const userNickname = ref('');
-const userImageUrl = ref('https://via.placeholder.com/150');
-const userPhoneNumber = ref('');
+const userInfo = ref(null);
+const imageUrl = ref('');
 
 // 모달 열기
 const openChatModal = () => {
@@ -90,63 +88,43 @@ const closeChatModal = () => {
   isChatModalOpen.value = false;
 };
 
-// 사용자 프로필 정보 가져오기
-const fetchUserProfile = async () => {
-  await userStore.fetchUserProfile();
-};
-
-// 사용자 정보 변경 감지 및 반영
-watch(() => userStore.userNickname,
-  (newNickname) => {
-    if (newNickname) {
-      userNickname.value = newNickname;
-    }
-  },
-  { immediate: true }
-);
-
-watch(() => userStore.imageUrl,
-  (newImageUrl) => {
-    if (newImageUrl) {
-      userImageUrl.value = newImageUrl || 'https://via.placeholder.com/150';
-    }
-  },
-  { immediate: true }
-);
-
-watch(() => userStore.userPhoneNumber,
-  (newPhoneNumber) => {
-    if (newPhoneNumber) {
-      userPhoneNumber.value = newPhoneNumber;
-    }
-  },
-  { immediate: true }
-);
-
 const fetchMarketDetails = async () => {
   try {
-    const token = localStorage.getItem("accessToken");
-    const response = await fetch(
-      `${API_BASE_URL}/market/detail/${marketId.value}`, {
+    const token = localStorage.getItem("accessToken"); // 현재 접속한 사용자의 액세스 토큰 가져옴
+
+    // market detail 데이터 가져옴
+    const response = await fetch(`${API_BASE_URL}/market/detail/${marketId.value}`, {
         method: "GET",
         headers: {
           Authorization: "Bearer " + token,
         },
-      }
-    );
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`서버 응답 오류 : ${errorData.message || "알수없는 오류"}`);
     }
-    // 백에서 응답받은 데이터를 가져옴
-    const result = await response.json();
-    market.value = result;
-    const imagePath = result.post.marketImage; // url 경로 가져옴
+    const marketData = await response.json(); // 응답받은 데이터
+    market.value = marketData;
+    const userEmail = market.value.post.userEmail; // 게시글에 저장된 email 가져오기
+    const imagePath = marketData.post.marketImage; // 게시글 url 경로 가져옴
     marketImage.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
 
+    // user 데이터 가져옴
+    const userResponse = await fetch(`${API_BASE_URL}/user/info-market?email=${userEmail}`, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+    });
+    const userData = await userResponse.json(); // 응답받은 user 데이터
+    userInfo.value = userData;
+  
+    const userImagePath = userData.imageUrl; // 유저 프로필 이미지 가져와야함
+    imageUrl.value = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(userImagePath)}`;
+
     if (market.value && market.value.post) {
-      const createdDate = new Date(result.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
+      const createdDate = new Date(marketData.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
       const today = new Date();
       const timeDiff = today - createdDate; // 밀리초 차이
       const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // 일(day)로 변환
@@ -164,16 +142,18 @@ const fetchMarketDetails = async () => {
   }
 };
 
-watch(() => route.params.id, (newId) => {
-    marketId.value = newId;
-    fetchMarketDetails()
-  }, { immediate: true }
-);
+const isUser = computed(() => {
+  return market.value.post.userEmail === userStore.email; // 작성자와 현재 로긍인한 사용자 이메일 같은지 비교
+});
 
 onMounted(async() => {
-  await fetchUserProfile();
   await fetchMarketDetails();
 });
+
+// 분양완료 상태일때 버튼을 다시 누르면 실행시킴
+const showCompletedAlert = () => {
+  alert("이미 분양이 완료되었습니다. 변경이 불가능합니다");
+}
 
 // 분양중과 분양완료 상태만 바꿔서 백엔드에 저장함
 const updateMarketStatus = async (id, status) => {
@@ -181,6 +161,12 @@ const updateMarketStatus = async (id, status) => {
     console.error("게시글이 존재하지 않습니다. 다시 시도해주세요");
     return;
   }
+
+  if (!status) { // 이미 분양 완료 상태인 경우
+    showCompletedAlert();
+    return;
+  }
+
   const confirmed = confirm("분양이 완료되셨다면 확인을 눌러주세요. 분양이 완료 될 경우 다시 되돌릴 수 없습니다.");
 
   if (!confirmed) {
@@ -195,20 +181,17 @@ const updateMarketStatus = async (id, status) => {
         Authorization: "Bearer " + token,
         "Content-Type": "application/json",
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
         status: !status,
       }),
     });
-
-    console.log("확인");
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`서버 응답 오류 : ${errorData.message || "알 수 없는 오류"}`);
     }
 
-    const result = await response.json();
-    console.log("상태 업데이트 성공:", result);
+    const marketData = await response.json();
     market.value.post.marketStatus = !status;
     alert("상태가 업데이트되었습니다.");
   } catch (error) {
@@ -234,7 +217,6 @@ const deletePost = async (id) => {
   const confirmed = confirm("삭제된 게시글은 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?");
 
   if (!confirmed) {
-    // 사용자가 취소를 누르면 함수 종료
     return;
   }
 
@@ -253,7 +235,6 @@ const deletePost = async (id) => {
     }
 
     // 삭제 성공 시
-    console.log("게시글 삭제 성공");
     router.push("/market"); // 삭제 후 리스트 페이지로 리다이렉트
   } catch (error) {
     console.error("오류:", error);
