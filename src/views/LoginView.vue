@@ -6,7 +6,7 @@
       <div class="signup-container">
         <div class="signup-text">아직 계정이 없으신가요?</div>
         <!-- router-link를 사용하여 회원가입 페이지로 이동 -->
-        <router-link to="/signup" class="signup-button">회원가입</router-link>
+        <router-link to="/terms" class="signup-button">회원가입</router-link>
       </div>
     </div>
   </div>

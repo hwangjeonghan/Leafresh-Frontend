@@ -12,7 +12,9 @@ import Chat from "@/views/Chat.vue";
 import MarketEdit from "@/views/MarketEdit.vue";
 import ProfileRegistration from "@/views/ProfileRegistration.vue";
 import LeafreshInfo from "@/views/LeafreshInfo.vue";
+import TermsAgreementView from "@/views/TermsAgreementView.vue"; 
 import DiaryDetail from "@/views/DiaryDetail.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +67,11 @@ const router = createRouter({
       name: "Signup",
       component: SignupView, // 회원가입 페이지
       meta: { transition: "fade" },
+    },
+    {
+      path: "/terms",
+      name: "TermsAgreement",
+      component: TermsAgreementView, // 약관 동의 페이지
     },
     {
       path: "/market/addpost",
