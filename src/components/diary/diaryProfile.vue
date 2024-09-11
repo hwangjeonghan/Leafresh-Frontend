@@ -8,8 +8,15 @@
       <div class="profile-info">
         <div class="profile-header-row">
           <h2 class="profile-username">{{ username }}</h2>
-          <button class="follow-button">👤+</button>
-          <button class="edit-button" @click="openEditModal">프로필 수정</button>
+          <button class="edit-button" title="팔로잉">
+            <span class="material-icons">person_add</span>
+          </button>
+          <button class="edit-button" @click="openEditModal" title="프로필 수정">
+            <span class="material-icons">manage_accounts</span>
+          </button>
+          <button class="edit-button" @click="goToFeedAdd" title="피드 추가">
+            <span class="material-icons">edit_note</span>
+          </button>
         </div>
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
@@ -70,6 +77,10 @@ const closeEditModal = () => {
 // 사용자 프로필 정보 가져오기
 const fetchUserProfile = async () => {
   await userStore.fetchUserProfile();
+};
+
+const goToFeedAdd = () => {
+  router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
 };
 
 // 사용자 정보 변경 감지 및 반영
@@ -180,6 +191,7 @@ onMounted(async () => {
 .profile-username {
   font-size: 32px;
   font-weight: bold;
+  margin-right: 10px
 }
 
 .follow-button {
@@ -223,15 +235,15 @@ onMounted(async () => {
 
 .edit-button {
   margin-left: 10px;
-  padding: 8px 16px;
+  padding: 5px 10px;
   background-color: #1ab546;
   border: none;
   color: white;
   cursor: pointer;
   border-radius: 5px;
 }
-
 .edit-button:hover {
   background-color: #148838;
 }
+
 </style>
