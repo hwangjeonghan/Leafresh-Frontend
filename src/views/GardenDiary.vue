@@ -172,4 +172,8 @@ const components = {
   width: 95%;
   justify-content: space-around;
 }
+
+.Card {
+  width: 85%;
+}
 </style>

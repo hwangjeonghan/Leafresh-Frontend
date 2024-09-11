@@ -48,9 +48,6 @@ onMounted(() => {
   fetchUserFeeds();
 });
 
-const goToFeedAdd = () => {
-  router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
-};
 // 피드 상세 페이지로 이동하는 함수
 const goToFeedDetail = (id) => {
   router.push(`/garden-diary/feed-detail/${loginState.userNickname}/${id}`);
@@ -75,6 +72,7 @@ const goToFeedDetail = (id) => {
             :src="card.feedImage"
             alt="feed image"
             class="card-img"
+            loading="lazy"
           />
         </div>
       </li>
@@ -82,10 +80,6 @@ const goToFeedDetail = (id) => {
 
     <div v-else>
       <p>유저의 피드가 없습니다.</p>
-    </div>
-
-    <div style="text-align: center; margin-top: 20px">
-      <button @click="goToFeedAdd" class="btn btn-primary">피드 추가</button>
     </div>
   </div>
 </template>
