@@ -10,22 +10,39 @@
       <li>영양제: <input type="checkbox" v-model="store.nutrients"></li>
  
     </ul>
-    <button @click="store.savePlantCare">저장</button>
+    <button @click="saveData">저장</button>
   </div>
 
-  <div>
-    메모
+  <div class="meme_box">
+
+    <h1>메모</h1>
+
+    <memo />
+
   </div>
 </template>
   
 <script setup>
 
-import { ref } from 'vue';
+import memo from './plantCarememo.vue';
 import { usePlantCareStore } from '@/stores/plantCareStore.js';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 
 const store = usePlantCareStore();
+
+const saveData = async () => {
+  await store.savePlantCare();
+};
 </script>
-  
+
+<style>
+
+.meme_box{
+  display: flex;
+  margin: 20px;
+}
+
+
+</style>

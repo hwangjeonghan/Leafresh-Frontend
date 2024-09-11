@@ -25,6 +25,7 @@ const calendarOptions = reactive({
 
 onMounted(()=> {
   plantCareStore.fetchPlantCareEvents();
+  console.log('Events after fetch:', plantCareStore.events);
 });
 
 </script>
