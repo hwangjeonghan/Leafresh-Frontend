@@ -4,7 +4,8 @@ import { ref } from "vue";
 
 export const useUserstore = defineStore("useUserstore", () => {
   // 사용자 정보 상태
-  const userId = ref(null);
+  // const userId = ref(null);
+  const userId = ref(localStorage.getItem("userId") || null);
   const userName = ref("");
   const userNickname = ref("");
   const email = ref("");
@@ -21,6 +22,9 @@ export const useUserstore = defineStore("useUserstore", () => {
 
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
+    // 토큰 다시 불러옴
+    token.value = localStorage.getItem("accessToken");  
+
     if (!token.value) {
       console.error("토큰이 존재하지 않습니다.");
       isLoggedIn.value = false;
@@ -69,6 +73,7 @@ export const useUserstore = defineStore("useUserstore", () => {
       });
 
       isLoggedIn.value = true; // 로그인 상태로 설정
+
     } catch (error) {
       console.error("사용자 정보를 가져오는 데 실패했습니다.", error);
       isLoggedIn.value = false; // 오류 시 로그인 상태 false
