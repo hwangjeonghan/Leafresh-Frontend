@@ -29,22 +29,21 @@
             <p class="user_nickname">{{ userInfo.userNickname }}</p>
             <p class="user_phonenumber">{{ userInfo.userPhoneNumber }}</p>
           </div>
+          <!-- 원형 채팅하기 버튼 -->
+          <button @click="openChatModal" class="market_chat_circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12c0 1.72.55 3.31 1.47 4.6L2 22l5.4-1.48C8.69 21.45 10.28 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.71 0-3.3-.53-4.6-1.47l-1.24.37.39-1.23C5.53 15.3 4 13.36 4 11c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm-1-9h2v2h-2zm0 4h2v2h-2z"
+              />
+            </svg>
+          </button>
         </div>
-
-        <!-- 원형 채팅하기 버튼 -->
-        <button @click="openChatModal" class="market_chat_circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12c0 1.72.55 3.31 1.47 4.6L2 22l5.4-1.48C8.69 21.45 10.28 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.71 0-3.3-.53-4.6-1.47l-1.24.37.39-1.23C5.53 15.3 4 13.36 4 11c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm-1-9h2v2h-2zm0 4h2v2h-2z"
-            />
-          </svg>
-        </button>
       </div>
       <div v-else>
         <p>Loading...</p>
@@ -395,7 +394,8 @@ const deletePost = async (id) => {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  position: fixed; /* 고정된 위치 */
+  /* position: fixed; 고정된 위치 */
+  margin-right: 10px;
   right: 30px; /* 오른쪽 여백 */
   bottom: 30px; /* 아래 여백 */
   font-size: 24px; /* 아이콘 크기 */
@@ -515,6 +515,7 @@ const deletePost = async (id) => {
 .market_user_container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-top: 3vh;
   height: 14vh;
   padding: 1vw;
@@ -529,7 +530,7 @@ const deletePost = async (id) => {
   height: 100px; /* 이미지 크기 */
   border-radius: 50%; /* 동그라미 모양 */
   object-fit: cover; /* 이미지 비율 유지 */
-  margin-right: 30px; /* 이미지와 텍스트 사이의 간격 */
+  margin-left: 10px;
 }
 
 .user_info {
