@@ -88,7 +88,7 @@ const getApiUrl = () => {
   const pageNo = 1; // 페이지 번호
   const dataType = "JSON"; // 응답 데이터 형식 (JSON)
 
-  return `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${apiKey}&numOfRows=${numOfRows}&pageNo=${pageNo}&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}&dataType=${dataType}`;
+  return `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${apiKey}&numOfRows=${numOfRows}&pageNo=${pageNo}&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}&dataType=${dataType}`;
 };
 
 // API를 호출하여 날씨 정보를 가져오는 함수
