@@ -89,9 +89,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router"; // useRoute 추가
 import Swal from "sweetalert2"; // SweetAlert2 라이브러리 임포트
 
 const userName = ref("");
@@ -110,7 +110,19 @@ const passwordError = ref("");
 const confirmPasswordError = ref("");
 
 const router = useRouter();
+const route = useRoute(); // 현재 라우트 정보 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// 약관 동의 여부 확인
+const termsAgreed = ref(false);
+onMounted(() => {
+  termsAgreed.value = route.query.termsAgreed === 'true'; // 쿼리에서 약관 동의 여부 가져오기
+  if (!termsAgreed.value) {
+    alert('약관에 동의해야 회원가입을 진행할 수 있습니다.');
+    router.push('/terms'); // 동의하지 않은 경우 동의 페이지로 리다이렉트
+  }
+});
+
 
 // Sweetalert2 토스트 설정 함수
 const showToast = (message, icon = "warning") => {
@@ -135,9 +147,9 @@ const validateInputs = () => {
   if (!userName.value) {
     showToast("이름을 입력하세요.");
     return false; // 첫 번째 오류 발견 시 바로 중단
-  } else if (userName.value.length > 40) {
-    showToast("이름은 최대 40자까지 입력할 수 있습니다.");
-    nameError.value = "이름은 최대 40자까지 입력할 수 있습니다.";
+  } else if (userName.value.length > 6) {
+    showToast("이름은 최대 6자까지 입력할 수 있습니다.");
+    nameError.value = "이름은 최대 6자까지 입력할 수 있습니다.";
     return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
     nameError.value = "";
@@ -239,6 +251,7 @@ const handleSubmit = async () => {
       email: userMailAdress.value,
       password: userPassword.value,
       imageUrl: uploadedImagePath,
+      termsAgreement: termsAgreed.value, // 약관 동의 여부를 함께 전송
     };
 
     const response = await axios.post(`${API_BASE_URL}/auth/signup`, userInfo, {
