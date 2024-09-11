@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useUserstore } from "@/stores/users.js";
 
@@ -53,16 +53,34 @@ const props = defineProps({
   fetchUserProfile: Function,
   currentUsername: String,
   currentProfileImage: String,
+  currentProfileTitle: String,
+  currentProfileDescription: String,
 });
+console.log(props);
 
-const newNickname = ref(props.currentUsername);
+const newNickname = ref('');
 const currentPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 const newProfileImage = ref(null);
-const newProfileTitle = ref('');  // 프로필 타이틀 상태 추가
-const newProfileDescription = ref('');  // 프로필 설명 상태 추가
+const newProfileTitle = ref(''); 
+const newProfileDescription = ref(''); 
 const passwordMismatch = ref(false);
+
+// 모달이 열릴 때마다 초기값 설정
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal) {
+      newNickname.value = props.currentUsername; // 닉네임 초기값 설정
+      newProfileTitle.value = props.currentProfileTitle; // 프로필 제목 초기값 설정
+      newProfileDescription.value = props.currentProfileDescription; // 프로필 설명 초기값 설정
+      currentPassword.value = ''; // 비밀번호 필드는 빈 값으로 초기화
+      newPassword.value = ''; // 새로운 비밀번호 필드는 빈 값으로 초기화
+      confirmNewPassword.value = ''; // 비밀번호 확인 필드는 빈 값으로 초기화
+    }
+  }
+);
 
 const handleProfileUpdate = async () => {
   if (!currentPassword.value) {
@@ -71,7 +89,7 @@ const handleProfileUpdate = async () => {
   }
 
   // 새로운 비밀번호와 확인 비밀번호가 일치하는지 확인
-  if (newPassword.value !== confirmNewPassword.value) {
+  if (newPassword.value && newPassword.value !== confirmNewPassword.value) {
     passwordMismatch.value = true;
     return;
   } else {
@@ -112,33 +130,40 @@ const handleProfileUpdate = async () => {
     }
 
     // 사용자 정보 업데이트 요청
-    await axios.post(`${API_BASE_URL}/user/update`, {
-      newNickname: newNickname.value,
-      newPassword: newPassword.value ? newPassword.value : undefined,  // 빈 문자열이면 undefined
-      newImageUrl: newImageUrl,
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const updatedUserInfo = {
+      ...(newNickname.value && { newNickname: newNickname.value }),
+      ...(newPassword.value && { newPassword: newPassword.value }),
+      ...(newImageUrl !== props.currentProfileImage && { newImageUrl: newImageUrl }),
+    };
+
+    if (Object.keys(updatedUserInfo).length > 0) {  // 실제로 업데이트할 정보가 있는 경우에만 요청
+      await axios.post(`${API_BASE_URL}/user/update`, updatedUserInfo, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+    }
 
     // 프로필 정보 업데이트 요청
-    await axios.post(`${API_BASE_URL}/profile/modify`, {  // 여기를 수정하여 ProfileController에 요청합니다.
-      profileTitle: newProfileTitle.value,  // 추가된 프로필 타이틀 필드
-      profileDescription: newProfileDescription.value,  // 추가된 프로필 설명 필드
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const updatedProfileInfo = {
+      ...(newProfileTitle.value && { profileTitle: newProfileTitle.value }),
+      ...(newProfileDescription.value && { profileDescription: newProfileDescription.value }),
+    };
+
+    if (Object.keys(updatedProfileInfo).length > 0) {  // 실제로 업데이트할 정보가 있는 경우에만 요청
+      await axios.post(`${API_BASE_URL}/profile/modify`, updatedProfileInfo, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+    }
 
     // Pinia store에서 프로필 정보 업데이트
     userStore.setUserProfile({
       ...userStore, // 기존 프로필 정보 복사
-      userNickname: newNickname.value,
-      imageUrl: newImageUrl,
-      profileTitle: newProfileTitle.value,
-      profileDescription: newProfileDescription.value
+      ...updatedUserInfo,
+      profileTitle: newProfileTitle.value || userStore.profileTitle,
+      profileDescription: newProfileDescription.value || userStore.profileDescription
     });
 
     alert('프로필이 성공적으로 업데이트되었습니다.');
@@ -154,6 +179,7 @@ const handleImageUpload = (event) => {
   newProfileImage.value = event.target.files[0];
 };
 </script>
+
 
 <style scoped>
 .modal {
