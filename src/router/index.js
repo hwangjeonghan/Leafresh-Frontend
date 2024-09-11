@@ -14,6 +14,8 @@ import ProfileRegistration from "@/views/ProfileRegistration.vue";
 import LeafreshInfo from "@/views/LeafreshInfo.vue";
 import TermsAgreementView from "@/views/TermsAgreementView.vue"; 
 import DiaryDetail from "@/views/DiaryDetail.vue";
+import PlantAddModal from "@/views/PlantAddModal.vue";
+import PlantDetail from "@/views/PlantDetail.vue";
 
 
 const router = createRouter({
@@ -98,6 +100,16 @@ const router = createRouter({
       path: "/profile/registration",
       name: "ProfileRegistration",
       component: ProfileRegistration,
+    },
+    {
+      path: "/plant/addmodal",
+      name: "plantaddmodal",
+      component: PlantAddModal,
+    },
+    {
+      path: "/plant/Detail",
+      name: "PlantDetail",
+      component: PlantDetail,
     },
     {
       path: "/leafresh/info",
