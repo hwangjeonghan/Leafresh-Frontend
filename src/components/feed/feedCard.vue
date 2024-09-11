@@ -17,7 +17,7 @@ const fetchUserFeeds = async () => {
   try {
     const token = localStorage.getItem("accessToken"); // 액세스 토큰 가져오기
 
-    const response = await axios.get(`${API_BASE_URL}/feeds/user/${loginState.userId}`, {
+    const response = await axios.get(`${API_BASE_URL}/feeds/id/${loginState.userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
