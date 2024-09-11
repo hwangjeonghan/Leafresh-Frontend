@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 export const useUserstore = defineStore("useUserstore", () => {
   // 사용자 정보 상태
-  // const userId = ref(null);
   const userId = ref(localStorage.getItem("userId") || null);
   const userName = ref("");
   const userNickname = ref("");
@@ -16,14 +16,17 @@ export const useUserstore = defineStore("useUserstore", () => {
   const profileTitle = ref(""); // 프로필 타이틀 추가
   const profileDescription = ref(""); // 프로필 설명 추가
   const token = ref(localStorage.getItem("accessToken") || null); // JWT 토큰 저장
+  const router = useRouter(); // Pinia 스토어 내부에서 useRouter 사용
 
   // 로그인 여부
   const isLoggedIn = ref(!!token.value); // 토큰이 있으면 로그인 상태로 간주
 
+  // API 기본 URL
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   // 사용자 정보를 받아와 상태를 업데이트하는 함수
   const fetchUserProfile = async () => {
-    // 토큰 다시 불러옴
-    token.value = localStorage.getItem("accessToken");  
+    updateToken(); // 토큰 다시 불러옴
 
     if (!token.value) {
       console.error("토큰이 존재하지 않습니다.");
@@ -32,8 +35,6 @@ export const useUserstore = defineStore("useUserstore", () => {
     }
 
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
       // 사용자 기본 정보 가져오기
       const userResponse = await axios.get(`${API_BASE_URL}/user/me`, {
         headers: {
@@ -98,15 +99,26 @@ export const useUserstore = defineStore("useUserstore", () => {
     token.value = profile.token;
 
     // 로컬 스토리지에 토큰 저장
-    if (profile.token) {
-      localStorage.setItem("accessToken", profile.token);
-    }
+    saveToken(profile.token);
   };
 
-  // 로그아웃 메서드 (라우터 인자로 전달받음)
-  const logout = async (router) => {
+  // 토큰 저장 및 업데이트 함수
+  const saveToken = (newToken) => {
+    if (newToken) {
+      localStorage.setItem("accessToken", newToken);
+    } else {
+      localStorage.removeItem("accessToken");
+    }
+    token.value = newToken;
+  };
+
+  const updateToken = () => {
+    token.value = localStorage.getItem("accessToken");
+  };
+
+  // 로그아웃 메서드
+  const logout = async () => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       await axios.post(
         `${API_BASE_URL}/auth/logout`,
         {},
@@ -118,6 +130,7 @@ export const useUserstore = defineStore("useUserstore", () => {
       localStorage.removeItem("refreshToken");
       clearUserProfile();
       setLoginState(false);
+      alert("로그아웃 되었습니다.")
       router.push("/login");
     } catch (error) {
       console.error("로그아웃 오류:", error);
