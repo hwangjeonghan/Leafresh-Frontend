@@ -70,7 +70,7 @@
       <h2>문의하기</h2>
       <p>
         프로젝트에 대한 문의사항은 아래 깃허브로 연락주세요:<br>
-        <a href="https://github.com/orgs/Leafresh-2024/discussions">깃허브 Discussions 링크</a>
+        <a href="https://github.com/orgs/Leafresh-2024/discussions">깃허브 Discussions</a>
       </p>
     </section>
   </div>
@@ -302,7 +302,7 @@ ul {
 /* 연락처 섹션 */
 .contact a {
   font-family: "GothicA1-Light";
-  color: #2C3562; /* 어두운 블루 톤 */
+  color: #3B755F; /* 어두운 블루 톤 */
   text-decoration: none;
 }
 

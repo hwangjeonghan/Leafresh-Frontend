@@ -89,6 +89,7 @@ const router = createRouter({
       path: "/leafresh/info",
       name: "LeafreshInfo",
       component: LeafreshInfo,
+      meta: { transition: "fade" },
     },
   ],
 });
