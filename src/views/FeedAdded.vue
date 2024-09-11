@@ -38,7 +38,6 @@ const addFeed = async (feedInfo) => {
     });
 
     if (response.data.success) {
-      console.log("리다이렉트 중..."); // 리다이렉트 전 로그 출력
       router.push(`/garden-diary/${loginState.userNickname}`);
       alert("피드가 성공적으로 등록되었습니다.");
     } else {
