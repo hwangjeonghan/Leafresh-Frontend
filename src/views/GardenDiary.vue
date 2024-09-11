@@ -24,7 +24,7 @@ const fetchUserFeeds = async () => {
   try {
     const token = localStorage.getItem("accessToken");
 
-    const response = await axios.get(`${API_BASE_URL}/feeds/user/${loginState.userId}`, {
+    const response = await axios.get(`${API_BASE_URL}/feeds/id/${loginState.userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -58,7 +58,6 @@ onMounted(async () => {
     await fetchUserFeeds(); // 피드 데이터를 비동기로 불러오기
   }
 });
-
 
 // 각 컴포넌트를 미리 등록
 const components = {
