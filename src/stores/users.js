@@ -17,7 +17,7 @@ export const useUserstore = defineStore("useUserstore", () => {
   const userReportCount = ref(0);
   const profileTitle = ref(""); // 프로필 타이틀 추가
   const profileDescription = ref(""); // 프로필 설명 추가
-  const token = ref(''); // JWT 토큰 저장
+  const token = ref(null); // JWT 토큰 저장
 
   // 로그인 여부
   const isLoggedIn = ref(false);
@@ -62,6 +62,7 @@ export const useUserstore = defineStore("useUserstore", () => {
           userPhoneNumber: userData.userPhoneNumber,
           role: userData.role.name,
           imageUrl: ftpImagePath,
+          token: localToken,
           userReportCount: userData.userReportCount,
           profileTitle: profileData.profileTitle || "프로필 제목 없음", // 프로필 타이틀 설정
           profileDescription: profileData.profileDescription || "프로필 설명 없음", // 프로필 설명 설정
@@ -96,6 +97,7 @@ export const useUserstore = defineStore("useUserstore", () => {
     userReportCount.value = profile.userReportCount;
     profileTitle.value = profile.profileTitle; // 프로필 타이틀 설정
     profileDescription.value = profile.profileDescription; // 프로필 설명 설정
+    token.value = profile.token;
   };
 
   // 로그아웃 메서드

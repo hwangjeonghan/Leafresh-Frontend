@@ -3,10 +3,12 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import loading from "../common/loading.vue";
 
 const router = useRouter();
 const loginState = useUserstore(); // Pinia 스토어에서 로그인 정보 가져오기
 const myObject = ref([]); // 피드 데이터를 저장할 상태
+const isLoading = ref(true); // 로딩 상태 관리
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // API 기본 경로
 
@@ -15,7 +17,7 @@ const fetchUserFeeds = async () => {
   try {
     const token = localStorage.getItem("accessToken"); // 액세스 토큰 가져오기
 
-    const response = await axios.get(`${API_BASE_URL}/feeds/user/${loginState.userNickname}`, {
+    const response = await axios.get(`${API_BASE_URL}/feeds/user/${loginState.userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,6 +38,8 @@ const fetchUserFeeds = async () => {
     }
   } catch (error) {
     console.error("피드 가져오기 오류:", error);
+  } finally {
+    isLoading.value = false; // 데이터를 모두 가져오면 로딩을 끝냄
   }
 };
 
@@ -55,7 +59,11 @@ const goToFeedDetail = (id) => {
 
 <template>
   <div class="feed-container">
-    <ul v-if="myObject.length > 0" class="feed-list">
+    <div v-if="isLoading" class="spinner-container">
+      <loading/>
+    </div>
+
+    <ul v-else-if="myObject.length > 0" class="feed-list">
       <li
         v-for="(card, index) in myObject"
         :key="card.feedId"

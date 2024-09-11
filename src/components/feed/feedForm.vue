@@ -38,17 +38,20 @@ const handleFileUpload = (event) => {
 
 // 이미지 업로드 함수
 const uploadImageToFTP = async () => {
+
   if (!feedImage.value) return '';
 
   const formData = new FormData();
   formData.append('file', feedImage.value);
 
   try {
-    const response = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
+    let uploadedImagePath = "";
+
+    const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    const uploadedImagePath = response.data.split(': ')[1].trim(); // 경로만 추출
+    uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim(); // 경로만 추출
     return uploadedImagePath;
   } catch (error) {
     console.error('이미지 업로드 오류:', error);
@@ -76,12 +79,18 @@ const submitFeed = async () => {
       userNickname: loginState.userNickname, // 유저 닉네임 추가
     };
 
+    // 로컬 스토리지에서 JWT 토큰 가져오기
+    const token = localStorage.getItem('accessToken'); // 로컬 스토리지에서 'token' 키로 토큰을 가져옴
+    console.log(token);
+
     // 피드 데이터를 백엔드에 전송 (JSON 형식)
     const response = await axios.post(`${API_BASE_URL}/feeds`, feedData, {
       headers: {
+        Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 추가
         'Content-Type': 'application/json',
       },
     });
+    console.log(token);
 
     if (response.status === 200) {
       alert('피드가 성공적으로 등록되었습니다.');
