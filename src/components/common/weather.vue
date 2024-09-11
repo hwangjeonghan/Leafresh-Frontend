@@ -96,8 +96,6 @@ const fetchWeatherData = async () => {
   try {
     const response = await fetch(getApiUrl());
     const data = await response.json();
-    
-    console.log(data); // 응답 데이터를 콘솔에 출력하여 확인
 
     if (data.response && data.response.body && data.response.body.items) {
       const weatherItems = data.response.body.items.item;

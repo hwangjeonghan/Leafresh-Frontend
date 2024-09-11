@@ -38,8 +38,9 @@ const addFeed = async (feedInfo) => {
     });
 
     if (response.data.success) {
-      router.push(`/garden-diary/${loginState.userNickname}`);
       alert("피드가 성공적으로 등록되었습니다.");
+      console.log("사용자 닉네임:", loginState.userNickname); // 닉네임 확인
+      router.push(`/garden-diary/${loginState.userNickname}`);
     } else {
       alert("피드 등록 실패: " + response.data.message);
     }

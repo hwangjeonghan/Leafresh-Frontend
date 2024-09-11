@@ -28,6 +28,12 @@ const feedImage = ref(null);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // API URL
 const loginState = useUserstore(); // 로그인된 유저 정보 가져오기
 
+const token = localStorage.getItem("accessToken");
+if (!token) {
+  console.error("토큰이 없습니다. 로그인이 필요합니다.");
+  alert('로그인이 필요합니다.');
+}
+
 // 이미지 업로드 처리 함수
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -77,11 +83,8 @@ const submitFeed = async () => {
       userId: loginState.userId, // 유저 ID 추가
       userName: loginState.userName, // 유저 이름 추가
       userNickname: loginState.userNickname, // 유저 닉네임 추가
+      userProfileImg : loginState.imageUrl,
     };
-
-    // 로컬 스토리지에서 JWT 토큰 가져오기
-    const token = localStorage.getItem('accessToken'); // 로컬 스토리지에서 'token' 키로 토큰을 가져옴
-    console.log(token);
 
     // 피드 데이터를 백엔드에 전송 (JSON 형식)
     const response = await axios.post(`${API_BASE_URL}/feeds`, feedData, {
@@ -90,7 +93,8 @@ const submitFeed = async () => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(token);
+
+    console.log(response);
 
     if (response.status === 200) {
       alert('피드가 성공적으로 등록되었습니다.');
