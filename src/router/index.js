@@ -13,6 +13,8 @@ import MarketEdit from "@/views/MarketEdit.vue";
 import ProfileRegistration from "@/views/ProfileRegistration.vue";
 import LeafreshInfo from "@/views/LeafreshInfo.vue";
 import TermsAgreementView from "@/views/TermsAgreementView.vue"; 
+import DiaryDetail from "@/views/DiaryDetail.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +48,12 @@ const router = createRouter({
       path: "/garden-diary/feed-detail/:username/:id", // 유저 이름 및 피드 ID 포함
       name: "FeedDetail",
       component: FeedDetail,
+      props: true,
+    },
+    {
+      path: "/garden-diary/diary-detail/:username/:id", // 유저 이름 및 피드 ID 포함
+      name: "DiaryDetail",
+      component: DiaryDetail,
       props: true,
     },
     {
