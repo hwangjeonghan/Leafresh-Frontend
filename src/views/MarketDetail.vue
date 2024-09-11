@@ -18,11 +18,14 @@
         </div>
         <img class="market_image_box" :src="marketImage" alt="Market Image" />
         <div class="market_content_box">{{ market.post.marketContent }}</div>
-        <div class="market_btn_box" v-if="isUser">
-          <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
-          <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
+        <div class="market_btn_box">
+          <div v-if="isUser">
+            <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
+            <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
+          </div>
+          <button class="market_btn_list" @click="allPostList">글목록</button>
         </div>
-        <button class="market_btn_list" @click="allPostList">글목록</button>
+
         <div class="market_user_container" v-if="userInfo">
           <img :src="imageUrl" alt="User Profile Image" class="user_image" />
           <div class="user_info">
