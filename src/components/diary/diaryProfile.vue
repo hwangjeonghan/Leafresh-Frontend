@@ -17,6 +17,10 @@
           <button class="edit-button" @click="goToFeedAdd" title="피드 추가">
             <span class="material-icons">edit_note</span>
           </button>
+          <button class="edit-button" @click="openPlantAddModal" title="식물 등록">
+            <span class="material-icons">add_circle_outline</span>
+          </button>
+
         </div>
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
@@ -38,6 +42,12 @@
       :currentUsername="username"
       :currentProfileImage="profileImage"
     />
+
+     <!-- 식물 등록 모달 컴포넌트 -->
+     <PlantAddModal
+      :isOpen="isPlantAddModalOpen"
+      :closeModal="closePlantAddModal"
+    />
   </div>
 </template>
 
@@ -47,6 +57,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useUserstore } from "@/stores/users.js";
 import EditProfileModal from './EditProfileModal.vue'; // 모달 컴포넌트 가져오기
+import PlantAddModal from '@/views/PlantAddModal.vue'; // 식물 등록 모달 가져오기
 
 const userStore = useUserstore();
 const profileExists = ref(true);
@@ -63,6 +74,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 모달 상태
 const isEditModalOpen = ref(false);
+const isPlantAddModalOpen = ref(false);
 
 // 모달 열기
 const openEditModal = () => {
@@ -74,6 +86,16 @@ const closeEditModal = () => {
   isEditModalOpen.value = false;
 };
 
+// 식물 등록 모달 열기
+const openPlantAddModal = () => {
+  isPlantAddModalOpen.value = true;
+};
+
+// 식물 등록 모달 닫기
+const closePlantAddModal = () => {
+  isPlantAddModalOpen.value = false;
+};
+
 // 사용자 프로필 정보 가져오기
 const fetchUserProfile = async () => {
   await userStore.fetchUserProfile();
@@ -82,6 +104,7 @@ const fetchUserProfile = async () => {
 const goToFeedAdd = () => {
   router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
 };
+
 
 // 사용자 정보 변경 감지 및 반영
 watch(
