@@ -7,25 +7,36 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 
-const loginState = useUserstore();
 
+
+const props = defineProps({
+    username: String,
+    id: [String, Number]
+})
+
+const loginState = useUserstore();
 
 
 </script>
 
 <template>
+<div>
+    <diaryProfile />
 
 
-<diaryProfile />
 
-
-
-<h1>여기다가 다이어리 쓸거라고!!</h1>
-<br>
+        <h1>여기다가 다이어리 쓸거라고!!</h1>
+        <br>
 
 
 
 <diaryForm />
+
+
+</div>
+
+
+
 
 
 

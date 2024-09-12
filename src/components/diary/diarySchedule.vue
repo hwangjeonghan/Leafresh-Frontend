@@ -99,7 +99,7 @@ const date = ref();
 
         <div>
           <h1>todo날짜를 입력하세용</h1>
-          <VueDatePicker v-model="date" />
+          <VueDatePicker v-model="date" :enable-time-picker=false />
         </div>
         <input
           v-model="newTodoContent"
@@ -127,13 +127,14 @@ const date = ref();
 .line_9 {
   height: 0px;
   border: 3px solid #f1ddc5;
+  width: 85%;
 }
 
 .schedule_container {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  margin: 10px;
+  margin: 40px;
   gap: 20px;
 }
 

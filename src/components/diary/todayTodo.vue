@@ -6,10 +6,10 @@
 
       <div class="todo_box">
         <ul>
-        <li v-for="todo in todos" :key="todo.id" class="todo-item">
+        <li v-for="todo in todos" :key="todo.todoId" class="todo-item">
           <input type="checkbox" class="todo-checkbox">
           <span class="todo-content">{{ todo.todoContent }}</span>
-          <!-- <button class="delete-btn" @click="deleteTodo(todo.id, 0)"> x</button> -->
+          <button class="delete-btn" @click="deleteTodo(todo.todoId, 0)"> x</button>
         </li>
       </ul>
       </div>
