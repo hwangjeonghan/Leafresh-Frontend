@@ -18,6 +18,7 @@
 import { useRouter } from "vue-router"; // vue-router 사용
 import FeedForm from "@/components/feed/feedForm.vue"; // FeedForm 컴포넌트 import
 import axios from "axios"; // axios import
+import Swal from "sweetalert2"; // SweetAlert2 import
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 import
 
 // 환경 변수에서 API URL 가져오기
@@ -38,15 +39,26 @@ const addFeed = async (feedInfo) => {
     });
 
     if (response.data.success) {
-      alert("피드가 성공적으로 등록되었습니다.");
-      console.log("사용자 닉네임:", loginState.userNickname); // 닉네임 확인
-      router.push(`/garden-diary/${loginState.userNickname}`);
+      await Swal.fire({
+        icon: 'success',
+        title: '성공',
+        text: '피드가 성공적으로 등록되었습니다.',
+      });
+      goBackToDiary();
     } else {
-      alert("피드 등록 실패: " + response.data.message);
+      Swal.fire({
+        icon: 'error',
+        title: '등록 실패',
+        text: response.data.message || '피드 등록 중 오류가 발생했습니다.',
+      });
     }
   } catch (error) {
     console.error("피드 등록 오류:", error);
-    alert("서버 오류가 발생했습니다.");
+    Swal.fire({
+      icon: 'error',
+      title: '서버 오류',
+      text: '서버와 통신 중 오류가 발생했습니다.',
+    });
   }
 };
 

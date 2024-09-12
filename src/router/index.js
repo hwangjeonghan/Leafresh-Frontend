@@ -6,6 +6,7 @@ import SignupView from "@/views/SignupView.vue"; // 회원가입 페이지 impor
 import MarketAddPost from "@/views/MarketAddPost.vue";
 import Market from "@/views/Market.vue";
 import FeedAdded from "@/views/FeedAdded.vue"; // 피드 추가 페이지 import
+import FeedFix from "@/views/FeedFix.vue";
 import MarketDetail from "@/views/MarketDetail.vue";
 import FeedDetail from "@/views/FeedDetail.vue";
 import Chat from "@/views/Chat.vue";
@@ -50,6 +51,12 @@ const router = createRouter({
       path: "/garden-diary/feed-detail/:username/:id", // 유저 이름 및 피드 ID 포함
       name: "FeedDetail",
       component: FeedDetail,
+      props: true,
+    },
+    {
+      path: "/garden-diary/feed-modify/:username/:id",
+      name: "FeedFix",
+      component: FeedFix,
       props: true,
     },
     {

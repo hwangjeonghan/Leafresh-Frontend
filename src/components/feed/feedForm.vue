@@ -2,12 +2,18 @@
   <form @submit.prevent="submitFeed">
     <div class="input-group">
       <label for="feedContent" class="feedContents">피드 내용</label>
-      <textarea
-        v-model="feedContent"
-        placeholder="피드 내용을 입력하세요"
-        required
-        class="feedContent"
-      ></textarea>
+      <div class="textarea-wrapper">
+        <textarea
+          v-model="feedContent"
+          placeholder="피드 내용을 입력하세요"
+          required
+          class="feedContent"
+        ></textarea>
+        <!-- 글자 수 인디케이터 -->
+        <div class="char-count">
+          {{ feedContent.length }} / 1000
+        </div>
+      </div>
     </div>
     <div class="input-group">
       <label for="feedImage">피드 이미지 업로드</label>
@@ -19,7 +25,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from "vue-router"; // vue-router 사용
 import axios from 'axios';
+import Swal from 'sweetalert2'; // SweetAlert2 import
 import { useUserstore } from '@/stores/users'; // Pinia 스토어에서 유저 정보를 가져오기
 
 // 피드 데이터 상태
@@ -27,12 +35,7 @@ const feedContent = ref('');
 const feedImage = ref(null);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // API URL
 const loginState = useUserstore(); // 로그인된 유저 정보 가져오기
-
-const token = localStorage.getItem("accessToken");
-if (!token) {
-  console.error("토큰이 없습니다. 로그인이 필요합니다.");
-  alert('로그인이 필요합니다.');
-}
+const router = useRouter(); // router 사용 설정
 
 // 이미지 업로드 처리 함수
 const handleFileUpload = (event) => {
@@ -51,16 +54,19 @@ const uploadImageToFTP = async () => {
   formData.append('file', feedImage.value);
 
   try {
-    let uploadedImagePath = "";
-
     const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim(); // 경로만 추출
+    const uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim(); // 경로만 추출
     return uploadedImagePath;
   } catch (error) {
     console.error('이미지 업로드 오류:', error);
+    Swal.fire({
+      icon: 'error',
+      title: '이미지 업로드 실패',
+      text: '이미지 업로드 중 오류가 발생했습니다.',
+    });
     throw new Error('이미지 업로드 실패');
   }
 };
@@ -68,7 +74,11 @@ const uploadImageToFTP = async () => {
 // 피드 등록 함수
 const submitFeed = async () => {
   if (!feedContent.value || !feedImage.value) {
-    alert('모든 필드를 채워주세요.');
+    Swal.fire({
+      icon: 'warning',
+      title: '필드 누락',
+      text: '모든 필드를 입력하세요.',
+    });
     return;
   }
 
@@ -86,6 +96,11 @@ const submitFeed = async () => {
       userProfileImg : loginState.imageUrl,
     };
 
+    console.log(feedData);
+
+    // 로컬 스토리지에서 JWT 토큰 가져오기
+    const token = localStorage.getItem('accessToken'); // 로컬 스토리지에서 'token' 키로 토큰을 가져옴
+
     // 피드 데이터를 백엔드에 전송 (JSON 형식)
     const response = await axios.post(`${API_BASE_URL}/feeds`, feedData, {
       headers: {
@@ -94,18 +109,30 @@ const submitFeed = async () => {
       },
     });
 
-    console.log(response);
-
     if (response.status === 200) {
-      alert('피드가 성공적으로 등록되었습니다.');
+      await Swal.fire({
+        icon: 'success',
+        title: '성공',
+        text: '피드가 성공적으로 등록되었습니다.',
+      });
+      router.push(`/garden-diary/${loginState.userNickname}`); // 스토어에서 유저 닉네임을 가져와 이동
     } else {
-      alert('피드 등록 실패: ' + response.data.message);
+      Swal.fire({
+        icon: 'error',
+        title: '등록 실패',
+        text: response.data.message || '피드 등록 중 오류가 발생했습니다.',
+      });
     }
   } catch (error) {
     console.error('피드 등록 오류:', error);
-    alert('서버 오류가 발생했습니다.');
+    Swal.fire({
+      icon: 'error',
+      title: '서버 오류',
+      text: '서버와 통신 중 오류가 발생했습니다.',
+    });
   }
 };
+
 </script>
 
 <style scoped>
@@ -173,5 +200,18 @@ const submitFeed = async () => {
   font-family: "GothicA1-Light";
   font-size: 18px;
   color: #000;
+}
+
+.textarea-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.char-count {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 0.9rem;
+  color: #999;
 }
 </style>
