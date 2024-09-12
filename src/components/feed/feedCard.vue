@@ -92,6 +92,12 @@ const goToFeedDetail = (id) => {
   align-items: center;
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .feed-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개의 열을 생성 */
