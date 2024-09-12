@@ -7,7 +7,8 @@
       </div>
       <div class="profile-info">
         <div class="profile-header-row">
-          <h2 class="profile-username">{{ username }}</h2>
+          <!-- 유저 닉네임을 표시하는 부분 -->
+          <h2 class="profile-username">{{ userNickname }}</h2>
           <button class="edit-button" @click="handleFollow" title="팔로잉">
             <span class="material-icons">person_add</span>
           </button>
@@ -20,7 +21,6 @@
           <button class="edit-button" @click="openPlantAddModal" title="식물 등록">
             <span class="material-icons">add_circle_outline</span>
           </button>
-
         </div>
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
@@ -38,9 +38,9 @@
     <EditProfileModal
       :isOpen="isEditModalOpen"
       :closeModal="closeEditModal"
-      :fetchUserProfile="fetchUserProfile"
-      :currentUsername="username"
-      :currentProfileImage="profileImage"
+      :profileTitle="profileTitle"
+      :profileDescription="profileDescription"
+      :currentUsername="userNickname" 
     />
 
     <!-- 식물 등록 모달 컴포넌트 -->
@@ -52,30 +52,33 @@
 </template>
 
 <script setup>
-// 기존 코드 가져오기
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useUserstore } from "@/stores/users.js";
-import EditProfileModal from './EditProfileModal.vue'; // 모달 컴포넌트 가져오기
-import PlantAddModal from '@/views/PlantAddModal.vue'; // 식물 등록 모달 가져오기
+import { useRouter, useRoute } from 'vue-router';
+import EditProfileModal from './EditProfileModal.vue';
+import PlantAddModal from '@/views/PlantAddModal.vue';
+import { useUserstore } from '@/stores/users'; // 사용자 스토어 불러오기
 
 const userStore = useUserstore();
-const profileExists = ref(true);
-const profileImage = ref(userStore.imageUrl || 'https://via.placeholder.com/150'); // Pinia 상태에서 가져옴
-const username = ref(userStore.userNickname || 'Unknown User'); // Pinia 상태에서 가져옴
-const followerPlants = ref(17);
-const salePlants = ref(5);
-const followers = ref('1만');
-const profileTitle = ref(userStore.profileTitle || '자연을 사랑하는 식집사'); // Pinia 상태에서 가져옴
-const profileDescription = ref(userStore.profileDescription || '식물 관련 정보를 함께 나눠요!\n희귀식물 00 아가들 분양중..'); // Pinia 상태에서 가져옴
-
+const route = useRoute();
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const profileImage = ref('');
+const userNickname = ref(route.params.userNickname);
+const profileTitle = ref('');
+const profileDescription = ref('');
+const followerPlants = ref(0);
+const salePlants = ref(0);
+const followers = ref('');
 
 // 모달 상태
 const isEditModalOpen = ref(false);
 const isPlantAddModalOpen = ref(false);
+
+// 추가된 변수들
+const profileExists = ref(false); // 프로필 존재 여부 추가
+const localToken = localStorage.getItem("accessToken");
 
 // 프로필 수정 모달 열기
 const openEditModal = () => {
@@ -98,65 +101,76 @@ const closePlantAddModal = () => {
 };
 
 // 사용자 프로필 정보 가져오기
-const fetchUserProfile = async () => {
-  await userStore.fetchUserProfile();
-};
-
-const goToFeedAdd = () => {
-  router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
-};
-
-// 프로필 정보를 불러오는 함수
 const fetchUserProfileDetails = async () => {
-  await userStore.fetchUserProfileDetails(); // 프로필 정보 불러오기
+  try {
+    const nickname = route.params.userNickname; // 여기서 nickname을 정의합니다.
+
+    const userResponse = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
+      params: { nickname: nickname },
+      headers: {
+        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+      },
+    });
+
+    if (typeof userResponse.data !== 'object') {
+      throw new Error('Invalid JSON response');
+    }
+
+    followers.value = userResponse.data.followers;
+
+    // 이미지 경로를 FTP 서버에서 가져옴
+    const imageResponse = await axios.get(`${API_BASE_URL}/ftp/image`, {
+      params: { path: userResponse.data.imageUrl },
+      headers: {
+        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+      },
+      responseType: 'blob',
+    });
+
+    profileImage.value = URL.createObjectURL(imageResponse.data);
+
+    const profileResponse = await axios.get(`${API_BASE_URL}/profile/info-by-nickname`, {
+      params: { nickname: nickname },
+      headers: {
+        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+      },
+    });
+
+    if (typeof profileResponse.data !== 'object') {
+      throw new Error('Invalid JSON response');
+    }
+
+    profileTitle.value = profileResponse.data.profileTitle;
+    profileDescription.value = profileResponse.data.profileDescription;
+    profileExists.value = true; // 프로필 존재 여부 설정
+    
+  } catch (error) {
+    console.error('Error fetching user profile details:', error);
+    profileExists.value = false; // 오류 시 프로필 존재 여부 설정
+  }
 };
 
-// 사용자 정보 변경 감지 및 반영
-watch(
-  () => userStore.userNickname,
-  (newNickname) => {
-    if (newNickname) {
-      username.value = newNickname;
-    }
-  },
-  { immediate: true }
-);
+// 데이터 변경 감시 및 반영
+watchEffect(() => {
+  if (localToken) {
+    console.log('프로필 정보를 새로 가져옵니다.');
+    fetchUserProfileDetails();
+  }
+});
 
-watch(
-  () => userStore.imageUrl,
-  (newImageUrl) => {
-    profileImage.value = newImageUrl || 'https://via.placeholder.com/150';
-  },
-  { immediate: true }
-);
-
-// 프로필 타이틀 변경 감지 및 반영
-watch(
-  () => userStore.profileTitle,
-  (newProfileTitle) => {
-    profileTitle.value = newProfileTitle || '프로필 제목 없음';
-  },
-  { immediate: true }
-);
-
-// 프로필 설명 변경 감지 및 반영
-watch(
-  () => userStore.profileDescription,
-  (newProfileDescription) => {
-    profileDescription.value = newProfileDescription || '프로필 설명 없음';
-  },
-  { immediate: true }
-);
-
+// 컴포넌트 마운트 시 프로필 정보 가져오기
 onMounted(async () => {
-  await fetchUserProfile(); // 사용자 기본 정보 가져오기
-  await fetchUserProfileDetails(); // 프로필 정보도 추가로 가져오기
+  if (localToken) {
+    // 사용자가 로그인된 상태이면 프로필 정보 가져오기
+    fetchUserProfileDetails();
+  } else {
+    console.warn('사용자 토큰이 존재하지 않습니다.');
+  }
 });
 </script>
 
-
-
 <style scoped>
+/* CSS는 동일하게 유지합니다. */
 .profile-container {
   display: flex;
   flex-direction: column;
