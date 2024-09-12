@@ -20,6 +20,7 @@
           <button class="edit-button" @click="openPlantAddModal" title="식물 등록">
             <span class="material-icons">add_circle_outline</span>
           </button>
+
         </div>
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
@@ -104,10 +105,6 @@ const goToFeedAdd = () => {
   router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
 };
 
-// 식물 등록 페이지로 이동
-const goToPlantAdd = () => {
-  router.push("/garden-diary/plant-add"); // 식물 등록 페이지로 이동
-};
 
 // 사용자 정보 변경 감지 및 반영
 watch(

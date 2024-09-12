@@ -44,27 +44,22 @@ import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useUserstore } from "@/stores/users.js";
 
-const userStore = useUserstore();
+const userStore = useUserstore();  // Pinia store 사용
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// 모달 열기 상태 및 닫기 함수
 const props = defineProps({
   isOpen: Boolean,
   closeModal: Function,
-  fetchUserProfile: Function,
-  currentUsername: String,
-  currentProfileImage: String,
-  currentProfileTitle: String,
-  currentProfileDescription: String,
 });
-console.log(props);
 
-const newNickname = ref('');
+const newNickname = ref(userStore.userNickname);  // Pinia 상태에서 가져옴
 const currentPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 const newProfileImage = ref(null);
-const newProfileTitle = ref(''); 
-const newProfileDescription = ref(''); 
+const newProfileTitle = ref(userStore.profileTitle);  // Pinia 상태에서 가져옴
+const newProfileDescription = ref(userStore.profileDescription);  // Pinia 상태에서 가져옴
 const passwordMismatch = ref(false);
 
 // 모달이 열릴 때마다 초기값 설정
@@ -72,12 +67,13 @@ watch(
   () => props.isOpen,
   (newVal) => {
     if (newVal) {
-      newNickname.value = props.currentUsername; // 닉네임 초기값 설정
-      newProfileTitle.value = props.currentProfileTitle; // 프로필 제목 초기값 설정
-      newProfileDescription.value = props.currentProfileDescription; // 프로필 설명 초기값 설정
-      currentPassword.value = ''; // 비밀번호 필드는 빈 값으로 초기화
-      newPassword.value = ''; // 새로운 비밀번호 필드는 빈 값으로 초기화
-      confirmNewPassword.value = ''; // 비밀번호 확인 필드는 빈 값으로 초기화
+      newNickname.value = userStore.userNickname;  // 닉네임 초기값 설정
+      newProfileTitle.value = userStore.profileTitle;  // 프로필 제목 초기값 설정
+      newProfileDescription.value = userStore.profileDescription;  // 프로필 설명 초기값 설정
+      currentPassword.value = '';  // 비밀번호 필드는 빈 값으로 초기화
+      newPassword.value = '';  // 새로운 비밀번호 필드는 빈 값으로 초기화
+      confirmNewPassword.value = '';  // 비밀번호 확인 필드는 빈 값으로 초기화
+      newProfileImage.value = null;  // 이미지 필드 초기화
     }
   }
 );
@@ -111,7 +107,7 @@ const handleProfileUpdate = async () => {
       return;
     }
 
-    let newImageUrl = props.currentProfileImage;  // 기존 프로필 이미지 URL 사용
+    let newImageUrl = userStore.imageUrl;  // 기존 프로필 이미지 URL 사용
 
     // 새로운 이미지가 업로드된 경우
     if (newProfileImage.value) {
@@ -133,7 +129,7 @@ const handleProfileUpdate = async () => {
     const updatedUserInfo = {
       ...(newNickname.value && { newNickname: newNickname.value }),
       ...(newPassword.value && { newPassword: newPassword.value }),
-      ...(newImageUrl !== props.currentProfileImage && { newImageUrl: newImageUrl }),
+      ...(newImageUrl !== userStore.imageUrl && { newImageUrl: newImageUrl }),
     };
 
     if (Object.keys(updatedUserInfo).length > 0) {  // 실제로 업데이트할 정보가 있는 경우에만 요청
@@ -142,6 +138,10 @@ const handleProfileUpdate = async () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
+
+      // Pinia store에서 사용자 정보 업데이트
+      userStore.userNickname = newNickname.value || userStore.userNickname;
+      userStore.imageUrl = newImageUrl || userStore.imageUrl;
     }
 
     // 프로필 정보 업데이트 요청
@@ -156,19 +156,15 @@ const handleProfileUpdate = async () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-    }
 
-    // Pinia store에서 프로필 정보 업데이트
-    userStore.setUserProfile({
-      ...userStore, // 기존 프로필 정보 복사
-      ...updatedUserInfo,
-      profileTitle: newProfileTitle.value || userStore.profileTitle,
-      profileDescription: newProfileDescription.value || userStore.profileDescription
-    });
+      // Pinia store에서 프로필 정보 업데이트
+      userStore.profileTitle = newProfileTitle.value || userStore.profileTitle;
+      userStore.profileDescription = newProfileDescription.value || userStore.profileDescription;
+    }
 
     alert('프로필이 성공적으로 업데이트되었습니다.');
     props.closeModal();
-    props.fetchUserProfile();
+    userStore.fetchUserProfileDetails();  // 프로필 정보를 다시 불러와 업데이트
   } catch (error) {
     console.error('프로필 업데이트 오류:', error);
     alert('프로필 업데이트 중 오류가 발생했습니다.');
@@ -179,6 +175,8 @@ const handleImageUpload = (event) => {
   newProfileImage.value = event.target.files[0];
 };
 </script>
+
+
 
 
 <style scoped>
