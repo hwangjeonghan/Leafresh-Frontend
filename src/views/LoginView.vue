@@ -71,7 +71,7 @@ const login = async (credentials) => {
 // 액세스 토큰 재발급 함수
 const refreshAccessToken = async () => {
   try {
-    const refreshToken = localStorage.getItem("refreshToken"); // 로컬 스토리지에서 리프레시 토큰 가져오기
+    const refreshToken = localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
       router.push("/login");
@@ -80,7 +80,7 @@ const refreshAccessToken = async () => {
 
     const response = await axios.post(
       `${API_BASE_URL}/auth/check-token`,
-      {},
+      { refreshToken },  // Refresh token 보내기
       {
         headers: {
           Authorization: `Bearer ${refreshToken}`,
@@ -89,8 +89,7 @@ const refreshAccessToken = async () => {
     );
 
     if (response.data.accessToken) {
-      localStorage.setItem("accessToken", response.data.accessToken); // 새로운 액세스 토큰 저장
-      console.log("새로운 액세스 토큰 발급 완료");
+      localStorage.setItem("accessToken", response.data.accessToken);
     } else {
       showToast("세션이 만료되었습니다. 다시 로그인 해주세요.", "error");
       router.push("/login");
@@ -101,6 +100,7 @@ const refreshAccessToken = async () => {
     router.push("/login");
   }
 };
+
 
 // 액세스 토큰이 만료될 경우 자동으로 재발급 시도
 const handleTokenExpiration = async () => {
