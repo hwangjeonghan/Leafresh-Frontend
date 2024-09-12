@@ -16,7 +16,6 @@ import LeafreshInfo from "@/views/LeafreshInfo.vue";
 import TermsAgreementView from "@/views/TermsAgreementView.vue";
 import DiaryDetail from "@/views/DiaryDetail.vue";
 import PlantAddModal from "@/views/PlantAddModal.vue";
-import PlantDetail from "@/views/PlantDetail.vue";
 import { useUserstore } from "@/stores/users";  // 정확한 경로로 설정
 
 const router = createRouter({
@@ -114,11 +113,6 @@ const router = createRouter({
       path: "/plant/add-modal",
       name: "PlantAddModal",
       component: PlantAddModal,
-    },
-    {
-      path: "/plant/detail",
-      name: "PlantDetail",
-      component: PlantDetail,
     },
     {
       path: "/leafresh/info",
