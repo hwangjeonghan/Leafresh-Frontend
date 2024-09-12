@@ -217,9 +217,6 @@ onMounted(() => {
   border-radius: 8px;
 }
 
-.detail-exit {
-}
-
 .feedDetail-container {
   display: flex;
   justify-content: center;
@@ -253,7 +250,7 @@ onMounted(() => {
 .feed-img {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 5px;
   object-fit: cover;
 }
 

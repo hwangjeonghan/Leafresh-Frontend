@@ -27,7 +27,7 @@ import { RouterView } from "vue-router";
 /* 페이드인/페이드아웃 CSS 애니메이션 정의 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 1s ease;
+  transition: opacity 0.5s ease;
 }
 
 .fade-enter-from,

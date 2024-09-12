@@ -1,40 +1,34 @@
 <template>
-    <div id="app">
-      <div class="weather-container">
-        <div class="weather-header">
-          <select v-model="selectedCity" @change="fetchWeatherData">
-            <option v-for="city in cities" :key="city.name" :value="city">{{ city.name }}</option>
-          </select>
-        </div>
-        <div class="weather-box">
-          <div v-if="weatherData" class="box-item-list">
-            <!-- Thermometer Icon for Temperature -->
-            <div class="box-item" :style="{ color: '#FF4500' }">
-              <span class="material-icons">thermostat</span> {{ weatherData.T1H }} °C
-            </div>
-            <!-- Humidity Icon for Humidity -->
-            <div class="box-item" :style="{ color: '#1E90FF' }">
-              <span class="material-icons">water_drop</span> {{ weatherData.REH }}%
-            </div>
-            <!-- Weather Icon for Sky Status -->
-            <div class="box-item" :style="{ color: getSkyColor }">
-              <span class="material-icons">{{ getSkyIcon }}</span> {{ skyStatus }}
-            </div>
+  <!-- weatherData가 존재하고 weatherError가 없을 때만 weather-container를 보여줌 -->
+  <div v-if="weatherData && !weatherError" id="app">
+    <div class="weather-container">
+      <div class="weather-header">
+        <select v-model="selectedCity" @change="fetchWeatherData">
+          <option v-for="city in cities" :key="city.name" :value="city">{{ city.name }}</option>
+        </select>
+      </div>
+
+      <div class="weather-box">
+        <div class="box-item-list">
+          <!-- Thermometer Icon for Temperature -->
+          <div class="box-item" :style="{ color: '#FF4500' }">
+            <span class="material-icons">thermostat</span> {{ weatherData.T1H }} °C
           </div>
-  
-          <div v-else-if="weatherError" class="box-item">
-            <Loading/>
+          <!-- Humidity Icon for Humidity -->
+          <div class="box-item" :style="{ color: '#1E90FF' }">
+            <span class="material-icons">water_drop</span> {{ weatherData.REH }}%
           </div>
-  
-          <div v-else class="box-item">
-            <Loading/>
+          <!-- Weather Icon for Sky Status -->
+          <div class="box-item" :style="{ color: getSkyColor }">
+            <span class="material-icons">{{ getSkyIcon }}</span> {{ skyStatus }}
           </div>
         </div>
       </div>
     </div>
-  </template>  
+  </div>
+</template>
   
-  <script setup>
+<script setup>
 import { ref, onMounted, computed } from "vue";
 
 import Loading from "./loading.vue";
