@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router"; // useRouter 사용
 import axios from "axios";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
-
+import { useGardenStore } from "@/stores/gardenStore.js";
 import FeedCard from "@/components/feed/feedCard.vue";
 import GardenCard from "@/components/diary/diaryCard.vue";
 import Profile from "@/components/diary/diaryProfile.vue";
@@ -14,10 +14,13 @@ const router = useRouter();
 const activeComponent = ref("Feed");
 const accessToken = localStorage.getItem("accessToken");
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+const gardenStore = useGardenStore(); // Pinia 스토어 사용
 const loginState = useUserstore(); // Pinia 스토어에서 로그인된 사용자 정보 가져오기
 const feedData = ref([]); // 피드 데이터를 저장할 상태
 const isLoading = ref(false); // 로딩 상태 추가
+
+
+
 
 // 피드 데이터를 가져오는 함수
 const fetchUserFeeds = async () => {
@@ -56,6 +59,7 @@ onMounted(async () => {
     router.push("/login"); // 로그인이 되어 있지 않으면 로그인 페이지로 리다이렉트
   } else {
     await fetchUserFeeds(); // 피드 데이터를 비동기로 불러오기
+    await gardenStore.fetchPlants(); // 반려정원의 식물 목록을 불러옴
   }
 });
 
@@ -108,6 +112,7 @@ const components = {
     <!-- 선택된 컴포넌트만 교체 -->
     <div class="Card">
       <component :is="components[activeComponent]" :feedData="feedData" />
+      
     </div>
   </div>
 </template>

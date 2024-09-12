@@ -6,19 +6,9 @@
       <form @submit.prevent="addPlant">
         <!-- 이미지 업로드 섹션 -->
         <div class="image-upload">
-          <label for="image-input">
-            <div class="image-placeholder" v-if="!imageFile">
-              <span>이미지 추가</span>
-            </div>
-            <input
-              type="file"
-              id="image-input"
-              @change="onImageChange"
-              accept="image/*"
-              class="file-input"
-            />
-          </label>
-          <div v-if="imageUrl">
+          <label class="image-placeholder" for="image-input">사진 선택</label>
+          <input type="file" id="image-input" @change="handleImageUpload" class="file-input" />
+          <div v-if="imageUrl" class="image-container">
             <img :src="imageUrl" alt="이미지 미리보기" class="image-preview" />
           </div>
         </div>
@@ -77,27 +67,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
-// props에서 isOpen, closeModal 받기
-const props = defineProps(['isOpen', 'closeModal']);
+const props = defineProps(["isOpen", "closeModal"]);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// 상태 변수
-const plantName = ref('');
-const plantType = ref('');
-const registrationDate = ref('');
-const plantDescription = ref('');
-const imageFile = ref(null); // 이미지 파일
-const imageUrl = ref(''); // 이미지 URL
+const plantName = ref("");
+const plantType = ref("");
+const registrationDate = ref("");
+const plantDescription = ref("");
+const imageFile = ref(null);
+const imageUrl = ref("");
 
-// 라우터 객체 사용
 const router = useRouter();
 
-// 이미지 파일 선택 처리
-const onImageChange = (event) => {
+const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
     imageFile.value = file;
@@ -105,60 +91,55 @@ const onImageChange = (event) => {
   }
 };
 
-
-
-// 식물 등록 함수
 const addPlant = async () => {
-  const formData = new FormData();
-  formData.append('plantName', plantName.value);
-  formData.append('plantType', plantType.value);
-  formData.append('registrationDate', registrationDate.value);
-  formData.append('plantDescription', plantDescription.value);
-
-  // 이미지가 선택된 경우, 먼저 이미지 업로드
-  if (imageFile.value) {
-    const imageFormData = new FormData();
-    imageFormData.append('file', imageFile.value);
-
-    try {
-      // 이미지 업로드
-      const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, imageFormData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      // JSON 응답에서 업로드된 파일 경로를 가져옴
-      const uploadedFilePath = imageUploadResponse.data.uploadedFilePath.trim();
-
-      
-      formData.append('imageFilePath', uploadedFilePath); // 서버에서 사용하는 이미지 경로 필드
-    } catch (error) {
-      console.error('이미지 업로드 실패:', error);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
-      return; // 이미지 업로드 실패 시 식물 등록을 중단
-    }
+  if (!imageFile.value) {
+    alert("이미지를 업로드해 주세요.");
+    return;
   }
+
+  const imageFormData = new FormData();
+  imageFormData.append("file", imageFile.value);
+
+  let uploadedImagePath;
+  try {
+    const imageUploadResponse = await axios.post(
+      `${API_BASE_URL}/ftp/upload`,
+      imageFormData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+    uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim();
+  } catch (error) {
+    console.error("이미지 업로드 실패:", error);
+    alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("plantName", plantName.value);
+  formData.append("plantType", plantType.value);
+  formData.append("registrationDate", registrationDate.value);
+  formData.append("plantDescription", plantDescription.value);
+  formData.append("imageUrl", uploadedImagePath);
 
   try {
-    // 식물 데이터 등록
-    const response = await axios.post(`${API_BASE_URL}/api/add`, formData, {
+    await axios.post(`${API_BASE_URL}/api/add`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
     });
 
-    console.log('식물 등록 성공:', response.data);
-    router.push('/PlantDetail'); // 등록 후 이동
-    closeModal(); // 모달 닫기
+    alert("식물등록에 성공하셨습니다"); // 성공 메시지 표시
+    // router.push("/plant/detail"); // 등록 후 이동
+    props.closeModal(); // 모달 닫기
   } catch (error) {
-    console.error('식물 등록 실패:', error);
-    alert('식물 등록에 실패했습니다. 다시 시도해 주세요.');
+    console.error("식물 등록 실패:", error);
+    alert("식물 등록에 실패했습니다. 다시 시도해 주세요.");
   }
 };
-
 </script>
 
 <style scoped>
