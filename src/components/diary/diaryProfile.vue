@@ -8,7 +8,7 @@
       <div class="profile-info">
         <div class="profile-header-row">
           <h2 class="profile-username">{{ username }}</h2>
-          <button class="edit-button" title="팔로잉">
+          <button class="edit-button" @click="handleFollow" title="팔로잉">
             <span class="material-icons">person_add</span>
           </button>
           <button class="edit-button" @click="openEditModal" title="프로필 수정">
@@ -43,8 +43,8 @@
       :currentProfileImage="profileImage"
     />
 
-     <!-- 식물 등록 모달 컴포넌트 -->
-     <PlantAddModal
+    <!-- 식물 등록 모달 컴포넌트 -->
+    <PlantAddModal
       :isOpen="isPlantAddModalOpen"
       :closeModal="closePlantAddModal"
     />
@@ -76,12 +76,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const isEditModalOpen = ref(false);
 const isPlantAddModalOpen = ref(false);
 
-// 모달 열기
+// 프로필 수정 모달 열기
 const openEditModal = () => {
   isEditModalOpen.value = true;
 };
 
-// 모달 닫기
+// 프로필 수정 모달 닫기
 const closeEditModal = () => {
   isEditModalOpen.value = false;
 };
@@ -214,7 +214,7 @@ onMounted(async () => {
 .profile-username {
   font-size: 32px;
   font-weight: bold;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .follow-button {
@@ -265,8 +265,8 @@ onMounted(async () => {
   cursor: pointer;
   border-radius: 5px;
 }
+
 .edit-button:hover {
   background-color: #148838;
 }
-
 </style>

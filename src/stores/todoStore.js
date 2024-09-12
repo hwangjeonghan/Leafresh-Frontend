@@ -1,13 +1,22 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import { ref } from 'vue';
 
-export const useTodoStore = defineStore('todo', () => {
-  const clickedDate = ref(''); // 선택된 날짜 저장
+export const useTodoStore = defineStore('todoStore', () => {
+    const todos = ref([]);
 
-  // 날짜 업데이트 함수
-  const setClickedDate = (date) => {
-    clickedDate.value = date;
-  };
+    //새로운 할일을 추가
+    const addTodo = (todo) => {
+        todos.value.push({
+            content: todo.content,
+            selectedDate: todo.selectedDate,
+        });
+    };
 
-  return { clickedDate, setClickedDate };
+
+    return {
+        todos,
+        addTodo,
+    };
 });
+
+

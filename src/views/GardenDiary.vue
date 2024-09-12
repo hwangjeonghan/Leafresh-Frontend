@@ -8,6 +8,7 @@ import FeedCard from "@/components/feed/feedCard.vue";
 import GardenCard from "@/components/diary/diaryCard.vue";
 import Profile from "@/components/diary/diaryProfile.vue";
 import Schedule from "@/components/diary/diarySchedule.vue";
+import MarketCard from "@/components/market/MarketCard.vue";
 
 const router = useRouter();
 const activeComponent = ref("Feed");
@@ -62,6 +63,7 @@ onMounted(async () => {
 const components = {
   Feed: FeedCard,
   Garden: GardenCard,
+  Adoption: MarketCard,
 };
 </script>
 
