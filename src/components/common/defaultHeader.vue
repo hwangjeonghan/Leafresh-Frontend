@@ -35,19 +35,19 @@ const goToGardenDiary = async () => {
   if (!loginState.isLoggedIn) {
     router.push("/login");
   } else {
-    // 프로필 정보 불러오기 시도
+    // 프로필 정보를 먼저 가져옴
     await loginState.fetchUserProfileDetails();
 
+    // 프로필 정보가 없으면 프로필 등록 페이지로 이동
     if (!loginState.profileExists) {
-      // 프로필이 없는 경우
-      router.push("/profile/registration"); // 프로필 등록 페이지로 이동
+      router.push("/profile/registration");
     } else {
-      router.push(`/garden-diary/${loginState.userNickname}`); // 프로필이 있는 경우 원예일지 페이지로 이동
+      // 프로필이 있는 경우 원예일지 페이지로 이동
+      router.push(`/garden-diary/${loginState.userNickname}`);
     }
   }
 };
 </script>
-
 
 <template>
   <div class="header_container">
@@ -97,6 +97,7 @@ const goToGardenDiary = async () => {
 </template>
 
 <style scoped>
+/* 스타일은 동일하게 유지합니다. */
 a {
   text-decoration: none;
 }
