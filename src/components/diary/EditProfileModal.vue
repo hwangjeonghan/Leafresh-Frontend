@@ -43,9 +43,11 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useUserstore } from "@/stores/users.js";
+import { useRouter } from 'vue-router';
 
 const userStore = useUserstore();  // Pinia store 사용
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const router = useRouter();
 
 // 모달 열기 상태 및 닫기 함수
 const props = defineProps({
@@ -164,12 +166,14 @@ const handleProfileUpdate = async () => {
 
     alert('프로필이 성공적으로 업데이트되었습니다.');
     props.closeModal();
-    userStore.fetchUserProfileDetails();  // 프로필 정보를 다시 불러와 업데이트
+    await userStore.fetchUserProfileDetails();  // 프로필 정보를 다시 불러와 업데이트
+    router.push(`/garden-diary/${userStore.userNickname}`);
   } catch (error) {
     console.error('프로필 업데이트 오류:', error);
     alert('프로필 업데이트 중 오류가 발생했습니다.');
   }
 };
+
 
 const handleImageUpload = (event) => {
   newProfileImage.value = event.target.files[0];

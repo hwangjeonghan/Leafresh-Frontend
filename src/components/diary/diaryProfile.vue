@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+// 기존 코드 가져오기
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -105,6 +106,10 @@ const goToFeedAdd = () => {
   router.push("/garden-diary/feed-add"); // 피드 추가 페이지로 이동
 };
 
+// 프로필 정보를 불러오는 함수
+const fetchUserProfileDetails = async () => {
+  await userStore.fetchUserProfileDetails(); // 프로필 정보 불러오기
+};
 
 // 사용자 정보 변경 감지 및 반영
 watch(
@@ -144,32 +149,12 @@ watch(
 );
 
 onMounted(async () => {
-  await fetchUserProfile();
-  try {
-    const response = await axios.get(`${API_BASE_URL}/profile/info`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
-
-    const profileData = response.data;
-    userStore.setUserProfile({ // Pinia store 업데이트
-      ...userStore,
-      profileTitle: profileData.profileTitle || '프로필 제목 없음',
-      profileDescription: profileData.profileDescription || '프로필 설명 없음',
-    });
-  } catch (error) {
-    console.error('프로필 정보 가져오기 오류:', error);
-    if (error.response && error.response.status === 404) {
-      alert('프로필이 존재하지 않습니다. 프로필을 먼저 등록해주세요.');
-      router.push('/profile/registration');
-    } else {
-      alert('프로필을 가져오는 중 오류가 발생했습니다.');
-      router.push('/login');
-    }
-  }
+  await fetchUserProfile(); // 사용자 기본 정보 가져오기
+  await fetchUserProfileDetails(); // 프로필 정보도 추가로 가져오기
 });
 </script>
+
+
 
 <style scoped>
 .profile-container {

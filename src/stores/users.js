@@ -13,10 +13,10 @@ export const useUserstore = defineStore("useUserstore", () => {
   const email = ref("");
   const userPhoneNumber = ref("");
   const role = ref("");
-  const imageUrl = ref("");
+  const imageUrl = ref(""); // 이미지 URL 상태
   const userReportCount = ref(0);
-  const profileTitle = ref(""); // 프로필 타이틀 추가
-  const profileDescription = ref(""); // 프로필 설명 추가
+  const profileTitle = ref(""); // 프로필 타이틀
+  const profileDescription = ref(""); // 프로필 설명
   const token = ref(''); // JWT 토큰 저장
 
   // 로그인 여부
@@ -26,6 +26,7 @@ export const useUserstore = defineStore("useUserstore", () => {
 
   // 사용자 기본 정보를 받아와 상태를 업데이트하는 함수 (프로필 정보는 포함하지 않음)
   const fetchUserProfile = async () => {
+    console.log("Fetching user profile...");
     const localToken = localStorage.getItem("accessToken");
     if (localToken) {
       token.value = localToken; // 토큰을 Pinia 상태에 저장
@@ -40,6 +41,7 @@ export const useUserstore = defineStore("useUserstore", () => {
         });
 
         const userData = userResponse.data;
+        console.log("User data fetched:", userData);
 
         // FTP 이미지 경로를 가져와 API를 통해 접근 가능한 URL로 변환
         let ftpImagePath = "";
@@ -64,7 +66,7 @@ export const useUserstore = defineStore("useUserstore", () => {
           email: userData.userMailAdress,
           userPhoneNumber: userData.userPhoneNumber,
           role: userData.role.name,
-          imageUrl: ftpImagePath,
+          imageUrl: ftpImagePath, // 이미지 URL 업데이트
           userReportCount: userData.userReportCount,
         });
 
@@ -116,15 +118,16 @@ export const useUserstore = defineStore("useUserstore", () => {
 
   // 사용자 정보를 설정하는 함수
   const setUserProfile = (profile) => {
-    userId.value = profile.userId;
-    userName.value = profile.userName;
-    userNickname.value = profile.userNickname;
-    email.value = profile.email;
-    userPhoneNumber.value = profile.userPhoneNumber;
-    role.value = profile.role;
-    imageUrl.value = profile.imageUrl;
-    userReportCount.value = profile.userReportCount;
+    userId.value = profile.userId || userId.value;
+    userName.value = profile.userName || userName.value;
+    userNickname.value = profile.userNickname || userNickname.value;
+    email.value = profile.email || email.value;
+    userPhoneNumber.value = profile.userPhoneNumber || userPhoneNumber.value;
+    role.value = profile.role || role.value;
+    imageUrl.value = profile.imageUrl || imageUrl.value;
+    userReportCount.value = profile.userReportCount || userReportCount.value;
   };
+  
 
   // 로그아웃 메서드
   const logout = async () => {
@@ -151,13 +154,14 @@ export const useUserstore = defineStore("useUserstore", () => {
 
   // 로그아웃 시 사용자 정보 초기화
   const clearUserProfile = () => {
+    console.log("Clearing user profile...");
     userId.value = null;
     userName.value = "";
     userNickname.value = "";
     email.value = "";
     userPhoneNumber.value = "";
     role.value = "";
-    imageUrl.value = "";
+    imageUrl.value = ""; // 이미지 URL 초기화
     userReportCount.value = 0;
     profileTitle.value = ""; // 프로필 타이틀 초기화
     profileDescription.value = ""; // 프로필 설명 초기화
@@ -168,6 +172,7 @@ export const useUserstore = defineStore("useUserstore", () => {
 
   // 로그인 상태 설정 함수
   const setLoginState = (state) => {
+    console.log("Setting login state:", state);
     isLoggedIn.value = state;
   };
 
