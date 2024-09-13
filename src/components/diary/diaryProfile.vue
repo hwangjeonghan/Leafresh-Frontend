@@ -9,19 +9,45 @@
         <div class="profile-header-row">
           <!-- 유저 닉네임을 표시하는 부분 -->
           <h2 class="profile-username">{{ userNickname }}</h2>
-          <button class="edit-button" @click="handleFollow" title="팔로잉">
+
+          <!-- 조건에 따라 팔로잉, 프로필 수정, 피드 추가, 식물 등록 버튼 표시 -->
+          <button
+            class="edit-button"
+            v-if="!isCurrentUserProfile"
+            @click="handleFollow"
+            title="팔로잉"
+          >
             <span class="material-icons">person_add</span>
           </button>
-          <button class="edit-button" @click="openEditModal" title="프로필 수정">
+
+          <button
+            class="edit-button"
+            v-if="isCurrentUserProfile"
+            @click="openEditModal"
+            title="프로필 수정"
+          >
             <span class="material-icons">manage_accounts</span>
           </button>
-          <button class="edit-button" @click="goToFeedAdd" title="피드 추가">
+
+          <button
+            class="edit-button"
+            v-if="isCurrentUserProfile"
+            @click="goToFeedAdd"
+            title="피드 추가"
+          >
             <span class="material-icons">edit_note</span>
           </button>
-          <button class="edit-button" @click="openPlantAddModal" title="식물 등록">
+
+          <button
+            class="edit-button"
+            v-if="isCurrentUserProfile"
+            @click="openPlantAddModal"
+            title="식물 등록"
+          >
             <span class="material-icons">add_circle_outline</span>
           </button>
         </div>
+
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
           <span>판매식물 {{ salePlants }}개</span>
@@ -40,7 +66,7 @@
       :closeModal="closeEditModal"
       :profileTitle="profileTitle"
       :profileDescription="profileDescription"
-      :currentUsername="userNickname" 
+      :currentUsername="userNickname"
     />
 
     <!-- 식물 등록 모달 컴포넌트 -->
@@ -52,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect, watch } from 'vue';
+import { ref, onMounted, watchEffect, watch, computed } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import EditProfileModal from './EditProfileModal.vue';
@@ -79,6 +105,11 @@ const isPlantAddModalOpen = ref(false);
 // 추가된 변수들
 const profileExists = ref(false); // 프로필 존재 여부 추가
 const localToken = localStorage.getItem("accessToken");
+
+// 현재 사용자와 프로필 사용자가 같은지 확인하는 계산 속성
+const isCurrentUserProfile = computed(() => {
+  return userStore.userNickname === userNickname.value;
+});
 
 // 프로필 수정 모달 열기
 const openEditModal = () => {
@@ -143,7 +174,7 @@ const fetchUserProfileDetails = async () => {
     profileTitle.value = profileResponse.data.profileTitle;
     profileDescription.value = profileResponse.data.profileDescription;
     profileExists.value = true; // 프로필 존재 여부 설정
-    
+
   } catch (error) {
     console.error('Error fetching user profile details:', error);
     profileExists.value = false; // 오류 시 프로필 존재 여부 설정
