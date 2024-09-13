@@ -1,43 +1,19 @@
 <script setup>
-import diaryForm from '@/components/diary/diaryForm.vue';
+import PlantcareForm from '@/components/diary/plantCare/PlantcareForm.vue';
 import diaryProfile from '@/components/diary/diaryProfile.vue';
-import { useUserstore } from '@/stores/users';
 
-import { useRoute, useRouter } from 'vue-router';
-const route = useRoute();
-const router = useRouter();
-
-
-
-const props = defineProps({
-    username: String,
-    id: [String, Number]
-})
-
-const loginState = useUserstore();
 
 
 </script>
 
 <template>
-<div>
-    <diaryProfile />
+    <div>
+        <diaryProfile />
+
+        <PlantcareForm />
 
 
-
-        <h1>여기다가 다이어리 쓸거라고!!</h1>
-        <br>
-
-
-
-<diaryForm />
-
-
-</div>
-
-
-
-
+    </div>
 
 
 </template>
