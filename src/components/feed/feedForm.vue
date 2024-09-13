@@ -5,7 +5,7 @@
       <div class="textarea-wrapper">
         <textarea
           v-model="feedContent"
-          placeholder="피드 내용을 입력하세요"
+          placeholder="피드 내용을 입력하세요 피드내용은 20자 이상이여야 합니다."
           required
           class="feedContent"
         ></textarea>
