@@ -35,7 +35,7 @@ export async function fetchMarketDetails(marketId, token) {
                 marketData.post.displayDate = `${dayDiff}일 전`;
             }
         }
-        console.log(marketData);
+        console.log(marketData, userEmail);
         return marketData;
     } catch (error) {
         console.error("오류:", error);
@@ -43,7 +43,7 @@ export async function fetchMarketDetails(marketId, token) {
 };
 
 // 분양중과 분양완료 상태만 바꿔서 백엔드에 저장함
-export async function updateMarketStatus(id, status, token) {
+export async function updateMarketStatus(id, status, token, marketData) {
     if (!id) {
         console.error("게시글이 존재하지 않습니다. 다시 시도해주세요");
         return;
