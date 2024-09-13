@@ -285,6 +285,8 @@ const handleSubmit = async () => {
   height: 100vh;
   background-image: url("@/assets/images/background2.webp");
   overflow: auto;
+  background-color: rgba(255, 255, 255, 0.6); /* 투명도 있는 배경색 추가 */
+  background-blend-mode: overlay; /* 배경색과 이미지 혼합 */
 }
 
 .signup-container {

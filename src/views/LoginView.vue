@@ -137,6 +137,8 @@ const isValidToken = (token) => {
   background-size: cover; /* 이미지를 화면에 맞추어 늘리기 */
   background-position: center; /* 이미지를 화면 중앙에 위치시키기 */
   background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+  background-color: rgba(255, 255, 255, 0.6); /* 투명도 있는 배경색 추가 */
+  background-blend-mode: overlay; /* 배경색과 이미지 혼합 */
 }
 
 .login-container {
