@@ -168,7 +168,7 @@ const handleProfileUpdate = async () => {
 
     alert('프로필이 성공적으로 업데이트되었습니다.');
     props.closeModal();
-    router.push(`/garden-diary/${userStore.userNickname}`);
+    router.replace(`/garden-diary/${userStore.userNickname}`);
   } catch (error) {
     console.error('프로필 업데이트 오류:', error);
     alert('프로필 업데이트 중 오류가 발생했습니다.');

@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect, watch } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import EditProfileModal from './EditProfileModal.vue';
@@ -149,6 +149,14 @@ const fetchUserProfileDetails = async () => {
     profileExists.value = false; // 오류 시 프로필 존재 여부 설정
   }
 };
+
+// 닉네임 변경을 감시하고 프로필을 다시 가져오는 watch 설정
+watch(
+  () => route.params.userNickname,
+  (newNickname) => {
+    userNickname.value = newNickname; // 닉네임 업데이트
+  }
+);
 
 // 데이터 변경 감시 및 반영
 watchEffect(() => {
