@@ -13,13 +13,6 @@ const renderYearMonth = ()=>{
   return `${date.value.getFullYear()}년 ${date.value.getMonth() + 1}월`;
 }
 
-// emit 함수 정의
-const emit = defineEmits(['open-modal']);
-
-// 모달 호출 이벤트 발생
-const emitDateClick = (day) => {
-  emit('open-modal', day);  // 클릭한 날짜를 상위로 emit
-};
 
 const renderCalendar = () => {
   const viewYear = date.value.getFullYear();
@@ -118,6 +111,7 @@ onMounted(renderCalendar);
         <div class="day">FRI</div>
         <div class="day">SAT</div>
       </div>
+    </div>
       
       
 
@@ -127,14 +121,18 @@ onMounted(renderCalendar);
         <div
           v-for="(date, index) in formattedDates"
           :key="index"
-          :class="['date', { today: date.isToday }]"
+          :class="['date', date.class, { today: date.isToday }]"
           
           @click="emitDateClick(date.day)"
         > 
-          <span>{{ date.day }}</span>
+          <!-- <span>{{ date.day }}</span> -->
+
+          <span :class="{ other: date.class === 'other' }">{{ date.day }}</span>
+
+
         </div>
       </div>
-    </div>
+   
   </section>
 
 
@@ -149,7 +147,7 @@ onMounted(renderCalendar);
   background: rgba(242, 217, 187, 0.8); /* #F2D9BB 색상에 투명도 80% 적용 */
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
 }
@@ -257,17 +255,20 @@ margin-left: 10px;
 
 
 .date.today span {
-    color: white; /* 텍스트 색상을 흰색으로 설정하여 배경과 대비되도록 함 */
-    background-color: #1C8C0B; /* 원 안을 초록색(#1C8C0B)으로 채움 */
-    border: 2px solid #1C8C0B; /* 동그라미 테두리 색상 */
-    border-radius: 50%; /* 동그라미 모양으로 만듦 */
-    padding: 5px; /* 텍스트와 테두리 사이의 간격을 조정 */
-    display: inline-block; /* 요소가 인라인 컨텍스트에서 제대로 표시되도록 함 */
-    width: 30px; /* 원의 크기를 설정 */
-    height: 30px; /* 원의 크기를 설정 */
-    text-align: center; /* 텍스트를 중앙에 배치 */
-    line-height: 30px; /* 텍스트를 중앙에 수직으로 배치 */
+    color: white;
+    background-color: #1C8C0B;
+    border: 2px solid #1C8C0B;
+    border-radius: 50%;
+    padding: 3px 7px 7px 5px; /* 상, 우, 하, 좌 */
+    margin-top: 5px;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 25px;
 }
+
+
 
 /* 해당월이 아닌 날짜들을 다른 색으로 처리 */
 span.other{

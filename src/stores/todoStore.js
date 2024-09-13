@@ -7,15 +7,21 @@ export const useTodoStore = defineStore('todoStore', () => {
     //새로운 할일을 추가
     const addTodo = (todo) => {
         todos.value.push({
-            content: todo.content,
+            todoContent: todo.content,
             selectedDate: todo.selectedDate,
         });
     };
+
+    //todo목록을 새로고침한다.
+    const setTodos = (newTodos) => {
+        todos.value = newTodos;
+    }
 
 
     return {
         todos,
         addTodo,
+        setTodos
     };
 });
 

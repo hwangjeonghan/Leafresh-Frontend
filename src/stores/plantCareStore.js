@@ -57,10 +57,18 @@ export const usePlantCareStore = defineStore('plantCare', {
           // events 배열에 새로 저장된 이벤트를 추가
           this.events.push(newEvent);
           console.log('New event added:', newEvent);
-          alert('저장 완료! & 달력에 나와야해! 바로!');
+          alert('저장 완료! & 달력에 바로 나오쥬?');
         } else {
-          console.error('Error:', response.statusText);
-          alert('데이터 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+          const errorData = await response.json(); // 서버로부터 받은 오류 메시지를 받아옴.
+          if(errorData.error) {
+            // 백엔드에서 받은 오류 메세지 처리
+            alert(errorData.error);
+          }else{
+            console.error('Error:', response.statusText);
+            alert('데이터 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            
+          }
+
         }
       } catch (error) {
         console.error('Fetch Error:', error);
