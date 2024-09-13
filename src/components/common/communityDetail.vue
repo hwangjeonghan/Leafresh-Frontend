@@ -118,11 +118,11 @@ onMounted(() => {
 
 .content-section {
   flex: 1;
+  height: 98%;
   display: flex;
   flex-direction: column;
   padding: 15px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   background-color: #fff;
   border-radius: 8px;
   border: none;
