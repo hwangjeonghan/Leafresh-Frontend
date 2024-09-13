@@ -16,7 +16,6 @@ import LeafreshInfo from "@/views/LeafreshInfo.vue";
 import TermsAgreementView from "@/views/TermsAgreementView.vue";
 import DiaryDetail from "@/views/DiaryDetail.vue";
 import PlantAddModal from "@/views/PlantAddModal.vue";
-import PlantDetail from "@/views/PlantDetail.vue";
 import { useUserstore } from "@/stores/users";  // 정확한 경로로 설정
 
 const router = createRouter({
@@ -38,9 +37,10 @@ const router = createRouter({
       component: Market, // 식물분양 페이지
     },
     {
-      path: "/garden-diary/:username", // 유저 이름 경로 포함
+      path: "/garden-diary/:userNickname", // 유저 이름 경로 포함
       name: "GardenDiary",
       component: GardenDiary,
+      props: true // username을 prop으로 전달
     },
     {
       path: "/garden-diary/feed-add", // 유저 이름 경로 포함
@@ -48,19 +48,19 @@ const router = createRouter({
       component: FeedAdded,
     },
     {
-      path: "/garden-diary/feed-detail/:username/:id", // 유저 이름 및 피드 ID 포함
+      path: "/garden-diary/feed-detail/:userNickname/:id", // 유저 이름 및 피드 ID 포함
       name: "FeedDetail",
       component: FeedDetail,
       props: true,
     },
     {
-      path: "/garden-diary/feed-modify/:username/:id",
+      path: "/garden-diary/feed-modify/:userNickname/:id",
       name: "FeedFix",
       component: FeedFix,
       props: true,
     },
     {
-      path: "/garden-diary/diary-detail/:username/:id", // 유저 이름 및 피드 ID 포함
+      path: "/garden-diary/diary-detail/:userNickname/:id", // 유저 이름 및 피드 ID 포함
       name: "DiaryDetail",
       component: DiaryDetail,
       props: true,
@@ -116,9 +116,9 @@ const router = createRouter({
       component: PlantAddModal,
     },
     {
-      path: "/plant/detail",
-      name: "PlantDetail",
-      component: PlantDetail,
+      path: "/plant/add-modal",
+      name: "PlantAddModal",
+      component: PlantAddModal,
     },
     {
       path: "/leafresh/info",

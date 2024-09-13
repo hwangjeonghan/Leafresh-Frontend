@@ -17,22 +17,20 @@ export const useUserstore = defineStore("useUserstore", () => {
   const userReportCount = ref(0);
   const profileTitle = ref(""); // 프로필 타이틀
   const profileDescription = ref(""); // 프로필 설명
-  const token = ref(''); // JWT 토큰 저장
+  const token = ref(localStorage.getItem("accessToken") || ''); // 로컬 스토리지에서 토큰을 초기화
 
-  // 로그인 여부
-  const isLoggedIn = ref(false);
-  const usersInfo = ref(false); // 사용자 기본 정보 존재 여부 추가
-  const profileExists = ref(false); // 프로필 존재 여부 추가
+  // 로그인 상태 변수 추가
+  const isLoggedIn = ref(false); // 로그인 상태 관리
+  const usersInfo = ref(false); // 사용자 정보가 존재하는지 여부
+  const profileExists = ref(false); // 프로필이 존재하는지 여부
 
   // 사용자 기본 정보를 받아와 상태를 업데이트하는 함수 (프로필 정보는 포함하지 않음)
   const fetchUserProfile = async () => {
-    console.log("Fetching user profile...");
     const localToken = localStorage.getItem("accessToken");
     if (localToken) {
       token.value = localToken; // 토큰을 Pinia 상태에 저장
       try {
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-        
         // 사용자 기본 정보 가져오기
         const userResponse = await axios.get(`${API_BASE_URL}/user/me`, {
           headers: {
@@ -41,7 +39,6 @@ export const useUserstore = defineStore("useUserstore", () => {
         });
 
         const userData = userResponse.data;
-        console.log("User data fetched:", userData);
 
         // FTP 이미지 경로를 가져와 API를 통해 접근 가능한 URL로 변환
         let ftpImagePath = "";
@@ -102,9 +99,6 @@ export const useUserstore = defineStore("useUserstore", () => {
       });
 
       const profileData = profileResponse.data; // ProfileDTO로 반환된 데이터
-
-      profileTitle.value = profileData.profileTitle || "프로필 제목 없음";
-      profileDescription.value = profileData.profileDescription || "프로필 설명 없음";
       profileExists.value = true; // 프로필이 존재함
 
     } catch (profileError) {
@@ -127,7 +121,6 @@ export const useUserstore = defineStore("useUserstore", () => {
     imageUrl.value = profile.imageUrl || imageUrl.value;
     userReportCount.value = profile.userReportCount || userReportCount.value;
   };
-  
 
   // 로그아웃 메서드
   const logout = async () => {

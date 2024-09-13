@@ -34,21 +34,34 @@
       <ul>
         <li>
           <h3>1. 체계적인 원예 관리</h3>
-          <p>Leafresh는 당신의 원예 활동을 효과적으로 기록하고 관리할 수 있도록 도와줍니다.<br>
-            식물의 성장 단계, 물주기, 비료 사용 등 모든 세부 사항을 체계적으로 기록할 수 있어, 더 나은 원예 결과를 얻을 수 있습니다.</p>
+          <p>
+            Leafresh는 당신의 원예 활동을 효과적으로 기록하고 관리할 수 있도록 도와줍니다.
+          </p>
+          <p>
+            식물의 성장 단계, 물 주기, 비료 사용 등 모든 세부 사항을 체계적으로 기록할 수 있어 더 나은 원예 결과를 얻을 수 있습니다.
+          </p>
         </li>
         <li>
           <h3>2. 커뮤니티의 지식 공유</h3>
-          <p>Leafresh의 커뮤니티는 전 세계의 원예 애호가들이 모여 서로의 경험과 지식을 공유하는 공간입니다.<br>
-            커뮤니티의 도움을 받아 식물의 문제를 해결하거나 새로운 원예 트렌드를 발견할 수 있습니다.</p>
+          <p>
+            Leafresh의 커뮤니티는 전 세계의 원예 애호가들이 모여 서로의 경험과 지식을 공유하는 공간입니다.
+          </p>
+          <p>
+            커뮤니티의 도움을 받아 식물의 문제를 해결하거나 새로운 원예 트렌드를 발견할 수 있습니다.
+          </p>
         </li>
         <li>
           <h3>3. 맞춤형 원예 조언 제공</h3>
-          <p>Leafresh는 사용자의 식물 종류와 지역 기후에 따라 맞춤형 원예 조언을 제공합니다.<br>
-            또한, 특정 상황에 맞는 알림과 팁을 제공해 원예 초보자들도 쉽게 따라할 수 있습니다.</p>
+          <p>
+            Leafresh는 사용자의 식물 종류와 지역 기후에 따라 맞춤형 원예 조언을 제공합니다.
+          </p>
+          <p>
+            또한, 특정 상황에 맞는 알림과 팁을 제공해 원예 초보자들도 쉽게 따라 할 수 있습니다.
+          </p>
         </li>
       </ul>
     </section>
+
 
     <!-- 팀원 소개 섹션 -->
     <section class="section team">
@@ -84,37 +97,37 @@ const teamMembers = [
     name: "강형석",
     githubLink: "https://github.com/ppudding3861",
     githubImage: "https://github.com/ppudding3861.png",
-    job: ["백엔드", "프론트엔드", "로그인"]
+    job: ["팀장","백엔드","프론트엔드","서버"]
   },
   {
     name: "주순태",
     githubLink: "https://github.com/stjoo0925",
     githubImage: "https://github.com/stjoo0925.png",
-    job: ["데이터베이스", "API"]
+    job: ["기획","인프라","백엔드","프론트"]
   },
   {
     name: "이서현",
     githubLink: "https://github.com/dansun2",
     githubImage: "https://github.com/dansun2.png",
-    job: ["UI/UX 디자인"]
+    job: ["디자인","백엔드","프론트"]
   },
   {
     name: "서은진",
     githubLink: "https://github.com/jinnyjinny12",
     githubImage: "https://github.com/jinnyjinny12.png",
-    job: ["테스트", "디버깅"]
+    job: ["기획","디자인","백엔드","프론트"]
   },
   {
     name: "황정한",
     githubLink: "https://github.com/hwangjeonghan",
     githubImage: "https://github.com/hwangjeonghan.png",
-    job: ["배포", "백엔드"]
+    job: ["백엔드","프론트","서버"]
   },
   {
     name: "김민주",
     githubLink: "https://github.com/minju132",
     githubImage: "https://github.com/minju132.png",
-    job: ["프론트엔드", "문서화"]
+    job: ["프로젝트"]
   }
 ];
 
@@ -220,6 +233,16 @@ watch(showPopup, (newValue) => {
 ul {
   list-style-type: none;
   padding-left: 0;
+}
+
+.section li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+  flex-direction: column;
 }
 
 /* 팀원 소개 스타일 */

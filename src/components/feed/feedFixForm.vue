@@ -1,22 +1,28 @@
 <template>
-    <form @submit.prevent="updateFeed">
-      <div class="input-group">
-        <label for="feedContent" class="feedContents">피드 내용</label>
+  <form @submit.prevent="updateFeed">
+    <div class="input-group">
+      <label for="feedContent" class="feedContents">피드 내용</label>
+      <div class="textarea-wrapper">
         <textarea
           v-model="feedContent"
-          placeholder="피드 내용을 입력하세요"
+          placeholder="피드 내용을 입력하세요. 피드 내용은 20자 이상이어야 합니다."
           required
           class="feedContent"
         ></textarea>
+        <!-- 글자 수 인디케이터 -->
+        <div class="char-count">
+          {{ feedContent.length }} / 1000
+        </div>
       </div>
-      <div class="input-group">
-        <label for="feedImage">피드 이미지 업로드</label>
-        <input type="file" @change="handleFileUpload" accept="image/*" />
-      </div>
-      <button type="submit" class="submit-button">피드 수정</button>
-    </form>
+    </div>
+    <div class="input-group">
+      <label for="feedImage">피드 이미지 업로드</label>
+      <input type="file" @change="handleFileUpload" accept="image/*" />
+    </div>
+    <button type="submit" class="submit-button">피드 수정</button>
+  </form>
 </template>
-  
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -176,5 +182,19 @@ onMounted(() => {
   font-family: "GothicA1-Light";
   font-size: 18px;
   color: #000;
+}
+
+/* 추가된 스타일 */
+.textarea-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.char-count {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 0.9rem;
+  color: #999;
 }
 </style>

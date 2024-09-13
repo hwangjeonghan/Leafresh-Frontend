@@ -1,95 +1,5 @@
-<template>
-  <div class="signup-page">
-    <div class="signup-container">
-      <div class="signup-header">
-        <RouterLink :to="`/login`">
-          <span class="material-icons">close</span>
-        </RouterLink>
-      </div>
-      <div class="signup-form">
-        <div class="signup-title">회원가입</div>
-        <form @submit.prevent="handleSubmit">
-          <!-- Existing input fields here -->
-          <div class="input-group" :class="{ 'input-error': nameError }">
-            <label for="name">이름</label>
-            <input
-              type="text"
-              v-model="userName"
-              placeholder="이름을 입력하세요"
-            />
-            <span v-if="nameError" class="error-message">{{ nameError }}</span>
-          </div>
-          <div class="input-group" :class="{ 'input-error': nicknameError }">
-            <label for="nickname">닉네임</label>
-            <input
-              type="text"
-              v-model="userNickname"
-              placeholder="닉네임을 입력하세요"
-            />
-            <span v-if="nicknameError" class="error-message">{{
-              nicknameError
-            }}</span>
-          </div>
-          <div class="input-group" :class="{ 'input-error': phoneNumberError }">
-            <label for="phoneNumber">전화번호</label>
-            <input
-              type="text"
-              v-model="userPhoneNumber"
-              placeholder="전화번호를 입력하세요"
-            />
-            <span v-if="phoneNumberError" class="error-message">{{
-              phoneNumberError
-            }}</span>
-          </div>
-          <div class="input-group" :class="{ 'input-error': emailError }">
-            <label for="email">이메일</label>
-            <input
-              type="text"
-              v-model="userMailAdress"
-              placeholder="이메일을 입력하세요"
-            />
-            <span v-if="emailError" class="error-message">{{
-              emailError
-            }}</span>
-          </div>
-          <div class="input-group" :class="{ 'input-error': passwordError }">
-            <label for="password">비밀번호</label>
-            <input
-              type="password"
-              v-model="userPassword"
-              placeholder="비밀번호를 입력하세요"
-            />
-            <span v-if="passwordError" class="error-message">{{
-              passwordError
-            }}</span>
-          </div>
-          <div
-            class="input-group"
-            :class="{ 'input-error': confirmPasswordError }"
-          >
-            <label for="confirmPassword">비밀번호 확인</label>
-            <input
-              type="password"
-              v-model="confirmPassword"
-              placeholder="비밀번호를 다시 입력하세요"
-            />
-            <span v-if="confirmPasswordError" class="error-message">{{
-              confirmPasswordError
-            }}</span>
-          </div>
-          <div class="input-group">
-            <label for="profileImage">프로필 이미지 업로드</label>
-            <input type="file" @change="handleImageUpload" accept="image/*" />
-          </div>
-          <button type="submit" class="submit-button">회원가입</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router"; // useRoute 추가
 import Swal from "sweetalert2"; // SweetAlert2 라이브러리 임포트
@@ -116,13 +26,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // 약관 동의 여부 확인
 const termsAgreed = ref(false);
 onMounted(() => {
-  termsAgreed.value = route.query.termsAgreed === 'true'; // 쿼리에서 약관 동의 여부 가져오기
+  termsAgreed.value = route.query.termsAgreed === "true"; // 쿼리에서 약관 동의 여부 가져오기
   if (!termsAgreed.value) {
-    alert('약관에 동의해야 회원가입을 진행할 수 있습니다.');
-    router.push('/terms'); // 동의하지 않은 경우 동의 페이지로 리다이렉트
+    alert("약관에 동의해야 회원가입을 진행할 수 있습니다.");
+    router.push("/terms"); // 동의하지 않은 경우 동의 페이지로 리다이렉트
   }
 });
-
 
 // Sweetalert2 토스트 설정 함수
 const showToast = (message, icon = "warning") => {
@@ -142,8 +51,22 @@ const showToast = (message, icon = "warning") => {
   });
 };
 
+// 닉네임 중복 확인 함수
+const checkNicknameDuplicate = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/auth/checkNickname?nickname=${userNickname.value}`
+    );
+    return response.data.exists; // 닉네임이 존재하는지 여부 반환
+  } catch (error) {
+    console.error("닉네임 중복 확인 오류:", error);
+    showToast("닉네임 중복 확인에 실패했습니다.", "error");
+    return false; // 오류가 발생한 경우 중복으로 처리
+  }
+};
+
 // 유효성 검사 및 첫 번째 오류만 표시
-const validateInputs = () => {
+const validateInputs = async () => {
   if (!userName.value) {
     showToast("이름을 입력하세요.");
     return false; // 첫 번째 오류 발견 시 바로 중단
@@ -163,6 +86,12 @@ const validateInputs = () => {
     nicknameError.value = "닉네임은 최대 15자까지 입력할 수 있습니다.";
     return false; // 첫 번째 오류 발견 시 바로 중단
   } else {
+    const isNicknameDuplicate = await checkNicknameDuplicate(); // 닉네임 중복 검사
+    if (isNicknameDuplicate) {
+      showToast("이미 사용 중인 닉네임입니다.");
+      nicknameError.value = "이미 사용 중인 닉네임입니다.";
+      return false;
+    }
     nicknameError.value = "";
   }
 
@@ -220,7 +149,7 @@ const handleImageUpload = (event) => {
 };
 
 const handleSubmit = async () => {
-  if (!validateInputs()) {
+  if (!(await validateInputs())) {
     return;
   }
 
@@ -285,6 +214,8 @@ const handleSubmit = async () => {
   height: 100vh;
   background-image: url("@/assets/images/background2.webp");
   overflow: auto;
+  background-color: rgba(255, 255, 255, 0.6); /* 투명도 있는 배경색 추가 */
+  background-blend-mode: overlay; /* 배경색과 이미지 혼합 */
 }
 
 .signup-container {

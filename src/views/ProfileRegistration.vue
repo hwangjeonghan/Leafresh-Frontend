@@ -50,8 +50,14 @@ const handleProfileSubmit = async () => {
         },
       }
     );
+
     alert('프로필이 성공적으로 등록되었습니다.');
-    router.push('/garden-diary/${loginState.userNickname}'); // 프로필 등록 후 원예 일지로 이동
+
+    // 프로필 등록 후 사용자 정보를 다시 가져와 상태를 업데이트
+    await loginState.fetchUserProfileDetails(); // 프로필 정보 다시 가져오기
+
+    // 원예 일지로 이동 (동적 URL 설정)
+    router.push(`/garden-diary/${loginState.userNickname}`);
   } catch (error) {
     console.error('프로필 등록 오류:', error);
     alert('프로필 등록에 실패했습니다.');
@@ -80,82 +86,81 @@ const validateProfileInputs = () => {
 };
 </script>
 
-<style scoped="scoped">
-    .profile-page {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f2f2f2;
-    }
+<style scoped>
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f2f2f2;
+}
 
-    .profile-container {
-        background: #fff;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        max-width: 500px;
-        width: 100%;
-        text-align: center;
-    }
+.profile-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
 
-    .input-group {
-        margin-bottom: 1.5rem;
-        text-align: left;
-    }
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
 
-    .input-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-        color: #555;
-    }
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
 
-    .input-group input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-        box-sizing: border-box;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
 
-    .input-group input:focus {
-        border-color: #1ab546;
-        box-shadow: 0 0 0 4px rgba(26, 181, 70, 0.2);
-        outline: none;
-    }
+.input-group input:focus {
+  border-color: #1ab546;
+  box-shadow: 0 0 0 4px rgba(26, 181, 70, 0.2);
+  outline: none;
+}
 
-    .input-error input {
-        border-color: red;
-    }
+.input-error input {
+  border-color: red;
+}
 
-    .error-message {
-        color: red;
-        font-size: 0.9rem;
-        margin-top: 0.25rem;
-    }
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
 
-    .submit-button {
-        width: 100%;
-        padding: 12px;
-        background-color: #1ab546;
-        border: none;
-        color: white;
-        font-size: 1.2rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-    }
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #1ab546;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
 
-    .submit-button:hover {
-        background-color: #148838;
-        transform: translateY(-2px);
-    }
+.submit-button:hover {
+  background-color: #148838;
+  transform: translateY(-2px);
+}
 
-    .submit-button:active {
-        transform: translateY(0);
-    }
+.submit-button:active {
+  transform: translateY(0);
+}
 </style>
-

@@ -106,7 +106,7 @@ onMounted(() => {
 }
 
 .share_container {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background-color: #f9fff8;
   display: flex;
@@ -116,13 +116,14 @@ onMounted(() => {
 }
 
 .market-list {
-  width: 90vw;
+  width: 100%;
   max-width: 100%;
   height: auto;
-  margin: 3vw 0 3vw 10vw;
+  margin-top: 3vh;
   display: flex;
   flex-direction: column; /* 아이템을 세로로 배치 */
   overflow-y: auto; /* 세로 스크롤 가능 */
+  align-items: center;
 }
 
 .market_status_category {
@@ -203,22 +204,24 @@ onMounted(() => {
 }
 
 .market-image {
-  width: 70%; /* 부모 컨테이너에 맞추기 */
-  height: auto; /* 비율 유지하면서 크기 조절 */
+  width: 100%; /* 부모 컨테이너에 맞추기 */
+  height: 100%; /* 비율 유지하면서 크기 조절 */
   object-fit: cover; /* 이미지가 박스에 맞게 잘림 */
   border-radius: 1vw; /* 이미지의 모서리를 둥글게 */
   /* justify-content: center; 
   align-items: center;  */
+  object-fit: cover;
 }
 
 .market_image_box {
   width: 25%;
-  height: auto;
+  height: 100%;
   margin-right: 2vw;
   display: flex;
   flex-direction: column;
   justify-content: center; /* 중앙 정렬 */
   align-items: center; /* 중앙 정렬 */
+  overflow: hidden;
 }
 
 .market_text_box {
@@ -273,8 +276,13 @@ onMounted(() => {
 
   .market_image_box {
     width: 100%;
+    height: 100%;
+    display: flex;
     margin-right: 0;
     margin-bottom: 10px;
+    justify-content: center; /* 이미지가 중앙에 위치하도록 설정 */
+    align-items: center; /* 이미지가 중앙에 위치하도록 설정 */
+    overflow: hidden; /* 이미지가 컨테이너 밖으로 나가지 않도록 설정 */
   }
 
   .market_text_box {

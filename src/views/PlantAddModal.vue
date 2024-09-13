@@ -7,7 +7,12 @@
         <!-- 이미지 업로드 섹션 -->
         <div class="image-upload">
           <label class="image-placeholder" for="image-input">사진 선택</label>
-          <input type="file" id="image-input" @change="handleImageUpload" class="file-input" />
+          <input
+            type="file"
+            id="image-input"
+            @change="handleImageUpload"
+            class="file-input"
+          />
           <div v-if="imageUrl" class="image-container">
             <img :src="imageUrl" alt="이미지 미리보기" class="image-preview" />
           </div>

@@ -169,7 +169,6 @@ const deleteTodo = async (todoId, action) => {
 .todo-content {
   font-size: 20px;
 
-
 }
 
 /* 삭제버튼 */

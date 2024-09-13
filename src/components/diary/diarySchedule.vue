@@ -124,9 +124,7 @@ const date = ref();
     src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-}
-
-.diaryschedule_container{
+.diaryschedule_container {
   width: 100%;
   height: 100%;
   display: flex;
@@ -143,7 +141,6 @@ const date = ref();
   font-weight: bold;
 }
 
-
 /* 헤어라인 div 스타일 */
 .hairline {
   width: 85%; /* 선 길이 */
@@ -153,13 +150,14 @@ const date = ref();
 }
 .schedule_container {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-  gap: 50px;
+  gap: 20px;
   padding: 5px;
+  margin-bottom: 10px;
 }
 
-.today_todo_box{
+.today_todo_box {
   margin: 30px;
 }
 

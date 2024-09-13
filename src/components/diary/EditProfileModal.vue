@@ -53,6 +53,8 @@ const router = useRouter();
 const props = defineProps({
   isOpen: Boolean,
   closeModal: Function,
+  profileTitle: String,  // 프로필 제목 전달받기
+  profileDescription: String,  // 프로필 설명 전달받기
 });
 
 const newNickname = ref(userStore.userNickname);  // Pinia 상태에서 가져옴
@@ -60,8 +62,8 @@ const currentPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 const newProfileImage = ref(null);
-const newProfileTitle = ref(userStore.profileTitle);  // Pinia 상태에서 가져옴
-const newProfileDescription = ref(userStore.profileDescription);  // Pinia 상태에서 가져옴
+const newProfileTitle = ref(props.profileTitle);  // 프로필 제목을 props에서 전달받음
+const newProfileDescription = ref(props.profileDescription);  // 프로필 설명을 props에서 전달받음
 const passwordMismatch = ref(false);
 
 // 모달이 열릴 때마다 초기값 설정
@@ -70,8 +72,8 @@ watch(
   (newVal) => {
     if (newVal) {
       newNickname.value = userStore.userNickname;  // 닉네임 초기값 설정
-      newProfileTitle.value = userStore.profileTitle;  // 프로필 제목 초기값 설정
-      newProfileDescription.value = userStore.profileDescription;  // 프로필 설명 초기값 설정
+      newProfileTitle.value = props.profileTitle;  // 프로필 제목 초기값 설정
+      newProfileDescription.value = props.profileDescription;  // 프로필 설명 초기값 설정
       currentPassword.value = '';  // 비밀번호 필드는 빈 값으로 초기화
       newPassword.value = '';  // 새로운 비밀번호 필드는 빈 값으로 초기화
       confirmNewPassword.value = '';  // 비밀번호 확인 필드는 빈 값으로 초기화
@@ -166,24 +168,20 @@ const handleProfileUpdate = async () => {
 
     alert('프로필이 성공적으로 업데이트되었습니다.');
     props.closeModal();
-    await userStore.fetchUserProfileDetails();  // 프로필 정보를 다시 불러와 업데이트
-    router.push(`/garden-diary/${userStore.userNickname}`);
+    router.replace(`/garden-diary/${userStore.userNickname}`);
   } catch (error) {
     console.error('프로필 업데이트 오류:', error);
     alert('프로필 업데이트 중 오류가 발생했습니다.');
   }
 };
 
-
 const handleImageUpload = (event) => {
   newProfileImage.value = event.target.files[0];
 };
 </script>
 
-
-
-
 <style scoped>
+/* 스타일은 그대로 유지합니다. */
 .modal {
   position: fixed;
   top: 0;
