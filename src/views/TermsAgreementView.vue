@@ -109,6 +109,8 @@ const proceedToSignup = () => {
   background-image: url("@/assets/images/background2.webp"); /* 배경 이미지 */
   overflow: auto;
   padding: 20px;
+  background-color: rgba(255, 255, 255, 0.6); /* 투명도 있는 배경색 추가 */
+  background-blend-mode: overlay; /* 배경색과 이미지 혼합 */
 }
 
 .terms-container {

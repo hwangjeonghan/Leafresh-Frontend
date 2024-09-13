@@ -205,3 +205,172 @@ const handleSubmit = async () => {
   }
 };
 </script>
+
+<style scoped>
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("@/assets/images/background2.webp");
+  overflow: auto;
+  background-color: rgba(255, 255, 255, 0.6); /* 투명도 있는 배경색 추가 */
+  background-blend-mode: overlay; /* 배경색과 이미지 혼합 */
+}
+
+.signup-container {
+  position: relative; /* Added to position child elements absolutely */
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  height: 95%;
+  text-align: center;
+}
+
+.signup-header {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.signup-header .material-icons {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.input-group label {
+  font-family: "ghanachoco";
+  font-size: 16px;
+  color: #76b852; /* fallback for old browsers */
+  color: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  color: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px !important;
+  font-family: "GothicA1-Light";
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #1ab546;
+  box-shadow: 0 0 0 4px rgba(26, 181, 70, 0.2);
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #999;
+}
+
+.input-error input {
+  border-color: red;
+}
+
+.error-message {
+  display: none;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background: #76b852; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border: none;
+  color: white;
+  font-family: "GothicA1-Light";
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-button:hover {
+  background: #76b852; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  transform: translateY(-2px);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .signup-container {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+
+.signup-title {
+  font-family: "ghanachoco";
+  font-size: 24px;
+  color: #76b852; /* fallback for old browsers */
+  color: -webkit-linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  color: linear-gradient(
+    to right,
+    #8dc26f,
+    #76b852
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  margin-bottom: 30px;
+}
+
+.material-icons {
+  color: #000;
+}
+</style>
