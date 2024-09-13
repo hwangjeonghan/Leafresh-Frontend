@@ -12,9 +12,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  server: {
-    port: 8000,
-  },
   define: {
     'global': 'window', // 브라우저 환경에서 global을 window로 정의
   },
