@@ -114,13 +114,14 @@ onMounted(() => {
 }
 
 .market-list {
-  display: flex;
+  display: grid;
   justify-content: space-evenly; /* 아이템 간 간격을 균등하게 */
   /* flex-direction: column; 아이템을 세로로 배치 */
   flex-wrap: wrap; /* 줄바꿈 허용 */
   height: auto;
   padding: 0 5vw;
   overflow-y: auto; /* 세로 스크롤 가능 */
+  grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개의 열을 생성 */
 }
 
 .market-list::-webkit-scrollbar {
