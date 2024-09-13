@@ -10,14 +10,15 @@
           <!-- 유저 닉네임을 표시하는 부분 -->
           <h2 class="profile-username">{{ userNickname }}</h2>
 
-          <!-- 조건에 따라 팔로잉, 프로필 수정, 피드 추가, 식물 등록 버튼 표시 -->
-          <button
+           <!-- 팔로잉, 프로필 수정, 피드 추가, 식물 등록 버튼 표시 -->
+           <button
             class="edit-button"
             v-if="!isCurrentUserProfile"
-            @click="handleFollow"
-            title="팔로잉"
+            @click="toggleFollow"
+            :title="isFollowing ? '팔로잉 취소' : '팔로잉'"
           >
-            <span class="material-icons">person_add</span>
+            <span class="material-icons">{{ isFollowing ? 'person_remove' : 'person_add' }}</span>
+            {{ isFollowing ? '팔로잉 취소' : '팔로잉' }}
           </button>
 
           <button
@@ -78,25 +79,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect, watch, computed } from "vue";
-import axios from "axios";
-import { useRouter, useRoute } from "vue-router";
-import EditProfileModal from "./EditProfileModal.vue";
-import PlantAddModal from "@/views/PlantAddModal.vue";
-import { useUserstore } from "@/stores/users"; // 사용자 스토어 불러오기
+import { ref, onMounted, watchEffect, watch, computed } from 'vue';
+import axios from 'axios';
+import { useRouter, useRoute } from 'vue-router';
+import EditProfileModal from './EditProfileModal.vue';
+import PlantAddModal from '@/views/PlantAddModal.vue';
+import { useUserstore } from '@/stores/users'; // 사용자 스토어 불러오기
 
 const userStore = useUserstore();
 const route = useRoute();
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const profileImage = ref("");
+const profileImage = ref('');
 const userNickname = ref(route.params.userNickname);
-const profileTitle = ref("");
-const profileDescription = ref("");
+const profileTitle = ref('');
+const profileDescription = ref('');
 const followerPlants = ref(0);
 const salePlants = ref(0);
-const followers = ref("");
+const followers = ref('');
 
 // 모달 상태
 const isEditModalOpen = ref(false);
@@ -104,6 +105,7 @@ const isPlantAddModalOpen = ref(false);
 
 // 추가된 변수들
 const profileExists = ref(false); // 프로필 존재 여부 추가
+const isFollowing = ref(false); // 팔로잉 상태를 관리하는 변수 추가
 const localToken = localStorage.getItem("accessToken");
 
 // 현재 사용자와 프로필 사용자가 같은지 확인하는 계산 속성
@@ -131,23 +133,74 @@ const closePlantAddModal = () => {
   isPlantAddModalOpen.value = false;
 };
 
+// 팔로잉 상태 확인
+const checkFollowingStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/follow/status`, {
+      params: { followingNickname: userNickname.value },
+      headers: {
+        Authorization: `Bearer ${localToken}`,
+      },
+    });
+
+    // API 응답 확인
+    console.log("API 응답 데이터:", response.data);
+
+    // 응답 데이터가 예상한 형태인지 확인하고 수정된 필드명을 사용
+    if (response && response.data && typeof response.data.following === 'boolean') {
+      isFollowing.value = response.data.following; // 올바른 필드명을 사용하여 팔로잉 상태 업데이트
+      console.log("팔로잉 상태 업데이트:", isFollowing.value);
+    } else {
+      console.error('API 응답 형식이 올바르지 않습니다:', response.data);
+    }
+  } catch (error) {
+    console.error('팔로잉 상태를 확인하는 중 오류 발생:', error);
+  }
+};
+
+
+console.log("팔로잉 상태 : "+ isFollowing.value);
+
+// 팔로잉/언팔로우 토글
+const toggleFollow = async () => {
+  try {
+    if (isFollowing.value) {
+      await axios.delete(`${API_BASE_URL}/follow`, {
+        data: { followingNickname: userNickname.value },
+        headers: {
+          Authorization: `Bearer ${localToken}`,
+        },
+      });
+      isFollowing.value = false;
+    } else {
+      await axios.post(`${API_BASE_URL}/follow`, {
+        followingNickname: userNickname.value,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localToken}`,
+        },
+      });
+      isFollowing.value = true;
+    }
+  } catch (error) {
+    console.error('팔로우/언팔로우 중 오류 발생:', error);
+  }
+};
+
 // 사용자 프로필 정보 가져오기
 const fetchUserProfileDetails = async () => {
   try {
     const nickname = route.params.userNickname; // 여기서 nickname을 정의합니다.
 
-    const userResponse = await axios.get(
-      `${API_BASE_URL}/user/info-by-nickname`,
-      {
-        params: { nickname: nickname },
-        headers: {
-          Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
-        },
-      }
-    );
+    const userResponse = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
+      params: { nickname: nickname },
+      headers: {
+        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+      },
+    });
 
-    if (typeof userResponse.data !== "object") {
-      throw new Error("Invalid JSON response");
+    if (typeof userResponse.data !== 'object') {
+      throw new Error('Invalid JSON response');
     }
 
     followers.value = userResponse.data.followers;
@@ -158,30 +211,33 @@ const fetchUserProfileDetails = async () => {
       headers: {
         Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
       },
-      responseType: "blob",
+      responseType: 'blob',
     });
 
     profileImage.value = URL.createObjectURL(imageResponse.data);
 
-    const profileResponse = await axios.get(
-      `${API_BASE_URL}/profile/info-by-nickname`,
-      {
-        params: { nickname: nickname },
-        headers: {
-          Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
-        },
-      }
-    );
+    const profileResponse = await axios.get(`${API_BASE_URL}/profile/info-by-nickname`, {
+      params: { nickname: nickname },
+      headers: {
+        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+      },
+    });
 
-    if (typeof profileResponse.data !== "object") {
-      throw new Error("Invalid JSON response");
+    if (typeof profileResponse.data !== 'object') {
+      throw new Error('Invalid JSON response');
     }
 
     profileTitle.value = profileResponse.data.profileTitle;
     profileDescription.value = profileResponse.data.profileDescription;
     profileExists.value = true; // 프로필 존재 여부 설정
+
+    // 팔로잉 상태 확인
+    if (!isCurrentUserProfile.value) {
+      checkFollowingStatus();
+    }
+    
   } catch (error) {
-    console.error("Error fetching user profile details:", error);
+    console.error('Error fetching user profile details:', error);
     profileExists.value = false; // 오류 시 프로필 존재 여부 설정
   }
 };
@@ -197,8 +253,9 @@ watch(
 // 데이터 변경 감시 및 반영
 watchEffect(() => {
   if (localToken) {
-    console.log("프로필 정보를 새로 가져옵니다.");
+    console.log('프로필 정보를 새로 가져옵니다.');
     fetchUserProfileDetails();
+    checkFollowingStatus(); // 로그아웃 후 다시 로그인 시에도 팔로잉 상태를 확인하도록 추가
   }
 });
 
@@ -208,10 +265,11 @@ onMounted(async () => {
     // 사용자가 로그인된 상태이면 프로필 정보 가져오기
     fetchUserProfileDetails();
   } else {
-    console.warn("사용자 토큰이 존재하지 않습니다.");
+    console.warn('사용자 토큰이 존재하지 않습니다.');
   }
 });
 </script>
+
 
 <style scoped>
 /* CSS는 동일하게 유지합니다. */
