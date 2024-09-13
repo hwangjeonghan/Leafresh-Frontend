@@ -172,6 +172,7 @@ const toggleFollow = async () => {
         },
       });
       isFollowing.value = false;
+      followers.value -= 1; // 팔로워 수 감소
     } else {
       await axios.post(`${API_BASE_URL}/follow`, {
         followingNickname: userNickname.value,
@@ -181,21 +182,24 @@ const toggleFollow = async () => {
         },
       });
       isFollowing.value = true;
+      followers.value += 1; // 팔로워 수 증가
     }
   } catch (error) {
     console.error('팔로우/언팔로우 중 오류 발생:', error);
   }
 };
 
+
 // 사용자 프로필 정보 가져오기
 const fetchUserProfileDetails = async () => {
   try {
-    const nickname = route.params.userNickname; // 여기서 nickname을 정의합니다.
+    const nickname = route.params.userNickname;
 
+    // 사용자 정보 API 호출
     const userResponse = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
       params: { nickname: nickname },
       headers: {
-        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+        Authorization: `Bearer ${localToken}`,
       },
     });
 
@@ -205,11 +209,27 @@ const fetchUserProfileDetails = async () => {
 
     followers.value = userResponse.data.followers;
 
+    // 팔로워 수 API 호출 (추가된 부분)
+    const followersResponse = await axios.get(`${API_BASE_URL}/follow/followers/count`, {
+      params: { nickname: nickname },
+      headers: {
+        Authorization: `Bearer ${localToken}`,
+      },
+    });
+
+    // 팔로워 수를 상태에 반영
+    if (typeof followersResponse.data === 'number') {
+      followers.value = followersResponse.data; // API로부터 받은 팔로워 수로 업데이트
+      console.log('팔로워 수:', followers.value);
+    } else {
+      console.error('팔로워 수 API 응답 형식이 올바르지 않습니다:', followersResponse.data);
+    }
+
     // 이미지 경로를 FTP 서버에서 가져옴
     const imageResponse = await axios.get(`${API_BASE_URL}/ftp/image`, {
       params: { path: userResponse.data.imageUrl },
       headers: {
-        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+        Authorization: `Bearer ${localToken}`,
       },
       responseType: 'blob',
     });
@@ -219,7 +239,7 @@ const fetchUserProfileDetails = async () => {
     const profileResponse = await axios.get(`${API_BASE_URL}/profile/info-by-nickname`, {
       params: { nickname: nickname },
       headers: {
-        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+        Authorization: `Bearer ${localToken}`,
       },
     });
 
@@ -235,12 +255,13 @@ const fetchUserProfileDetails = async () => {
     if (!isCurrentUserProfile.value) {
       checkFollowingStatus();
     }
-    
+
   } catch (error) {
     console.error('Error fetching user profile details:', error);
     profileExists.value = false; // 오류 시 프로필 존재 여부 설정
   }
 };
+
 
 // 닉네임 변경을 감시하고 프로필을 다시 가져오는 watch 설정
 watch(
