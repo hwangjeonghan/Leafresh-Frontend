@@ -68,7 +68,6 @@ const setFeed = () => {
 // 컴포넌트가 마운트될 때 setFeed 함수 실행
 onMounted(() => {
   setFeed();
-  console.log(feedData.value); // feedData 값 확인
 });
 </script>
 
