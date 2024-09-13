@@ -78,25 +78,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect, watch, computed } from 'vue';
-import axios from 'axios';
-import { useRouter, useRoute } from 'vue-router';
-import EditProfileModal from './EditProfileModal.vue';
-import PlantAddModal from '@/views/PlantAddModal.vue';
-import { useUserstore } from '@/stores/users'; // 사용자 스토어 불러오기
+import { ref, onMounted, watchEffect, watch, computed } from "vue";
+import axios from "axios";
+import { useRouter, useRoute } from "vue-router";
+import EditProfileModal from "./EditProfileModal.vue";
+import PlantAddModal from "@/views/PlantAddModal.vue";
+import { useUserstore } from "@/stores/users"; // 사용자 스토어 불러오기
 
 const userStore = useUserstore();
 const route = useRoute();
 const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const profileImage = ref('');
+const profileImage = ref("");
 const userNickname = ref(route.params.userNickname);
-const profileTitle = ref('');
-const profileDescription = ref('');
+const profileTitle = ref("");
+const profileDescription = ref("");
 const followerPlants = ref(0);
 const salePlants = ref(0);
-const followers = ref('');
+const followers = ref("");
 
 // 모달 상태
 const isEditModalOpen = ref(false);
@@ -136,15 +136,18 @@ const fetchUserProfileDetails = async () => {
   try {
     const nickname = route.params.userNickname; // 여기서 nickname을 정의합니다.
 
-    const userResponse = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
-      params: { nickname: nickname },
-      headers: {
-        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
-      },
-    });
+    const userResponse = await axios.get(
+      `${API_BASE_URL}/user/info-by-nickname`,
+      {
+        params: { nickname: nickname },
+        headers: {
+          Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+        },
+      }
+    );
 
-    if (typeof userResponse.data !== 'object') {
-      throw new Error('Invalid JSON response');
+    if (typeof userResponse.data !== "object") {
+      throw new Error("Invalid JSON response");
     }
 
     followers.value = userResponse.data.followers;
@@ -155,28 +158,30 @@ const fetchUserProfileDetails = async () => {
       headers: {
         Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
       },
-      responseType: 'blob',
+      responseType: "blob",
     });
 
     profileImage.value = URL.createObjectURL(imageResponse.data);
 
-    const profileResponse = await axios.get(`${API_BASE_URL}/profile/info-by-nickname`, {
-      params: { nickname: nickname },
-      headers: {
-        Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
-      },
-    });
+    const profileResponse = await axios.get(
+      `${API_BASE_URL}/profile/info-by-nickname`,
+      {
+        params: { nickname: nickname },
+        headers: {
+          Authorization: `Bearer ${localToken}`, // 토큰을 헤더에 포함
+        },
+      }
+    );
 
-    if (typeof profileResponse.data !== 'object') {
-      throw new Error('Invalid JSON response');
+    if (typeof profileResponse.data !== "object") {
+      throw new Error("Invalid JSON response");
     }
 
     profileTitle.value = profileResponse.data.profileTitle;
     profileDescription.value = profileResponse.data.profileDescription;
     profileExists.value = true; // 프로필 존재 여부 설정
-
   } catch (error) {
-    console.error('Error fetching user profile details:', error);
+    console.error("Error fetching user profile details:", error);
     profileExists.value = false; // 오류 시 프로필 존재 여부 설정
   }
 };
@@ -192,7 +197,7 @@ watch(
 // 데이터 변경 감시 및 반영
 watchEffect(() => {
   if (localToken) {
-    console.log('프로필 정보를 새로 가져옵니다.');
+    console.log("프로필 정보를 새로 가져옵니다.");
     fetchUserProfileDetails();
   }
 });
@@ -203,7 +208,7 @@ onMounted(async () => {
     // 사용자가 로그인된 상태이면 프로필 정보 가져오기
     fetchUserProfileDetails();
   } else {
-    console.warn('사용자 토큰이 존재하지 않습니다.');
+    console.warn("사용자 토큰이 존재하지 않습니다.");
   }
 });
 </script>

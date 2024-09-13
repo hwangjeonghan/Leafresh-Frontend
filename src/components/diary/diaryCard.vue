@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserstore } from '@/stores/users.js';
-import { useGardenStore } from '@/stores/gardenStore.js';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUserstore } from "@/stores/users.js";
+import { useGardenStore } from "@/stores/gardenStore.js";
 
 const router = useRouter();
 const loginState = useUserstore();
@@ -12,9 +12,11 @@ const selectedPlantId = ref(null);
 
 const goDiaryDetail = (plantId) => {
   if (loginState.userNickname && plantId) {
-    router.push(`/garden-diary/diary-detail/${loginState.userNickname}/${plantId}`);
+    router.push(
+      `/garden-diary/diary-detail/${loginState.userNickname}/${plantId}`
+    );
   } else {
-    console.error('사용자 정보나 식물 ID가 누락되었습니다.');
+    console.error("사용자 정보나 식물 ID가 누락되었습니다.");
     loginState.logout();
   }
 };
@@ -29,8 +31,12 @@ const goDiaryDetail = (plantId) => {
       @click="goDiaryDetail(plant.id)"
     >
       <div class="plant-image-container">
-        <img :src="plant.imageUrl" alt="식물 이미지" loading="lazy" class="plant-image" />
-        
+        <img
+          :src="plant.imageUrl"
+          alt="식물 이미지"
+          loading="lazy"
+          class="plant-image"
+        />
       </div>
       <div class="plant-info">
         <h3>{{ plant.plantName }}</h3>
@@ -40,7 +46,6 @@ const goDiaryDetail = (plantId) => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .plants-container {
@@ -58,7 +63,8 @@ const goDiaryDetail = (plantId) => {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
   position: relative; /* Position relative for the shimmer effect */
   overflow: hidden; /* Ensure shimmer effect stays within the card */
@@ -70,7 +76,7 @@ const goDiaryDetail = (plantId) => {
 }
 
 .plant-card:hover::before {
-  content: ''; /* Empty content for the shimmer effect */
+  content: ""; /* Empty content for the shimmer effect */
   position: absolute;
   top: -50%; /* Move shimmer effect outside the top edge */
   left: -50%; /* Move shimmer effect outside the left edge */
@@ -78,9 +84,9 @@ const goDiaryDetail = (plantId) => {
   height: 200%; /* Expand to cover the entire card */
   background: linear-gradient(
     45deg,
-    rgba(255, 215, 0, 0.2) 25%, /* Light gold */
-    rgba(255, 215, 0, 0.4) 50%, /* Medium gold */
-    rgba(255, 215, 0, 0.2) 75%  /* Light gold */
+    rgba(255, 215, 0, 0.2) 25%,
+    /* Light gold */ rgba(255, 215, 0, 0.4) 50%,
+    /* Medium gold */ rgba(255, 215, 0, 0.2) 75% /* Light gold */
   );
   background-size: 200% 200%;
   animation: shimmer 1.5s infinite, sparkle 2s infinite; /* Apply shimmer and sparkle animations */
@@ -143,8 +149,3 @@ const goDiaryDetail = (plantId) => {
   color: #666; /* Softer text color */
 }
 </style>
-
-
-
-
-
