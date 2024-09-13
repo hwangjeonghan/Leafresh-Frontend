@@ -139,7 +139,7 @@ const deleteTodo = async (todoId, action) => {
 
 /* Todo list container */
 .today_todolist {
-  padding: 20px;
+  padding: 10px;
  
 }
 .todo-checkbox{
@@ -152,6 +152,8 @@ const deleteTodo = async (todoId, action) => {
 
 /* Each todo item */
 .todo-item {
+
+  width: 80%;
   display: flex;
   align-items: center;
   margin-bottom: 10px; /* 간격을 20px으로 설정 */
@@ -174,7 +176,7 @@ const deleteTodo = async (todoId, action) => {
 .delete-btn {
   color: #000;
   border: none;
-  padding: 5px 10px;
+  padding: 5px;
   cursor: pointer;
   border-radius: 4px;
 }
