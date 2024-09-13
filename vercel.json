@@ -1,8 +1,6 @@
 {
-  "rewrites": [
-    {
-      "source": "/**/:path*",  
-      "destination": "http://1.214.19.22:6001/:path*"  
-    }
-  ]
-}
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/" }
+    ]
+  }
+  
