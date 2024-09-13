@@ -1,4 +1,3 @@
-// stores/gardenStore.js
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -15,12 +14,12 @@ export const useGardenStore = defineStore('garden', {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         // API 응답 데이터 구조 확인
         console.log('API 응답 데이터:', response.data);
-  
+
         // 데이터가 올바르게 설정되었는지 확인
-        if (response.data && Array.isArray(response.data)) {
+        if (Array.isArray(response.data)) {
           this.plants = response.data;
         } else {
           console.error('잘못된 데이터 구조:', response.data);
@@ -30,5 +29,4 @@ export const useGardenStore = defineStore('garden', {
       }
     },
   },
-  
 });
