@@ -97,37 +97,37 @@ const teamMembers = [
     name: "강형석",
     githubLink: "https://github.com/ppudding3861",
     githubImage: "https://github.com/ppudding3861.png",
-    job: ["백엔드", "프론트엔드", "로그인"]
+    job: ["팀장","백엔드","프론트엔드","서버"]
   },
   {
     name: "주순태",
     githubLink: "https://github.com/stjoo0925",
     githubImage: "https://github.com/stjoo0925.png",
-    job: ["데이터베이스", "API"]
+    job: ["기획","인프라","백엔드","프론트"]
   },
   {
     name: "이서현",
     githubLink: "https://github.com/dansun2",
     githubImage: "https://github.com/dansun2.png",
-    job: ["UI/UX 디자인"]
+    job: ["디자인","백엔드","프론트"]
   },
   {
     name: "서은진",
     githubLink: "https://github.com/jinnyjinny12",
     githubImage: "https://github.com/jinnyjinny12.png",
-    job: ["테스트", "디버깅"]
+    job: ["기획","디자인","백엔드","프론트"]
   },
   {
     name: "황정한",
     githubLink: "https://github.com/hwangjeonghan",
     githubImage: "https://github.com/hwangjeonghan.png",
-    job: ["배포", "백엔드"]
+    job: ["백엔드","프론트","서버"]
   },
   {
     name: "김민주",
     githubLink: "https://github.com/minju132",
     githubImage: "https://github.com/minju132.png",
-    job: ["프론트엔드", "문서화"]
+    job: ["프로젝트"]
   }
 ];
 
