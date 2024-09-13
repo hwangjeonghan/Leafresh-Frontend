@@ -1,7 +1,7 @@
 <template>
   <div class="todo-container">
-    <h1 class="todo-header">Todo List</h1>
-
+    <h1 class="todo-header">Today's Todo List</h1>
+    <div class="today_date"></div> 
     <div class="today_todolist">
 
       <div class="todo_box">
@@ -20,19 +20,33 @@
   
   <script setup>
   import { useUserstore } from "@/stores/users";
-  import { ref, onMounted, computed } from 'vue';
+  import { useTodoStore } from "@/stores/todoStore";
+  import { ref, onMounted, computed, watch } from 'vue';
   import axios from 'axios';
 
-
+// 사용자 및 todo 상태정의
   const userStore = useUserstore();
+  const todoStore = useTodoStore();
+
   const userId = computed(() => userStore.userId);
-
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-
   // todos 상태를 ref로 정의
   const todos = ref([]);
   
+  // 엔드포인트 연결
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
+  // pinia 스토어의 todo를 상태를 감지하고 반영
+  watch(
+    () => useTodoStore.todos,
+    (newTodos) => {
+      todos.value = newTodos;
+    },
+    {immediate: true }
+  );
+
+
+
   // API로 오늘의 TODO 목록 가져오는 함수
   const fetchTodayTodos = async () => {
     try {
@@ -48,6 +62,8 @@
       
       if (response.data && response.data.todoIndex) {
         todos.value = response.data.todoIndex;
+        todoStore.setTodos(response.data.todoIndex);  // Pinia 스토어에 todos 저장
+
       } else {
         console.log('todoIndex가 없습니다. 응답 데이터:', response.data);
       }
@@ -63,7 +79,7 @@
 const deleteTodo = async (todoId, action) => {
 
   console.log("삭제할 todoId:", todoId);
-  console.log("action:", action);
+
   if (!todoId) {
     console.error("todoId가 없습니다:", todoId); // null 또는 undefined 체크
     return;
@@ -81,7 +97,9 @@ const deleteTodo = async (todoId, action) => {
     const { status, message, deletedTodoId } = response.data;
     if (status === "success") {
       // action이 0이면 목록에서 삭제
-      todos.value = todos.value.filter(todo => todo.id !== deletedTodoId);
+      todos.value = todos.value.filter(todo => todo.todoId !== deletedTodoId);
+      todoStore.setTodos(todos.value);  // Pinia 스토어에서 상태 업데이트
+  
       alert(message);  // 서버의 메시지를 UI에 표시
     } else {
       alert(message);  // 실패 메시지
@@ -98,8 +116,6 @@ const deleteTodo = async (todoId, action) => {
   </script>
 <style scoped>
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
 /* Container for the todo list */
 .todo-container {
@@ -108,14 +124,14 @@ const deleteTodo = async (todoId, action) => {
   padding: 20px;
   background-color: #f0f4f8;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Lato', sans-serif;
+  font-family: 'LeeSeoyun', sans-serif; /* 폰트 적용 */
   border-radius: 6px;
   box-shadow: 0px 2px 23px 0px #E4E6E9;
 }
 
 /* Header styling */
 .todo-header {
-  font-size: 24px;
+  font-size: 30px;
   color: #333;
   text-align: center;
   margin-bottom: 20px;
@@ -123,7 +139,7 @@ const deleteTodo = async (todoId, action) => {
 
 /* Todo list container */
 .today_todolist {
-  padding: 20px;
+  padding: 10px;
  
 }
 .todo-checkbox{
@@ -136,6 +152,8 @@ const deleteTodo = async (todoId, action) => {
 
 /* Each todo item */
 .todo-item {
+
+  width: 80%;
   display: flex;
   align-items: center;
   margin-bottom: 10px; /* 간격을 20px으로 설정 */
@@ -148,13 +166,18 @@ const deleteTodo = async (todoId, action) => {
   height: 100px;
 }
 
+.todo-content {
+  font-size: 20px;
+
+
+}
 
 /* 삭제버튼 */
 
 .delete-btn {
   color: #000;
   border: none;
-  padding: 5px 10px;
+  padding: 5px;
   cursor: pointer;
   border-radius: 4px;
 }
