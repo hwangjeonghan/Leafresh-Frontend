@@ -7,7 +7,7 @@
     </div>
     <div class="market_post_info_box">
       <div :class="market.post.marketStatus ? 'market_status_box_true' : 'market_status_box_false'"
-        @click="handleStatusUpdate">
+        @click="isUser ? handleStatusUpdate() : null" :style="{ cursor: isUser ? 'pointer' : 'default' }">
         <p>{{ market.post.marketStatus ? "분양중" : "분양 완료" }}</p>
       </div>
       <div class="market_created_box">

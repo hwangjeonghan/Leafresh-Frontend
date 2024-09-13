@@ -5,14 +5,14 @@
         :market="market"
         :marketImage="marketImage"
         :isUser="isUser"
-        :handleStatusUpdate="() => handleMarketStatusUpdate(market.post.marketId, market.post.marketStatus)"
+        :handleStatusUpdate="() => handleMarketStatusUpdate(market.post.marketId, market.post.marketStatus, market)"
         :editPost="editPost"
         :deletePost="handleDeletePost"
         :allPostList="allPostList"
       />
         <div class="market_user_container" v-if="userInfo">
           <img :src="userImage" alt="User Profile Image" class="user_image" />
-          <div class="user_info">
+          <div class="user_info" @click="toGardenDiary()" style="cursor: pointer;">
             <p class="user_nickname">{{ userInfo.userNickname }}</p>
             <p class="user_phonenumber">{{ userInfo.userPhoneNumber }}</p>
           </div>
@@ -73,6 +73,7 @@ const userImage = computed(() => {
   return `${import.meta.env.VITE_API_BASE_URL}/ftp/image?path=${encodeURIComponent(userInfo.value?.imageUrl)}`;
 })
 
+const userNickname = computed(() => userInfo.value?.userNickname);
 const isUser = computed(() => userStore.email === market.value?.post?.userEmail);
 const showCompletedAlert = () => alert("분양이 완료된 게시글입니다.");
 
@@ -82,6 +83,14 @@ const allPostList = () => {
 const editPost = (id) => {
   router.push(`/market/modify/${id}`);
 };
+
+const toGardenDiary = () => { 
+  if (userNickname.value) {
+    router.push(`/garden-diary/${userNickname.value}`);
+  } else {
+    console.log("유저 닉네임이 존재하지 않습니다.");
+  }
+}
 
 // 모달 열기
 const openChatModal = () => {
@@ -93,11 +102,11 @@ const closeChatModal = () => {
   isChatModalOpen.value = false;
 };
 
-const handleMarketStatusUpdate = async (id, status) => {
+const handleMarketStatusUpdate = async (id, status, marketData) => {
   try {
-    await updateMarketStatus(id, status, token);
+    await updateMarketStatus(id, status, token, marketData);
   } catch (error) {
-    console.error("Edit 문제 발생:", error);
+    console.error("Status 문제 발생:", error);
   }
 };
 
@@ -114,12 +123,12 @@ onMounted(async () => {
   try {
     market.value = await fetchMarketDetails(marketId.value, token);
     if (market.value) {
-      const userEmail = market.value.post.userEmail;
-      console.log('이메일 정상적으로 전달되는지',userEmail);
+      const userEmail = market.value.post.userEmail; // 게시글에 저장된 email 가져오기
       if (userEmail) {
         const userData = await getUserInfo(userEmail, token); // 작성자의 Email을 기준으로 getUserInfo 함수를 실행함.
         userInfo.value = userData;
-        console.log('userData: ',userData);
+        const userNickname = userInfo.value.userNickname;
+        console.log('유저닉네임 : ', userNickname);
       }
     }
   } catch (error) {
