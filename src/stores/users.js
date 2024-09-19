@@ -19,6 +19,8 @@ export const useUserstore = defineStore("useUserstore", () => {
   const profileDescription = ref(""); // 프로필 설명
   const token = ref(localStorage.getItem("accessToken") || ''); // 로컬 스토리지에서 토큰을 초기화
 
+
+
   // 로그인 상태 변수 추가
   const isLoggedIn = ref(false); // 로그인 상태 관리
   const usersInfo = ref(false); // 사용자 정보가 존재하는지 여부

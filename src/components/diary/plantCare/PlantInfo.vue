@@ -1,21 +1,50 @@
 <template>
-  <div class="plant-info">
-    <h2>{{ plantName }}</h2>
-    <p>종류: {{ species }}</p>
-    <p>만난 날: {{ meetDate }}</p>
-    <p>D + {{ daysPassed }}</p>
-    <p>{{ description }}</p>
+  <div class="plant-info" v-if="plant">
+    <h2>{{ plant.plantName }}</h2>
+    <p>종류: {{ plant.plantType }}</p>
+    <p>만난 날: {{ formattedDate(plant.registrationDate) }}</p>
+    <p>D + {{ daysPassed(plant.registrationDate) }}</p>
+    <p>{{ plant.plantDescription }}</p>
+  </div>
+  <div v-else>
+
+    <p>Loading ,,,</p>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useGardenStore } from '@/stores/gardenStore';
+import { useRoute } from 'vue-router';
 
-const plantName = ref('식물의 별명');
-const species = ref('스투키');
-const meetDate = ref('2022-05-01');
-const daysPassed = ref(1220);
-const description = ref('우리 스투키카운요... (식물 소개)');
+const route = useRoute();
+const store = useGardenStore();
+const id = route.params.id;
+
+const plant = computed(() => store.plants.find(p => p.id === Number(id))); // plants 배열에서 id에 해당하는 식물 찾기
+
+onMounted(() => {
+  if (!store.plants.length) {
+    store.fetchPlants(); // store에 plants 데이터가 없으면 API 호출
+  }
+});
+
+
+const formattedDate = (date) => {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return new Date(date).toLocaleDateString(undefined, options);
+};
+
+const daysPassed = (registrationDate) => {
+  const registration = new Date(registrationDate);
+  const now = new Date();
+  const diffTime = Math.abs(now - registration);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+
+
 </script>
 
 <style scoped>

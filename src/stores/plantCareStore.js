@@ -117,6 +117,37 @@ export const usePlantCareStore = defineStore('plantCare', {
         console.error('Fetch Error', error);
         alert('서버와의 통신 중 오류가 발생했습니다.');
       }
+    },
+
+    async deleteEvent(eventDate) {
+      const userStore = useUserstore();
+      const token = localStorage.getItem('accessToken');
+      const userId = userStore.userId;
+
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/garden-diary/plant-care/delete?userId=${userId}&eventDate=${eventDate}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+
+        if (response.ok) {
+          // 성공하면 프론트엔드에서도 삭제
+          this.events = this.events.filter(event => event.start !== eventDate);
+          alert('이벤트가 성공적으로 삭제되었습니다.');
+        } else {
+          const errorData = await response.json();
+          console.error('Error deleting event:', errorData.error);
+          alert('이벤트 삭제 중 오류가 발생했습니다.');
+        }
+      } catch (error) {
+        console.error('Fetch Error', error);
+        alert('서버와의 통신 중 오류가 발생했습니다.');
+      }
     }
+
+
   }
 });

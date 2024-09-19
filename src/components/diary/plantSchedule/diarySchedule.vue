@@ -78,22 +78,22 @@ const date = ref();
     <div class="garden_title">나의 정원일정</div>
     <div class="hairline"></div>
 
-    <!-- 캘린더 -->
+    <div class="schedule_box">
+    
+      <Calender />
+      
+      <div class="todo_box"><TodayTodo />
+      <button class="todo_input_button" @click="openModal">할일추가</button>
 
-    <div class="schedule_container">
-      <!-- Calender 컴포넌트에서 날짜 클릭 이벤트를 받아서 처리 -->
-      <div class="calender_box">
-        <Calender />
       </div>
+      
 
-      <div class="today_todo_box">
-        <TodayTodo />
-
-        <button class="todo_input_button" @click="openModal">할일추가</button>
-      </div>
 
     </div>
 
+
+
+ 
     <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h2>Add New Todo</h2>
@@ -125,6 +125,7 @@ const date = ref();
     font-weight: normal;
     font-style: normal;
 }
+
 .diaryschedule_container {
   width: 100%;
   height: 100%;
@@ -132,6 +133,7 @@ const date = ref();
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* 나의 정원일정 */
@@ -148,18 +150,6 @@ const date = ref();
   height: 1px; /* 얇은 선 */
   margin: 20px 0; /* 상하 여백 */
   border: #904F00 solid 2px;
-}
-.schedule_container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 5px;
-  margin-bottom: 10px;
-}
-
-.today_todo_box {
-  margin: 30px;
 }
 
 /* 할일 추가 버튼 */
@@ -197,6 +187,25 @@ const date = ref();
   margin-bottom: 20px;
   border: 2px solid #ccc;
   border-radius: 8px;
+}
+
+
+
+.schedule_box {
+  display: flex;
+  width: 85%;
+  justify-content: space-between; /* 컴포넌트들 간의 간격을 조정 */
+  align-items: flex-start; /* 상단 정렬 */
+  flex-direction: row; /* 가로로 나열 */
+  overflow: auto; /* 넘치는 경우 스크롤 생성 */
+  box-sizing: border-box;
+  padding: 10px; /* 내부 여백 설정 */
+}
+
+.schedule_box > * {
+  flex: 1; /* 각 컴포넌트가 동일한 크기를 가지도록 설정 */
+  max-width: 45%; /* 각 컴포넌트의 최대 너비를 45%로 제한하여 스크롤바 방지 */
+  box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
 }
 
 
