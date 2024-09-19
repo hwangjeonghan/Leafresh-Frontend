@@ -81,14 +81,14 @@
 <script setup>
 import { ref, onMounted, watchEffect, watch, computed } from 'vue';
 import axios from 'axios';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import EditProfileModal from './EditProfileModal.vue';
 import PlantAddModal from '@/views/PlantAddModal.vue';
 import { useUserstore } from '@/stores/users'; // 사용자 스토어 불러오기
+import { useFollowStore } from '@/stores/followStore';
 
 const userStore = useUserstore();
 const route = useRoute();
-const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const profileImage = ref('');
@@ -98,6 +98,7 @@ const profileDescription = ref('');
 const followerPlants = ref(0);
 const salePlants = ref(0);
 const followers = ref('');
+const followStore = useFollowStore(); // 팔로우 스토어 사용
 
 // 모달 상태
 const isEditModalOpen = ref(false);
@@ -137,7 +138,7 @@ const closePlantAddModal = () => {
 const checkFollowingStatus = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/follow/status`, {
-      params: { followingNickname: userNickname.value },
+      params: { userNickname: userNickname.value },
       headers: {
         Authorization: `Bearer ${localToken}`,
       },
@@ -161,32 +162,11 @@ const checkFollowingStatus = async () => {
 
 console.log("팔로잉 상태 : "+ isFollowing.value);
 
-// 팔로잉/언팔로우 토글
+
+// 팔로우/언팔로우 토글
 const toggleFollow = async () => {
-  try {
-    if (isFollowing.value) {
-      await axios.delete(`${API_BASE_URL}/follow`, {
-        data: { followingNickname: userNickname.value },
-        headers: {
-          Authorization: `Bearer ${localToken}`,
-        },
-      });
-      isFollowing.value = false;
-      followers.value -= 1; // 팔로워 수 감소
-    } else {
-      await axios.post(`${API_BASE_URL}/follow`, {
-        followingNickname: userNickname.value,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localToken}`,
-        },
-      });
-      isFollowing.value = true;
-      followers.value += 1; // 팔로워 수 증가
-    }
-  } catch (error) {
-    console.error('팔로우/언팔로우 중 오류 발생:', error);
-  }
+  await followStore.toggleFollow(userNickname.value, isFollowing.value, localToken);
+  isFollowing.value = !isFollowing.value;
 };
 
 
