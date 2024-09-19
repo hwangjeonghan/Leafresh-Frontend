@@ -11,7 +11,7 @@
         :allPostList="allPostList"
       />
         <div class="market_user_container" v-if="userInfo">
-          <img :src="userImage" alt="User Profile Image" class="user_image" />
+          <img :src="userImage" alt="User Profile Image" class="user_image" @click="toGardenDiary()"/>
           <div class="user_info" @click="toGardenDiary()" style="cursor: pointer;">
             <p class="user_nickname">{{ userInfo.userNickname }}</p>
             <p class="user_phonenumber">{{ userInfo.userPhoneNumber }}</p>
@@ -75,7 +75,6 @@ const userImage = computed(() => {
 
 const userNickname = computed(() => userInfo.value?.userNickname);
 const isUser = computed(() => userStore.email === market.value?.post?.userEmail);
-const showCompletedAlert = () => alert("분양이 완료된 게시글입니다.");
 
 const allPostList = () => {
   router.push('/market');
@@ -105,6 +104,11 @@ const closeChatModal = () => {
 const handleMarketStatusUpdate = async (id, status, marketData) => {
   try {
     await updateMarketStatus(id, status, token, marketData);
+    
+    if(marketData.post.marketStatus) {
+      marketData.post.marketStatus = !status;
+      alert('분양이 완료되었습니다.');
+    }
   } catch (error) {
     console.error("Status 문제 발생:", error);
   }

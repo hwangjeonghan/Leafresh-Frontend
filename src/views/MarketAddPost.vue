@@ -46,7 +46,7 @@ const router = useRouter();
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null, marketVisibleScope: '' });
+const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null, marketVisibleScope: '전체공개' });
 const postImage = ref(null);
 const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
 const scopes = {
