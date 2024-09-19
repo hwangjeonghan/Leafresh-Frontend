@@ -6,9 +6,9 @@ import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오�
 import { useGardenStore } from "@/stores/gardenStore.js";
 import FeedCard from "@/components/feed/feedCard.vue";
 import GardenCard from "@/components/diary/diaryCard.vue";
-import Profile from "@/components/diary/diaryProfile.vue";
 import Schedule from "@/components/diary/plantSchedule/diarySchedule.vue";
 import MarketCard from "@/components/market/MarketCard.vue";
+import DiaryProfileSection from "@/components/diary/diaryProfileSection.vue"
 
 const router = useRouter();
 const activeComponent = ref("Feed");
@@ -74,7 +74,7 @@ const components = {
 <template>
   <div class="diary_container">
     <div class="profile">
-      <Profile />
+      <DiaryProfileSection />
     </div>
     <div class="schedule">
       <Schedule />

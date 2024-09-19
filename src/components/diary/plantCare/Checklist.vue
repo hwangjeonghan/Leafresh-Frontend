@@ -65,7 +65,7 @@ ul {
   margin: 20px 0;
 }
 
-li {
+.date_picker_container li {
   display: flex;
   align-items: center;
   justify-content: space-between;
