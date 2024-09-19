@@ -9,6 +9,7 @@
         :editPost="editPost"
         :deletePost="handleDeletePost"
         :allPostList="allPostList"
+        :isModal="true"
       />
         <div class="market_user_container" v-if="userInfo">
           <img :src="userImage" alt="User Profile Image" class="user_image" @click="toGardenDiary()"/>
