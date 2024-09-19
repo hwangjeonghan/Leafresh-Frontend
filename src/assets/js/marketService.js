@@ -49,6 +49,8 @@ export async function updateMarketStatus(id, status, token, marketData) {
         return;
     }
 
+    const showCompletedAlert = () => alert("이미 분양이 완료된 게시글입니다.");
+
     if (!status) { // 이미 분양 완료 상태인 경우
         showCompletedAlert();
         return;
@@ -77,8 +79,8 @@ export async function updateMarketStatus(id, status, token, marketData) {
             const errorData = await response.json();
             throw new Error(`서버 응답 오류 : ${errorData.message || "알 수 없는 오류"}`);
         }
-        const marketData = await response.json();
-        market.value.post.marketStatus = !status;
+        const updateMarketData = await response.json(); // 백엔드의 상태 결과값을 가져옴
+        
     } catch (error) {
         console.error("오류:", error);
         alert("상태 업데이트 중 오류가 발생했습니다.");

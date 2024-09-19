@@ -72,6 +72,7 @@ const fetchPostData = async () => {
     });
     Object.assign(post, response.data.post);
     post.existingImagePath = response.data.post.marketImage; // 기존에 있던 이미지 경로
+    post.marketVisibleScope = scopes[response.data.post.marketVisibleScope];
 
     console.log('데이터 잘 가져오는지: ', response.data.post);
 

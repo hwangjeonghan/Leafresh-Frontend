@@ -228,11 +228,21 @@
     object-fit: cover;
     /* 이미지 비율 유지 */
     margin-left: 10px;
+    cursor: pointer;
 }
 
+.user_image:hover {
+    transform: translateY(-4px);
+}
+  
 .user_info {
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+}
+
+.user_info:hover {
+    transform: translateY(-4px);
 }
 
 .user_nickname {

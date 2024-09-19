@@ -87,7 +87,7 @@ onMounted(() => {
       </div>
 
       <div class="market_btn_box">
-        <router-link to="/market/addpost" class="addPost_btn">+</router-link>
+        <router-link to="/market/addpost" class="addPost_btn">게시글 작성</router-link>
       </div>
   </div>
 </div>
@@ -154,7 +154,13 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-color: #656565;
   display: flex;
+  cursor: pointer;
 }
+
+.market-item:hover {
+  transform: translateY(-4px);
+}
+
 
 .market_status_box_true {
   display: flex;
