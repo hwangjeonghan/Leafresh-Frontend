@@ -234,6 +234,7 @@ margin-left: 10px;
 } 
 
 
+
 .dates {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

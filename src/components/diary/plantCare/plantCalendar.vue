@@ -16,17 +16,50 @@ const calendarOptions = reactive({
   initialView: 'dayGridMonth',
   events: computed(()=> plantCareStore.events),
 
+
+    // 이벤트 클릭 시 호출되는 함수
+    eventClick: async function (info) {
+
+      if(confirm('이 기록을 삭제하겠습니까? ')){
+        // 서버에서 이벤트를 삭제하고 캘린더에서 제거.
+        const evnetDate = info.event.startStr; // 선택한 이벤트의 날짜
+        // 서버에 비동기 요청으로 이벤트 삭제
+        await plantCareStore.deleteEvent(evnetDate);
+        // 삭제 성공 시 캘린더에 이벤트 삭제
+        info.event.remove();
+ 
+      }
+    },
+
     // 이벤트 콘텐츠를 HTML로 렌더링
     eventContent: function (arg) {
-    return { html: arg.event.title };  // 이벤트 제목을 HTML로 렌더링
+      const deleteButton = `<button class="event-delete-btn">x</button>`;
+      const eventTitle = `<div class="event-title">${arg.event.title}</div>`
+
+      return { html: `${eventTitle}${deleteButton}` }; // 이벤트 제목을 HTML로 렌더링
   }
 
 });
 
 onMounted(()=> {
   plantCareStore.fetchPlantCareEvents();
-  console.log('Events after fetch:', plantCareStore.events);
 });
+
+
+// x 버튼 클릭 처리
+const handleDeleteClick = (e) => {
+  if (e.target.classList.contains('event-delete-btn')) {
+    const eventEl = e.target.closest('.fc-event');  // 이벤트 엘리먼트 찾기
+    const eventId = eventEl.getAttribute('data-event-id');  // 이벤트 ID나 날짜 등을 통해 식별
+
+    if (eventId && confirm('정말로 이 이벤트를 삭제하시겠습니까?')) {
+      plantCareStore.deleteEvent(eventId);
+    }
+  }
+};
+
+// 전체 문서에서 이벤트 삭제 버튼 클릭 시 처리
+document.addEventListener('click', handleDeleteClick);
 
 </script>
 
@@ -131,6 +164,26 @@ onMounted(()=> {
   border-radius: 4px;
   padding: 5px;
   font-size: 12px;
+  display: flex;
+  justify-content: space-between; /* x 버튼과 텍스트를 양쪽에 배치 */
+  align-items: center;
+}
+
+.event-title {
+  flex-grow: 1;
+}
+
+.event-delete-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.event-delete-btn:hover {
+  color: red;
 }
 
 .fc-event:hover {

@@ -119,27 +119,49 @@ const deleteTodo = async (todoId, action) => {
 
 /* Container for the todo list */
 .todo-container {
-  max-width: 600px;
+  width: 80%;
+  height: 40%;
   margin: 20px auto;
-  padding: 20px;
-  background-color: #f0f4f8;
+  padding: 10px;
+  background: linear-gradient(to bottom, #dfffd6, #c7f7bb); /* 그라데이션 추가 */
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   font-family: 'LeeSeoyun', sans-serif; /* 폰트 적용 */
   border-radius: 6px;
-  box-shadow: 0px 2px 23px 0px #E4E6E9;
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.1), /* 일반 그림자 */
+    -4px -4px 12px rgba(255, 255, 255, 0.5); /* 밝은 색 그림자로 접힌 느낌 */
+  
+  position: relative;
+  overflow: hidden;
 }
+
+
+.todo-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 90%, rgba(0, 0, 0, 0.05) 75%); /* 접힌 느낌을 위한 대각선 그라디언트 */
+  pointer-events: none;
+}
+
+
 
 /* Header styling */
 .todo-header {
   font-size: 30px;
   color: #333;
   text-align: center;
-  margin-bottom: 20px;
+  margin: 10px;
 }
 
 /* Todo list container */
 .today_todolist {
-  padding: 10px;
+ width: 100%;
+ height: 150px;
+ padding: 20px;
  
 }
 .todo-checkbox{
@@ -152,18 +174,11 @@ const deleteTodo = async (todoId, action) => {
 
 /* Each todo item */
 .todo-item {
-
-  width: 80%;
   display: flex;
   align-items: center;
   margin-bottom: 10px; /* 간격을 20px으로 설정 */
   list-style-type: none;
  
-}
-
-.todo_box{
-  width: 400px;
-  height: 100px;
 }
 
 .todo-content {
