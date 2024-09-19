@@ -18,11 +18,11 @@
   <img class="market_image_box" :src="marketImage" alt="Market Image" />
   <div class="market_content_box">{{ market.post.marketContent }}</div>
   <div class="market_btn_box">
-    <div v-if="isUser">
+    <div v-if="isUser && isModal">
       <button class="market_btn_edit" @click="editPost(market.post.marketId)">수정하기</button>
       <button class="market_btn_delete" @click="deletePost(market.post.marketId)">삭제하기</button>
     </div>
-    <button class="market_btn_list" @click="allPostList">글목록</button>
+    <button v-if="isModal" class="market_btn_list" @click="allPostList">글목록</button>
   </div>
 </div>
 </template>
@@ -42,5 +42,6 @@ const props = defineProps({
   editPost: Function,
   deletePost: Function,
   allPostList: Function,
+  isModal: Boolean
 });
 </script>

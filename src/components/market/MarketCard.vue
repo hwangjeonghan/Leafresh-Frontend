@@ -9,8 +9,9 @@
     <p>등록하신 분양글이 없습니다.</p>
   </div>
   <div v-if="isMarketDetailOpen">
+    ㅗㅎ촣초홓ㅊ호촣ㅊㅎㅊ
     <div>
-      <MarketInDiaryModal :marketId="itemMarketId" @close="closeMarketDetailModal"/>
+      <MarketInDiaryModal v-model:isMarketDetailOpen="isMarketDetailOpen" :marketId="itemMarketId" @update:modelValue="isMarketDetailOpen = $event"/>
     </div>
   </div>
 </div>
@@ -26,17 +27,17 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const userStore = useUserstore();
 const markets = ref([]); // 게시글 조회해서 담을 리스트
 const imageUrl = ref('');
-const itemMarketId = ref(null);
+const itemMarketId = ref('');
 const isMarketDetailOpen = ref(false);
 const userNickname = ref('');
 const route = useRoute();
 const router = useRouter();
 
 const openMarketDetailModal = (market) => {
-  console.log('marketId',market.marketId);
-  itemMarketId.value = market.marketId; // marketId를 변수에 넣어줌
-  console.log('marketId',itemMarketId.value);
+  itemMarketId.value = Number(market.marketId); // marketId를 변수에 넣어줌
+  console.log('마켓아이디 ',itemMarketId.value);
   console.log('market',market);
+
   isMarketDetailOpen.value = true;
 }
 
@@ -47,11 +48,9 @@ const closeMarketDetailModal = () => {
 const fetchMarkets = async () => {
   try {
     const token = localStorage.getItem('accessToken');
-    userNickname.value = route.params.userNickname; // url 에서 닉네임 가져옴
-    console.log(userNickname.value);
-    const nickname = userNickname.value;
 
-    const userResponse = await fetch(`${API_BASE_URL}/user/info-by-nickname?nickname=${nickname}`, {
+    // 유저닉네임으로 사용자 정보를 가져옴
+    const userResponse = await fetch(`${API_BASE_URL}/user/info-by-nickname?nickname=${userNickname.value}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -64,10 +63,9 @@ const fetchMarkets = async () => {
     }
 
     const userInfo = await userResponse.json();
-    const userEmail = userInfo.userEmail; // 유저정보에서 이메일 가져옴
-    console.log('userinfo', userInfo);
-    console.log(userEmail);
+    const userEmail = userInfo.userEmail; // 사용자 정보에서 이메일 가져옴
 
+    // 분양게시글 조회하는 api로 전체 게시글 조회함
     const response = await fetch(`${API_BASE_URL}/market`, {
       method: 'GET',
       headers: {
@@ -79,11 +77,11 @@ const fetchMarkets = async () => {
       const errorData = await response.json();
       throw new Error(`서버 응답 오류 : ${errorData.message || '알수없는 오류'}`);
     }
+    const result = await response.json(); 
 
-    const result = await response.json();
-    console.log('result : ',result);
-
-    markets.value = result.filter(market => market.userEmail === userEmail); // 출력할 markets의 값 중 이메일 같은것만 value에 넣음
+    markets.value = result.filter(market => 
+                              market.userEmail === userEmail && // 전체 게시글 중 다이어리 주인의 이메일과 같은것만 필터링해서 markets에 넣어줌
+                              market.marketVisibleScope !== 'MARKET_DELETE'); // 게시글 상태가 삭제가 아닌것만 보여줄라구
 
     // 게시글 이미지 경로를 하나하나 꺼내옴
     markets.value.forEach(market => {
@@ -97,6 +95,8 @@ const fetchMarkets = async () => {
 }
 
 onMounted(() => {
+  userNickname.value = route.params.userNickname; // url 에서 닉네임 가져옴
+  console.log('유저닉네임 가져오기 : ',userNickname.value);
   fetchMarkets();
 })
 </script>
