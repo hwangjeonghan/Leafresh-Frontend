@@ -53,7 +53,7 @@ const saveMessages = () => {
 
 const connection = () => {
   client.value = new Client({
-    brokerURL: 'wss://localhost:8080/ws', // WebSocket URL
+    brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
     onConnect: () => {
       console.log('STOMP 연결 성공');
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
