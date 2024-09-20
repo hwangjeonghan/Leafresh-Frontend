@@ -20,7 +20,7 @@
           </div>
           <div class="input-group">
             <label for="image">사진</label>
-            <input type="file" @change="handleImageUpload" />
+            <input type="file" @change="handleImageUpload" accept="image/*" required />
           </div>
           <div class="input-group">
             <label for="visibleScope">공개범위</label>
