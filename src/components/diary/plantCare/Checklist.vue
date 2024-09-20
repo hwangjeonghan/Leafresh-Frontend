@@ -12,7 +12,8 @@
               <path d="M12.275 19C12.475 18.9833 12.646 18.904 12.788 18.762C12.93 18.62 13.0007 18.4493 13 18.25C13 18.0167 12.925 17.8293 12.775 17.688C12.625 17.5467 12.4333 17.484 12.2 17.5C11.5167 17.55 10.7917 17.3627 10.025 16.938C9.25833 16.5133 8.775 15.7423 8.575 14.625C8.54167 14.4417 8.45433 14.2917 8.313 14.175C8.17167 14.0583 8.009 14 7.825 14C7.59167 14 7.4 14.0877 7.25 14.263C7.1 14.4383 7.05 14.6423 7.1 14.875C7.38333 16.3917 8.05 17.475 9.1 18.125C10.15 18.775 11.2083 19.0667 12.275 19ZM12 22C9.71667 22 7.81267 21.2167 6.288 19.65C4.76333 18.0833 4.00067 16.1333 4 13.8C4 12.1333 4.66267 10.321 5.988 8.363C7.31333 6.405 9.31733 4.284 12 2C14.6833 4.28333 16.6877 6.40433 18.013 8.363C19.3383 10.3217 20.0007 12.134 20 13.8C20 16.1333 19.2377 18.0833 17.713 19.65C16.1883 21.2167 14.284 22 12 22Z" fill="#3B7FFD"/>
             </svg>
           </span>
-          물주기: <input class="fas fa-tint" type="number" v-model="store.water" min="0" max="5" />
+          <span style="flex-shrink: 0;">물주기:</span>
+          <el-slider v-model="store.water" :step="1" :min="0" :max="5" show-stops style="margin-left: 30px" />
         </li>
         <li>
           <span class="icon-container">
@@ -28,10 +29,9 @@
               </clipPath>
               </defs>
             </svg>
-            
-
           </span>
-          햇빛: <input type="number" v-model="store.sunlight" min="0" max="5" />
+          <span style="flex-shrink: 0;">햇빛:</span>
+          <el-slider v-model="store.sunlight" :step="1" :min="0" :max="5" show-stops style="margin-left: 40px" class="sun_slider" />
         </li>
         
         <li>
@@ -107,7 +107,7 @@ const saveData = async () => {
 };
 </script>
 
-<style>
+<style scoped>
 @font-face {
     font-family: 'LeeSeoyun';
     src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');
@@ -129,11 +129,6 @@ ul {
   margin: 20px 0;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0;
-}
 
 li {
   display: flex;
@@ -147,6 +142,10 @@ li {
   margin-right: 10px;
 }
 
+.sun_slider{
+  --el-color-primary: #FFA829;
+
+}
 
 
 input[type="number"] {
