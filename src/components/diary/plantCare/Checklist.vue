@@ -40,7 +40,14 @@
               <path d="M15.1 1.80957L12.27 4.63957C11.5 5.41957 11.5 6.68957 12.27 7.46957L13.68 8.87957L9.13001 13.4296L6.31001 10.5996L4.89001 11.9996C-0.0599859 16.9996 3.50001 20.4996 3.50001 20.4996C3.50001 20.4996 7.00001 23.9996 12 19.0896L13.41 17.6796L10.61 14.8796L15.15 10.3396L16.54 11.7296C17.32 12.4996 18.59 12.4996 19.37 11.7296L22.2 8.89957L15.1 1.80957ZM17.93 10.2796L16.55 8.89957L15.11 7.45957L13.71 6.05957L15.12 4.64957L19.35 8.87957L17.93 10.2796Z" fill="#F24E1E"/>
             </svg>
           </span>
-          분갈이: <input type="checkbox" v-model="store.ventilation"></li>
+          분갈이: 
+          <el-switch
+            v-model="store.ventilation"
+            class="mt-2"
+            style="--el-switch-on-color: #F24E1E; --el-switch-off-color: #C0C4CC; margin-left: 35px"
+            inline-prompt
+          />
+        </li>
         <li>
           
           <span class="icon-container">
@@ -58,7 +65,14 @@
 
           </span>
           
-          가지치기: <input type="checkbox" v-model="store.cover"></li>
+          가지치기: 
+          
+          <el-switch
+              v-model="store.cover"
+              class="mt-2"
+              style="--el-switch-on-color: #1C8C0B; --el-switch-off-color: #C0C4CC; margin-left: 24px"
+              inline-prompt
+            /></li>
         <li>
           <span class="icon-container">
             <svg width="24" height="24" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,7 +88,16 @@
           </span>
           
           
-          영양제: <input type="checkbox" v-model="store.nutrients"></li>     
+          영양제:
+          <el-switch
+        v-model="store.nutrients"
+        class="mt-2"
+        style="--el-switch-on-color: #AFA929; --el-switch-off-color: #C0C4CC; margin-left: 37px"
+        inline-prompt
+        :active-icon="Check"
+        :inactive-icon="Close"
+         />
+      </li>     
      </ul>
   
     <button class="save_button" @click="saveData">저장</button>
