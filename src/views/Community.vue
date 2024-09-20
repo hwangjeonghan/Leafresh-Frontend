@@ -5,6 +5,8 @@
         v-for="feed in feeds"
         :key="feed.feedId"
         :feed="feed"
+        :comment="feed.comments"
+        @addComment="handleAddReply(feed.feedId, $event)"
         class="feed-card"
       />
     </div>
@@ -15,6 +17,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import CommunityDetail from '@/components/common/communityDetail.vue'; // FeedDetail 컴포넌트 가져오기
+import { fetchReplyLists } from '@/assets/js/feedReplyService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("accessToken");
@@ -30,7 +33,7 @@ const fetchFeeds = async () => {
       },
     });
 
-    feeds.value = response.data
+    const feedsData = response.data
   .map(feedData => ({
     username: feedData.userNickname,
     userimg: feedData.userProfileImg,
@@ -43,12 +46,34 @@ const fetchFeeds = async () => {
     feedId: feedData.feedId
   }))
   .sort((a, b) => new Date(b.time) - new Date(a.time)); // 최신순으로 정렬
+  
+  // 댓글조회하기
+  const feedsWithReply = await Promise.all(feedsData.map(async (feed) => {
+      const comments = ref([]);
+      await fetchReplyLists(feed.feedId, token, comments); // 각 피드의 댓글 가져오기
+      return {
+        ...feed,
+        comments: comments.value,
+      };
+    }));
+    feeds.value = feedsWithReply;
   } catch (error) {
     console.error("피드 리스트 조회 오류:", error);
   }
 };
 
-onMounted(fetchFeeds);
+// 댓글 추가 후 처리하는 함수
+const handleAddReply = (feedId, newReply) => {
+  const feed = feeds.value.find(feed => feed.feedId === feedId);
+  if (feed) {
+    feed.comments.push({ replyContent: newReply, displayDate: "방금 전" });
+  }
+};
+
+
+onMounted(async () => {
+  fetchFeeds();
+});
 </script>
 
 <style scoped>
