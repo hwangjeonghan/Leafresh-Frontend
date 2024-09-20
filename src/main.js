@@ -9,6 +9,9 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'; // Pinia Persist 플러그인 추가
 
 import App from "./App.vue";
@@ -22,6 +25,7 @@ app.config.globalProperties.$axios = axios;
 const pinia = createPinia(); // Pinia 인스턴스 생성
 pinia.use(piniaPluginPersistedstate); // 플러그인 등록
 
+app.use(ElementPlus);
 app.use(pinia); // Pinia 사용
 app.use(router); // 라우터 사용
 
