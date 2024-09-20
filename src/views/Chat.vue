@@ -53,7 +53,7 @@ const saveMessages = () => {
 
 const connection = () => {
   client.value = new Client({
-    brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
+    brokerURL: 'wss://api.leafresh.shop/ws', // 배포 서버의 WebSocket URL
     onConnect: () => {
       console.log('STOMP 연결 성공');
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
@@ -71,7 +71,8 @@ const connection = () => {
   });
 
   client.value.activate();
-}
+};
+
 
 const sendMessage = () => {
   console.log('User ID:', userStore.userId.value);
@@ -128,11 +129,6 @@ watch(() => route.params.id, (newId) => {
   });
 });
 </script>
-
-<style scoped>
-/* 기존 스타일 유지 */
-</style>
-
 
 
 <style scoped>
