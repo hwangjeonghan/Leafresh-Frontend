@@ -15,13 +15,39 @@ export const useTodoStore = defineStore('todoStore', () => {
     //todo목록을 새로고침한다.
     const setTodos = (newTodos) => {
         todos.value = newTodos;
-    }
+    };
+
+
+    // 서버에서 todo 목록을 가져온다
+    const fetchTodos = async () =>{
+
+        try{
+
+            const token = localStorage.getItem('accessToken');
+            const response = await axios.get ( `${import.meta.env.VITE_API_BASE_URL}/garden-diary/todo/today`,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+           });
+
+           if(response.status === 200 & Array.isArray(response.data)) {
+            setTodos(response.data);
+           }else{
+            console.error('잘못된 데이터 형식:', response.data);
+           }
+
+        }catch(error){
+            console.error('할일 목록을 가져오는 중 오류 발생', error);
+        }
+
+    };
 
 
     return {
         todos,
         addTodo,
-        setTodos
+        setTodos,
+        fetchTodos
     };
 });
 

@@ -148,8 +148,9 @@ onMounted(renderCalendar);
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
   padding: 30px;
-  display: flex;
   flex-direction: column;
+  width: 350px;
+  height: 350px;
 }
 
 

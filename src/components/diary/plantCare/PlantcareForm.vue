@@ -52,13 +52,12 @@ import Checklist from '@/components/diary/plantCare/Checklist.vue';
 .checkandcal-container {
   display: flex;
   flex-direction: row;
+  width: auto;
 }
 
 .cal-box {
   flex: 2;
-  margin: 20px;
-  width:  100%;
-  height: 50%;
+  margin: 10px;
 }
 
 .check-box {
