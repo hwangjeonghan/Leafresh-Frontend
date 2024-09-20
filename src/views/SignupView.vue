@@ -144,14 +144,17 @@ const showToast = (message, icon = "warning") => {
 // 닉네임 중복 확인 함수
 const checkNicknameDuplicate = async () => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/auth/checkNickname?nickname=${userNickname.value}`
-    );
-    return response.data.exists; // 닉네임이 존재하는지 여부 반환
+    const response = await axios.get(`${API_BASE_URL}/auth/checkNickname?nickname=${userNickname.value}`);
+    
+    // 닉네임이 중복되었는지 여부를 확인
+    if (response.data && response.data.exists === true) {
+      return true;  // 중복된 닉네임 있음
+    }
+    return false; // 중복된 닉네임 없음
   } catch (error) {
     console.error("닉네임 중복 확인 오류:", error);
     showToast("닉네임 중복 확인에 실패했습니다.", "error");
-    return false; // 오류가 발생한 경우 중복으로 처리
+    return false; // 오류 발생 시 기본적으로 중복 없는 것으로 처리
   }
 };
 
@@ -282,18 +285,15 @@ const handleSubmit = async () => {
     showToast("회원가입이 성공적으로 완료되었습니다.", "success");
     router.push("/login");
   } catch (error) {
-    if (
-      error.response &&
-      error.response.data &&
-      error.response.data.message === "중복된 이메일 입니다"
-    ) {
-      showToast("중복된 이메일 입니다", "error");
+    if (error.response && error.response.data && error.response.data.message) {
+      showToast(error.response.data.message, "error");  // 백엔드 오류 메시지를 표시
     } else {
       console.error("회원가입 오류:", error);
       showToast("회원가입에 실패했습니다.", "error");
     }
   }
 };
+
 </script>
 
 <style scoped>
