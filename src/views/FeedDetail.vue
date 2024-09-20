@@ -46,8 +46,9 @@
         <div class="comments mb-10">
           <div>Comments</div>
           <ul>
-            <li v-for="(comment, index) in comments" :key="index">
-              {{ comment }}
+            <li v-for="(comment, index) in comments" :key="index" class="comments_item">
+              <p class="comments_content">{{ comment.replyContent }}</p>
+              <p class="comments_date">{{ comment.displayDate }}</p>
             </li>
           </ul>
         </div>
@@ -62,6 +63,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router"; // 라우터를 사용하여 페이지 이동
 import axios from "axios";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import { fetchReplyLists } from '@/assets/js/feedReplyService';
 
 // 라우터에서 id 파라미터 가져오기
 const route = useRoute();
@@ -181,9 +183,44 @@ const goBackToDiary = () => {
   router.push(`/garden-diary/${loginState.userNickname}`); // 스토어에서 유저 닉네임을 가져와 이동
 };
 
+const allCommentLists = async () => {
+  try {
+    await fetchReplyLists(feedId.value, token, comments);
+    console.log('리플',comments.value);
+    const today = new Date();
+
+    comments.value.forEach(comment => {
+      const replyUpdateDate = new Date(comment.replyUpdatedAt);
+      const timeDiff = today - replyUpdateDate;
+      const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+      if (dayDiff === 0) {
+        // 날짜가 같을 경우 시간, 분으로 세세하게 나눔
+        const hourDiff = Math.floor(timeDiff / (1000 * 60 * 60)); // 시간 단위 차이
+        const minuteDiff = Math.floor(timeDiff / (1000 * 60)); // 분 단위 차이
+
+        if (hourDiff > 0) {
+          comment.displayDate = `${hourDiff}시간 전`;
+        } else if (minuteDiff > 0) {
+          comment.displayDate = `${minuteDiff}분 전`;
+        } else {
+          comment.displayDate = "방금 전";
+        }
+      } else if (dayDiff === 1) {
+        comment.displayDate = "어제";
+      } else {
+        comment.displayDate = `${dayDiff}일 전`;
+      }
+    })
+  } catch (error) {
+    console.error("오류:", error);
+  }
+}
+
 // 페이지 로드 시 피드 상세 정보를 가져오기
-onMounted(() => {
+onMounted(async () => {
   fetchFeedDetail();
+  allCommentLists();
 });
 </script>
 
@@ -335,6 +372,22 @@ onMounted(() => {
   font-family: "GothicA1-Light";
   margin-top: 10px;
   font-size: 0.9em;
+}
+
+.comments_item {
+  display: flex;
+  align-items: center;
+  margin: 8px !important;
+}
+
+.comments_content {
+  font-size: 1em !important;
+  margin: 0 0.5em 0 0 !important;
+}
+
+.comments_date {
+  font-size: 0.5em !important;
+  margin: 0 !important;
 }
 
 .middle-container {
