@@ -133,7 +133,6 @@ onMounted(async () => {
         const userData = await getUserInfo(userEmail, token); // 작성자의 Email을 기준으로 getUserInfo 함수를 실행함.
         userInfo.value = userData;
         const userNickname = userInfo.value.userNickname;
-        console.log('유저닉네임 : ', userNickname);
       }
     }
   } catch (error) {

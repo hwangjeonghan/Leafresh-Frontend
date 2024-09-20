@@ -22,13 +22,12 @@
         <div class="comments mb-10">
           <div>Comments</div>
           <ul>
+            <replyForm :feedId="feed.feedId" @addComment="handleAddReply" />
             <li v-for="(comment, index) in feed.comments" :key="index" class="comments_item">
               <p class="comments_content">{{ comment.replyContent }}</p>
               <p class="comments_date">{{ comment.displayDate }}</p>
             </li>
           </ul>
-          <replyForm :feedId="feed.feedId"
-          @addComment="handleAddReply" />
         </div>
       </div>
     </div>
@@ -74,7 +73,7 @@ const setFeed = () => {
 const emit = defineEmits(['addComment']);
 
 const handleAddReply = (newReply) => {
-  props.feed.comments.push({ replyContent: newReply });
+  emit('addComment', newReply);
 };
 
 // 컴포넌트가 마운트될 때 setFeed 함수 실행

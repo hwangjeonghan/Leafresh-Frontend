@@ -35,9 +35,6 @@ const router = useRouter();
 
 const openMarketDetailModal = (market) => {
   itemMarketId.value = Number(market.marketId); // marketId를 변수에 넣어줌
-  console.log('마켓아이디 ',itemMarketId.value);
-  console.log('market',market);
-
   isMarketDetailOpen.value = true;
 }
 
@@ -88,7 +85,6 @@ const fetchMarkets = async () => {
       const imagePath = market.marketImage;
       market.imageUrl = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
     });
-    console.log(markets.value);
   } catch (error) {
     console.error('오류:', error);
   }
@@ -96,7 +92,6 @@ const fetchMarkets = async () => {
 
 onMounted(() => {
   userNickname.value = route.params.userNickname; // url 에서 닉네임 가져옴
-  console.log('유저닉네임 가져오기 : ',userNickname.value);
   fetchMarkets();
 })
 </script>

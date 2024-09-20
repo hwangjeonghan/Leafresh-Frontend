@@ -1,7 +1,9 @@
 <template>
 <div class="comment-form">
-  <textarea v-model="newReply" placeholder="댓글을 입력하세요." @keyup.enter="submitComment"></textarea>
-  <button @click="submitComment">등록</button>
+  <form @submit.prevent="submitComment">
+    <input v-model="newReply" placeholder="댓글을 입력하세요." />
+    <button type="submit">등록</button>
+  </form>
 </div>
 </template>
 
@@ -10,29 +12,35 @@ import { ref } from 'vue';
 import { defineEmits } from 'vue';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const props = defineProps({
   feedId: {
     type: Number,
     required: true
-  },
-  addComment: {
-    type: Function,
-    required: true
   }
 });
 
-const newReply = ref('');
 const emit = defineEmits(['addComment']);
+const newReply = ref('');
+
 
 const submitComment = async () => {
   if (newReply.value.trim()) {
     try {
-      await axios.post(`${API_BASE_URL}/feeds/${feedId}/addreply`, {
+      console.log('폼제출실행');
+      await axios.post(`${API_BASE_URL}/feeds/${props.feedId}/addreply`, {
         feedId: props.feedId,
-        content: newReply.value,
-    });
-    emit('addComment', newReply.value);
-    newReply.value = ''; // 등록 후 내용 초기화
+        replyContent: newReply.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      emit('addComment', newReply.value);
+      newReply.value = ''; // 등록 후 내용 초기화
     } catch (error) {
       console.error("댓글 추가 오류:", error);
     }
@@ -43,11 +51,6 @@ const submitComment = async () => {
 <style scoped>
 .comment-form {
   margin-top: 10px;
-}
-textarea {
-  width: 100%;
-}
-button {
-  margin-top: 5px;
+  font-family: "GothicA1-Light" !important;
 }
 </style>
