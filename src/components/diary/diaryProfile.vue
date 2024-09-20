@@ -10,8 +10,8 @@
           <!-- 유저 닉네임을 표시하는 부분 -->
           <h2 class="profile-username">{{ userNickname }}</h2>
 
-           <!-- 팔로잉, 프로필 수정, 피드 추가, 식물 등록 버튼 표시 -->
-           <button
+          <!-- 팔로잉, 프로필 수정, 피드 추가, 식물 등록 버튼 표시 -->
+          <button
             class="edit-button"
             v-if="!isCurrentUserProfile"
             @click="toggleFollow"
@@ -52,7 +52,7 @@
         <div class="profile-stats">
           <span>반려식물 {{ followerPlants }}개</span>
           <span>판매식물 {{ salePlants }}개</span>
-          <span>팔로워 {{ followers }}명</span>
+          <span>팔로워 {{ followers }}명</span> <!-- 팔로워 수가 즉시 반영 -->
         </div>
         <div class="profile-bio">
           <p class="profile-title">{{ profileTitle }}</p>
@@ -97,7 +97,7 @@ const profileTitle = ref('');
 const profileDescription = ref('');
 const followerPlants = ref(0);
 const salePlants = ref(0);
-const followers = ref('');
+const followers = ref(''); // 팔로워 수를 상태로 저장
 const followStore = useFollowStore(); // 팔로우 스토어 사용
 
 // 모달 상태
@@ -147,10 +147,8 @@ const checkFollowingStatus = async () => {
     // API 응답 확인
     console.log("API 응답 데이터:", response.data);
 
-    // 응답 데이터가 예상한 형태인지 확인하고 수정된 필드명을 사용
     if (response && response.data && typeof response.data.following === 'boolean') {
-      isFollowing.value = response.data.following; // 올바른 필드명을 사용하여 팔로잉 상태 업데이트
-      console.log("팔로잉 상태 업데이트:", isFollowing.value);
+      isFollowing.value = response.data.following; // 팔로잉 상태 업데이트
     } else {
       console.error('API 응답 형식이 올바르지 않습니다:', response.data);
     }
@@ -159,16 +157,18 @@ const checkFollowingStatus = async () => {
   }
 };
 
-
-console.log("팔로잉 상태 : "+ isFollowing.value);
-
-
 // 팔로우/언팔로우 토글
 const toggleFollow = async () => {
   await followStore.toggleFollow(userNickname.value, isFollowing.value, localToken);
   isFollowing.value = !isFollowing.value;
-};
 
+  // 팔로우/언팔로우 후 팔로워 수 업데이트
+  if (isFollowing.value) {
+    followers.value++; // 팔로우 시 팔로워 수 증가
+  } else {
+    followers.value--; // 언팔로우 시 팔로워 수 감소
+  }
+};
 
 // 사용자 프로필 정보 가져오기
 const fetchUserProfileDetails = async () => {
@@ -187,9 +187,7 @@ const fetchUserProfileDetails = async () => {
       throw new Error('Invalid JSON response');
     }
 
-    followers.value = userResponse.data.followers;
-
-    // 팔로워 수 API 호출 (추가된 부분)
+    // 팔로워 수를 상태에 반영
     const followersResponse = await axios.get(`${API_BASE_URL}/follow/followers/count`, {
       params: { nickname: nickname },
       headers: {
@@ -197,10 +195,8 @@ const fetchUserProfileDetails = async () => {
       },
     });
 
-    // 팔로워 수를 상태에 반영
     if (typeof followersResponse.data === 'number') {
-      followers.value = followersResponse.data; // API로부터 받은 팔로워 수로 업데이트
-      console.log('팔로워 수:', followers.value);
+      followers.value = followersResponse.data; // API로 받은 팔로워 수로 업데이트
     } else {
       console.error('팔로워 수 API 응답 형식이 올바르지 않습니다:', followersResponse.data);
     }
@@ -242,7 +238,6 @@ const fetchUserProfileDetails = async () => {
   }
 };
 
-
 // 닉네임 변경을 감시하고 프로필을 다시 가져오는 watch 설정
 watch(
   () => route.params.userNickname,
@@ -271,9 +266,8 @@ onMounted(async () => {
 });
 </script>
 
-
 <style scoped>
-/* CSS는 동일하게 유지합니다. */
+/* CSS 동일 */
 .profile-container {
   display: flex;
   flex-direction: column;

@@ -5,6 +5,7 @@ export const useFollowStore = defineStore('followStore', {
   state: () => ({
     followers: [],
     following: [],
+    followerCount: 0,  // 팔로워 수를 저장하는 변수 추가
   }),
   actions: {
     async fetchFollowLists(token) {
@@ -13,6 +14,7 @@ export const useFollowStore = defineStore('followStore', {
           headers: { Authorization: `Bearer ${token}` },
         });
         this.followers = followersResponse.data;
+        this.followerCount = followersResponse.data.length; // 팔로워 수를 업데이트
 
         const followingResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/follow/following`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -29,12 +31,14 @@ export const useFollowStore = defineStore('followStore', {
             data: { userNickname },
             headers: { Authorization: `Bearer ${token}` },
           });
+          this.followerCount--; // 팔로우 취소 시 팔로워 수 감소
         } else {
           await axios.post(`${import.meta.env.VITE_API_BASE_URL}/follow`, {
             userNickname,
           }, {
             headers: { Authorization: `Bearer ${token}` },
           });
+          this.followerCount++; // 팔로우 시 팔로워 수 증가
         }
         await this.fetchFollowLists(token); // 팔로우 리스트 갱신
       } catch (error) {
@@ -43,3 +47,4 @@ export const useFollowStore = defineStore('followStore', {
     }
   },
 });
+
