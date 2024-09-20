@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useFollowStore } from '@/stores/followStore';
+import { useRouter } from 'vue-router';
 
 const followStore = useFollowStore();
 const token = localStorage.getItem('accessToken');
+const router = useRouter();
 
 // 팔로워 및 팔로잉 리스트 가져오기
 onMounted(async () => {
@@ -11,6 +13,11 @@ onMounted(async () => {
     await followStore.fetchFollowLists(token);
   }
 });
+
+// 유저 클릭 시 garden-diary 페이지로 이동
+const goToGardenDiary = (userNickname) => {
+  router.push(`/garden-diary/${userNickname}`);
+};
 </script>
 
 <template>
@@ -19,7 +26,12 @@ onMounted(async () => {
     <div class="follow-column">
       <h2>팔로워 목록</h2>
       <ul v-if="followStore.followers.length" class="follow-list">
-        <li v-for="follower in followStore.followers" :key="follower.userNickname" class="follow-card">
+        <li 
+          v-for="follower in followStore.followers" 
+          :key="follower.userNickname" 
+          class="follow-card"
+          @click="goToGardenDiary(follower.userNickname)"
+        >
           <img :src="'data:image/jpeg;base64,' + follower.imageUrl" alt="Profile Image" class="profile-image" />
           <div class="user-info">
             <span class="user-nickname">{{ follower.userNickname }}</span>
@@ -33,7 +45,12 @@ onMounted(async () => {
     <div class="follow-column">
       <h2>팔로잉 목록</h2>
       <ul v-if="followStore.following.length" class="follow-list">
-        <li v-for="followedUser in followStore.following" :key="followedUser.userNickname" class="follow-card">
+        <li 
+          v-for="followedUser in followStore.following" 
+          :key="followedUser.userNickname" 
+          class="follow-card"
+          @click="goToGardenDiary(followedUser.userNickname)"
+        >
           <img :src="'data:image/jpeg;base64,' + followedUser.imageUrl" alt="Profile Image" class="profile-image" />
           <div class="user-info">
             <span class="user-nickname">{{ followedUser.userNickname }}</span>
