@@ -1,3 +1,93 @@
+<template>
+  <div class="signup-page">
+    <div class="signup-container">
+      <div class="signup-header">
+        <RouterLink :to="`/login`">
+          <span class="material-icons">close</span>
+        </RouterLink>
+      </div>
+      <div class="signup-form">
+        <div class="signup-title">회원가입</div>
+        <form @submit.prevent="handleSubmit">
+          <!-- Existing input fields here -->
+          <div class="input-group" :class="{ 'input-error': nameError }">
+            <label for="name">이름</label>
+            <input
+              type="text"
+              v-model="userName"
+              placeholder="이름을 입력하세요"
+            />
+            <span v-if="nameError" class="error-message">{{ nameError }}</span>
+          </div>
+          <div class="input-group" :class="{ 'input-error': nicknameError }">
+            <label for="nickname">닉네임</label>
+            <input
+              type="text"
+              v-model="userNickname"
+              placeholder="닉네임을 입력하세요"
+            />
+            <span v-if="nicknameError" class="error-message">{{
+              nicknameError
+            }}</span>
+          </div>
+          <div class="input-group" :class="{ 'input-error': phoneNumberError }">
+            <label for="phoneNumber">전화번호</label>
+            <input
+              type="text"
+              v-model="userPhoneNumber"
+              placeholder="전화번호를 입력하세요"
+            />
+            <span v-if="phoneNumberError" class="error-message">{{
+              phoneNumberError
+            }}</span>
+          </div>
+          <div class="input-group" :class="{ 'input-error': emailError }">
+            <label for="email">이메일</label>
+            <input
+              type="text"
+              v-model="userMailAdress"
+              placeholder="이메일을 입력하세요"
+            />
+            <span v-if="emailError" class="error-message">{{
+              emailError
+            }}</span>
+          </div>
+          <div class="input-group" :class="{ 'input-error': passwordError }">
+            <label for="password">비밀번호</label>
+            <input
+              type="password"
+              v-model="userPassword"
+              placeholder="비밀번호를 입력하세요"
+            />
+            <span v-if="passwordError" class="error-message">{{
+              passwordError
+            }}</span>
+          </div>
+          <div
+            class="input-group"
+            :class="{ 'input-error': confirmPasswordError }"
+          >
+            <label for="confirmPassword">비밀번호 확인</label>
+            <input
+              type="password"
+              v-model="confirmPassword"
+              placeholder="비밀번호를 다시 입력하세요"
+            />
+            <span v-if="confirmPasswordError" class="error-message">{{
+              confirmPasswordError
+            }}</span>
+          </div>
+          <div class="input-group">
+            <label for="profileImage">프로필 이미지 업로드</label>
+            <input type="file" @change="handleImageUpload" accept="image/*" />
+          </div>
+          <button type="submit" class="submit-button">회원가입</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
