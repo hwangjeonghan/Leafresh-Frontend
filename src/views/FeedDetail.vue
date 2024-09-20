@@ -46,6 +46,7 @@
         <div class="comments mb-10">
           <div>Comments</div>
           <ul>
+            <replyForm :feedId="feedId" @addComment="handleAddReply" />
             <li v-for="(comment, index) in comments" :key="index" class="comments_item">
               <p class="comments_content">{{ comment.replyContent }}</p>
               <p class="comments_date">{{ comment.displayDate }}</p>

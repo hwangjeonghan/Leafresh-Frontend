@@ -19,6 +19,7 @@ import axios from 'axios';
 import CommunityDetail from '@/components/common/communityDetail.vue'; // FeedDetail 컴포넌트 가져오기
 import { fetchReplyLists } from '@/assets/js/feedReplyService';
 
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("accessToken");
 
@@ -69,7 +70,6 @@ const handleAddReply = (feedId, newReply) => {
     feed.comments.push({ replyContent: newReply, displayDate: "방금 전" });
   }
 };
-
 
 onMounted(async () => {
   fetchFeeds();

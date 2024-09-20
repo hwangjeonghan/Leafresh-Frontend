@@ -233,7 +233,7 @@ onMounted(() => {
 .market_text_box {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: flex-start; /* 왼쪽 정렬 */
   margin-top: 0.5vw;
   width: 100%; /* 가로를 꽉 채우도록 설정 */

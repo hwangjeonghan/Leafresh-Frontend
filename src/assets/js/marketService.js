@@ -19,7 +19,6 @@ export async function fetchMarketDetails(marketId, token) {
         const userEmail = marketData.post.userEmail; // 게시글에 저장된 email 가져오기
         const imagePath = marketData.post.marketImage; // 게시글 url 경로 가져옴
         const marketImage = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
-        console.log(marketData);
 
         if (marketData && marketData.post) {
             const createdDate = new Date(marketData.post.marketCreatedAt); //  게시글 등록일을 가져와서 Date객체로 바꿈
@@ -35,7 +34,6 @@ export async function fetchMarketDetails(marketId, token) {
                 marketData.post.displayDate = `${dayDiff}일 전`;
             }
         }
-        console.log(marketData, userEmail);
         return marketData;
     } catch (error) {
         console.error("오류:", error);
@@ -127,8 +125,6 @@ export async function getUserInfo(userEmail, token) {
                   }, 
             })
             const userData = await response.json();
-            console.log('service 유저데이터 : ',userData);
-            console.log(userData);
             return userData;
         } catch (error) {
             console.error("오류:", error);
