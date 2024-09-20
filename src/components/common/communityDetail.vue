@@ -22,10 +22,13 @@
         <div class="comments mb-10">
           <div>Comments</div>
           <ul>
-            <li v-for="(comment, index) in feed.comments" :key="index">
-              {{ comment }}
+            <li v-for="(comment, index) in feed.comments" :key="index" class="comments_item">
+              <p class="comments_content">{{ comment.replyContent }}</p>
+              <p class="comments_date">{{ comment.displayDate }}</p>
             </li>
           </ul>
+          <replyForm :feedId="feed.feedId"
+          @addComment="handleAddReply" />
         </div>
       </div>
     </div>
@@ -34,6 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import replyForm from '../feed/replyForm.vue';
 
 // 반응형 feedData 객체 생성
 const feedData = ref({
@@ -44,6 +48,8 @@ const feedData = ref({
   imageUrl: '',
   comments: []
 });
+
+const comments = ref([]);
 
 // props로 feed를 받아옴
 const props = defineProps({
@@ -62,7 +68,13 @@ const setFeed = () => {
     time: props.feed.time,
     imageUrl: props.feed.imageUrl,
     comments: props.feed.comments
-  };
+  }
+};
+
+const emit = defineEmits(['addComment']);
+
+const handleAddReply = (newReply) => {
+  props.feed.comments.push({ replyContent: newReply });
 };
 
 // 컴포넌트가 마운트될 때 setFeed 함수 실행
@@ -191,6 +203,22 @@ onMounted(() => {
   font-family: "GothicA1-Light";
   margin-top: 10px;
   font-size: 0.9em;
+}
+
+.comments_item {
+  display: flex;
+  align-items: center;
+  margin: 8px !important;
+}
+
+.comments_content {
+  font-size: 1em !important;
+  margin: 0 0.5em 0 0 !important;
+}
+
+.comments_date {
+  font-size: 0.5em !important;
+  margin: 0 !important;
 }
 
 .middle-container {
