@@ -2,7 +2,7 @@
   <div class="plant-info" v-if="plant">
     <h2>{{ plant.plantName }}</h2>
     <p>종류: {{ plant.plantType }}</p>
-    <p>만난 날: {{ formattedDate(plant.registrationDate) }}</p>
+    <p> 처음 만난 날: {{ formattedDate(plant.registrationDate) }}</p>
     <p>D + {{ daysPassed(plant.registrationDate) }}</p>
     <p>{{ plant.plantDescription }}</p>
   </div>
@@ -55,4 +55,18 @@ const daysPassed = (registrationDate) => {
   background-color: #f5f5f5;
   border-radius: 8px;
 }
+
+/* h2 태그의 글씨 크기를 키움 */
+h2 {
+  font-size: 2em; /* 글씨 크기를 크게 설정 */
+  font-weight: bold; /* 글씨를 굵게 */
+  margin-bottom: 20px; /* h2 아래 간격 */
+}
+
+/* p 태그들 사이의 간격을 조절 */
+p {
+  margin-bottom: 15px; /* p 태그들 사이의 간격을 넓힘 */
+  font-size: 1.1em; /* p 태그 안의 글씨 크기를 살짝 키움 */
+}
+
 </style>

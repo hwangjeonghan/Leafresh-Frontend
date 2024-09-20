@@ -11,7 +11,7 @@ import {
   openModal,
   closeModal,
 } from "@/assets/js/todo"; // todo.js에서 가져옴
-import { ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 
 
 import { useTodoStore } from "@/stores/todoStore";
@@ -39,6 +39,10 @@ const addTodo = async () => {
       todoContent: newTodoContent.value,  // 할 일 내용
       todoSelectedDate: date.value,     // 선택된 날짜
       userId: userId.value,           
+    },{
+      headers: {
+        Authorization: `Bearer @{token}`, // 헤더에 토큰 추가
+      },
     });
 
     if (response.status === 200) {
@@ -47,7 +51,7 @@ const addTodo = async () => {
         content: newTodoContent.value,
         selectedDate: date.value,
         userId: userId.value, // 추가로 userId도 저장
-      });
+      } );
       alert("할 일이 성공적으로 저장되었습니다.");
       
         // 입력 필드 초기화
@@ -68,7 +72,13 @@ const addTodo = async () => {
 
 
 
-const date = ref();
+// 오늘 날짜로 설정
+const date = ref(new Date());  // 초기값으로 오늘 날짜
+
+// 컴포넌트 마운트 후에도 오늘 날짜를 설정
+onMounted(() => {
+  date.value = new Date();
+});
 
 </script>
 
@@ -79,8 +89,14 @@ const date = ref();
     <div class="hairline"></div>
 
     <div class="schedule_box">
-    
+
+      <div class="calendar_box">
+
+         
       <Calender />
+   
+
+      </div>
       
       <div class="todo_box"><TodayTodo />
       <button class="todo_input_button" @click="openModal">할일추가</button>
@@ -129,12 +145,45 @@ const date = ref();
 .diaryschedule_container {
   width: 100%;
   height: 100%;
+  max-width: 1200px;  /* 최대 너비 설정 */
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   overflow: hidden;
 }
+
+.schedule_box {
+  display: flex;
+  width: 85%;
+  justify-content: space-evenly; /* 컴포넌트들 간의 간격을 조정 */
+  align-items: flex-start; /* 상단 정렬 */
+  flex-direction: row; /* 가로로 나열 */
+  overflow: auto; /* 넘치는 경우 스크롤 생성 */
+  box-sizing: border-box;
+  padding: 10px; /* 내부 여백 설정 */
+}
+
+.schedule_box > * {
+  flex: 1; /* 각 컴포넌트가 동일한 크기를 가지도록 설정 */
+  max-width: 45%; /* 각 컴포넌트의 최대 너비를 45%로 제한하여 스크롤바 방지 */
+  box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
+}
+
+@media (max-width: 1200px) {
+  .schedule_box {
+    flex-direction: column; /* 가로에서 세로로 변경 */
+    align-items: center; /* 중앙 정렬 */
+  }
+
+  .schedule_box > * {
+    max-width: 100%; /* 각 컴포넌트가 100% 너비를 차지하도록 변경 */
+    margin-bottom: 20px; /* 컴포넌트 간의 간격 추가 */
+  }
+}
+
+
+
 
 /* 나의 정원일정 */
 .garden_title {
@@ -151,6 +200,9 @@ const date = ref();
   margin: 20px 0; /* 상하 여백 */
   border: #904F00 solid 2px;
 }
+
+/* 달력크기 */
+
 
 /* 할일 추가 버튼 */
 
@@ -179,34 +231,8 @@ const date = ref();
   transform: translateY(0); /* 클릭 시 원래 위치로 */
 }
 
-.todo_input {
-  width: 100%;
-  padding: 15px;
-  font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-}
 
 
-
-.schedule_box {
-  display: flex;
-  width: 85%;
-  justify-content: space-between; /* 컴포넌트들 간의 간격을 조정 */
-  align-items: flex-start; /* 상단 정렬 */
-  flex-direction: row; /* 가로로 나열 */
-  overflow: auto; /* 넘치는 경우 스크롤 생성 */
-  box-sizing: border-box;
-  padding: 10px; /* 내부 여백 설정 */
-}
-
-.schedule_box > * {
-  flex: 1; /* 각 컴포넌트가 동일한 크기를 가지도록 설정 */
-  max-width: 45%; /* 각 컴포넌트의 최대 너비를 45%로 제한하여 스크롤바 방지 */
-  box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
-}
 
 
 

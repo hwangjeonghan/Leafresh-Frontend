@@ -119,20 +119,21 @@ const deleteTodo = async (todoId, action) => {
 
 /* Container for the todo list */
 .todo-container {
-  width: 80%;
-  height: 40%;
-  margin: 20px auto;
+  width: auto;
+  height: auto;
+  margin-bottom: 20px;
   padding: 10px;
   background: linear-gradient(to bottom, #dfffd6, #c7f7bb); /* 그라데이션 추가 */
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   font-family: 'LeeSeoyun', sans-serif; /* 폰트 적용 */
   border-radius: 6px;
   box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.1), /* 일반 그림자 */
+    4px 4px 8px rgba(0, 0, 0, 0.5), /* 일반 그림자 */
     -4px -4px 12px rgba(255, 255, 255, 0.5); /* 밝은 색 그림자로 접힌 느낌 */
-  
   position: relative;
   overflow: hidden;
+  max-width: 450px; /* 최대 너비 설정 */
+  max-height: 220px; /* 최대 높이 설정 */
+
 }
 
 

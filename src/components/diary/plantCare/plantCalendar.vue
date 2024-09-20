@@ -36,7 +36,7 @@ const calendarOptions = reactive({
       const deleteButton = `<button class="event-delete-btn">x</button>`;
       const eventTitle = `<div class="event-title">${arg.event.title}</div>`
 
-      return { html: `${eventTitle}${deleteButton}` }; // 이벤트 제목을 HTML로 렌더링
+      return { html: `${deleteButton}${eventTitle}` }; // 이벤트 제목을 HTML로 렌더링
   }
 
 });
@@ -75,8 +75,17 @@ document.addEventListener('click', handleDeleteClick);
   font-style: normal;
 }
 
+a {
+  text-decoration: none;
+  color: #000;
+}
+
 .fc {
   font-family: 'LeeSeoyun', sans-serif;
+  max-width: 800px; /* 원하는 최대 너비로 고정 */
+  max-height: 700px; /* 원하는 최대 높이로 고정 */
+  margin: 0 auto; /* 중앙 정렬 */
+  overflow: auto; /* 내용이 넘칠 경우 스크롤 */
 }
 
 /* 캘린더 헤더 영역 스타일 */
@@ -145,9 +154,18 @@ document.addEventListener('click', handleDeleteClick);
 }
 
 
+/* 요일 셀 스타일 */
+.fc-col-header-cell {
+  padding: 15px !important; /* 요일 셀 패딩 */
+  font-size: 20px !important; /* 요일 폰트 크기 */
+  background-color: #F2D9BB; /* 요일 셀 배경색 */
+  border: none !important; /* 요일 셀 밑줄 제거 */
+} 
+
 /* 날짜 셀 스타일 */
 .fc-daygrid-day {
   border: 1px solid #e0e0e0;
+
 }
 
 .fc-daygrid-day-number {
@@ -158,8 +176,8 @@ document.addEventListener('click', handleDeleteClick);
 
 /* 이벤트 스타일 */
 .fc-event {
-  background-color: #1C8C0B;
-  color: white;
+  background-color: white;
+  color: #904F00;
   border: none;
   border-radius: 4px;
   padding: 5px;
@@ -170,16 +188,20 @@ document.addEventListener('click', handleDeleteClick);
 }
 
 .event-title {
-  flex-grow: 1;
+  color: #000;
+  font-size: 15px !important; /* 폰트 크기를 16px로 설정 */
+  font-weight: bold;          /* 글씨를 굵게 설정 */
+  line-height: 1.0;           /* 줄 간격을 조정 */
 }
 
 .event-delete-btn {
   background: transparent;
   border: none;
-  color: white;
+  color: black;
   font-size: 14px;
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: 80px;
+
 }
 
 .event-delete-btn:hover {
@@ -187,7 +209,7 @@ document.addEventListener('click', handleDeleteClick);
 }
 
 .fc-event:hover {
-  background-color: #904F00;
+  background-color: #F2D9BB;
   cursor: pointer;
 }
 </style>
