@@ -37,6 +37,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import replyForm from '../feed/replyForm.vue';
+import { getUserInfo } from '@/assets/js/feedReplyService';
 
 // 반응형 feedData 객체 생성
 const feedData = ref({
@@ -49,6 +50,7 @@ const feedData = ref({
 });
 
 const comments = ref([]);
+// const { userNickname, profileImg } = await getUserInfo(userId, token);
 
 // props로 feed를 받아옴
 const props = defineProps({
