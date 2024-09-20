@@ -101,6 +101,12 @@ const refreshAccessToken = async () => {
   }
 };
 
+// 토큰 유효성 검사 함수
+const isValidToken = (token) => {
+  // 단순히 토큰의 유효 기간을 검증하는 로직을 구현할 수 있습니다.
+  // 여기서는 예제로 토큰이 비어있지 않은지만 확인
+  return token && token !== "";
+};
 
 // 액세스 토큰이 만료될 경우 자동으로 재발급 시도
 const handleTokenExpiration = async () => {
@@ -119,12 +125,7 @@ const handleTokenExpiration = async () => {
 // 페이지 로드 시 토큰 만료 여부를 확인하고 재발급 시도
 handleTokenExpiration();
 
-// 토큰 유효성 검사 함수
-const isValidToken = (token) => {
-  // 단순히 토큰의 유효 기간을 검증하는 로직을 구현할 수 있습니다.
-  // 여기서는 예제로 토큰이 비어있지 않은지만 확인
-  return token && token !== "";
-};
+
 </script>
 
 <style scoped>

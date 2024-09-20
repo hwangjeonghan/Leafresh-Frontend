@@ -75,6 +75,7 @@ const router = createRouter({
       path: "/signup",
       name: "Signup",
       component: SignupView, // 회원가입 페이지
+      meta: { requiresAuth: false } // 인증 필요 없음
     },
     {
       path: "/terms",
@@ -129,29 +130,31 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  const userStore = useUserstore(); // Pinia store에서 user 정보를 가져옴
+router.beforeEach((to, from, next) => {
+  const userStore = useUserstore(); 
   const accessToken = localStorage.getItem('accessToken');
   
-  // 로그인 필수 경로를 체크함
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-
-  if (requiresAuth && !accessToken) {
-    next('/login');
-  } else if (accessToken) {
-    try {
-      await userStore.fetchUserProfile(); // 사용자 정보를 다시 불러와 토큰 유효성을 확인
-      next();
-    } catch (error) {
-      console.error('토큰이 유효하지 않아 리다이렉트됩니다.');
-      localStorage.removeItem('accessToken'); // 잘못된 토큰 제거
-      localStorage.removeItem('refreshToken');
-      next('/login'); // 로그인 화면으로 리다이렉트
-    }
+  if (to.name === 'Signup' || to.name === 'TermsAgreement') {
+    next(); // 회원가입 및 약관 페이지는 토큰 확인 없이 진행
   } else {
-    next();
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+    if (requiresAuth && !accessToken) {
+      next('/login');
+    } else if (accessToken) {
+      userStore.fetchUserProfile()
+        .then(() => next())
+        .catch(() => {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          next('/login');
+        });
+    } else {
+      next();
+    }
   }
 });
+
 
 
 export default router;
