@@ -74,7 +74,14 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useUserstore } from "../stores/users";
 import axios from "axios";
+
+// userStore 불러오기
+const userStore = useUserstore();
+const userId = ref(userStore.userId);
+const userNickname = ref(userStore.userNickname);
+
 
 const props = defineProps(["isOpen", "closeModal"]);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -97,6 +104,11 @@ const handleImageUpload = (event) => {
 };
 
 const addPlant = async () => {
+
+  console.log("UserId:", userId.value);
+  console.log("UserNickname:", userNickname.value);
+
+
   if (!imageFile.value) {
     alert("이미지를 업로드해 주세요.");
     return;
@@ -129,6 +141,8 @@ const addPlant = async () => {
   formData.append("registrationDate", registrationDate.value);
   formData.append("plantDescription", plantDescription.value);
   formData.append("imageUrl", uploadedImagePath);
+  formData.append("userId", userId.value);
+  formData.append("userNickname", userNickname.value);
 
   try {
     await axios.post(`${API_BASE_URL}/api/add`, formData, {

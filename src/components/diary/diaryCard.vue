@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useUserstore } from '@/stores/users.js';
 import { useGardenStore } from '@/stores/gardenStore.js';
 import axios from 'axios';
@@ -8,15 +8,28 @@ import axios from 'axios';
 const router = useRouter();
 const loginState = useUserstore();
 const gardenStore = useGardenStore();
-
 const isLoading = ref(true);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// 현재 루트 정보를 담는다
+const route = useRoute();
+// url 파라미터에서 유저 닉네임을 가져온다.
+const userNickname = ref(route.params.userNickname);
+
 
 // Function to fetch plants from API
 const fetchPlants = async () => {
   try {
     const token = localStorage.getItem('accessToken'); // 액세스 토큰 가져오기
-    const response = await axios.get(`${API_BASE_URL}/api/plants`, {
+
+    if(!userNickname.value){
+      throw new Error("사용자를 찾을 수 없습니다!!!!!");
+    }
+
+    // userNickname에 해당하는 식물 목록을 가져옴
+    await gardenStore.fetchPlants(userNickname.value);
+
+    const response = await axios.get(`${API_BASE_URL}/api/plants/user/${userNickname.value}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -29,11 +42,18 @@ const fetchPlants = async () => {
           ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(plant.imageUrl)}`
           : 'https://via.placeholder.com/150', // 기본 이미지 설정
       }));
+
+     // userNickname에 해당하는 식물 목록 필터링
+      gardenStore.filterPlantsByUser(userNickname.value);
+
+
     } else {
       console.error('잘못된 데이터 구조:', response.data);
     }
   } catch (error) {
     console.error('식물 목록을 가져오는 중 오류가 발생했습니다:', error);
+    gardenStore.filteredPlants = []; // 오류 발생 시 빈 배열 설정
+
   } finally {
     isLoading.value = false;
   }
@@ -73,7 +93,8 @@ const getImageUrl = (url) => {
 
 <template>
   <div class="plants-container">
-    <div
+    <div v-if="gardenStore.plants.length>0">
+      <div
       v-for="(plant, index) in gardenStore.plants"
       :key="plant.id"
       class="plant-card"
@@ -89,6 +110,13 @@ const getImageUrl = (url) => {
         <p>{{ plant.registrationDate }}</p>
       </div>
     </div>
+    </div>
+
+        <!-- userNickname에 해당하는 식물이 없을 때 -->
+      <div v-else>
+      <p class="no-plants-message">등록된 식물이 없습니다!</p>
+    </div>
+    
   </div>
 </template>
 

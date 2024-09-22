@@ -184,7 +184,6 @@ onMounted(() => {
 
 
 
-
 /* 나의 정원일정 */
 .garden_title {
   font-family: 'LeeSeoyun', sans-serif;

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router"; // useRouter 사용
+import { useRouter, useRoute } from "vue-router"; // useRouter 사용
 import axios from "axios";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
 import { useGardenStore } from "@/stores/gardenStore.js";
@@ -11,6 +11,8 @@ import MarketCard from "@/components/market/MarketCard.vue";
 import DiaryProfileSection from "@/components/diary/diaryProfileSection.vue"
 
 const router = useRouter();
+const route = useRoute();
+
 const activeComponent = ref("Feed");
 const accessToken = localStorage.getItem("accessToken");
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -20,6 +22,7 @@ const feedData = ref([]); // 피드 데이터를 저장할 상태
 const isLoading = ref(false); // 로딩 상태 추가
 
 
+const urlUserNickname = route.params.userNickname; //파라미터에서 유저 닉네임 가져옴
 
 
 // 피드 데이터를 가져오는 함수
@@ -76,7 +79,7 @@ const components = {
     <div class="profile">
       <DiaryProfileSection />
     </div>
-    <div class="schedule">
+    <div v-if="urlUserNickname === loginState.userNickname" class="schedule">
       <Schedule />
     </div>
 
