@@ -17,8 +17,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import CommunityDetail from '@/components/common/communityDetail.vue'; // FeedDetail 컴포넌트 가져오기
-import { fetchReplyLists } from '@/assets/js/feedReplyService';
-
+import { fetchReplyLists, getUserInfo } from '@/assets/js/feedReplyService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("accessToken");
@@ -52,9 +51,24 @@ const fetchFeeds = async () => {
   const feedsWithReply = await Promise.all(feedsData.map(async (feed) => {
       const comments = ref([]);
       await fetchReplyLists(feed.feedId, token, comments); // 각 피드의 댓글 가져오기
+
+      const commentsWithUserInfo = await Promise.all(comments.value.map(async (comment) => {
+        try {
+          const { userNickname, profileImg } = await getUserInfo(comment.userId, token);
+          return {
+            ...comment,
+            userNickname, // 작성자닉네임
+            profileImg: `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`, // 댓글작성자 프로필 이미지
+          };
+        } catch (error) {
+          console.error(`유저 정보 조회 실패 for userId ${comment.userId}`, error);
+          return comment;
+        }
+      }));
+
       return {
         ...feed,
-        comments: comments.value,
+        comments: commentsWithUserInfo,
       };
     }));
     feeds.value = feedsWithReply;
