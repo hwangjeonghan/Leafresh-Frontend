@@ -46,8 +46,10 @@
         <div class="comments mb-10">
           <div>Comments</div>
           <ul>
-            <replyForm :feedId="feedId" @addComment="handleAddReply" />
+            <replyForm :feedId="Number(feedId)" @addComment="handleAddReply" />
             <li v-for="(comment, index) in comments" :key="index" class="comments_item">
+              <img :src="comment.profileImg" alt="User Profile Image" class="reply_user_image" />
+              <p class="comments_nickName">{{ comment.userNickname }}</p>
               <p class="comments_content">{{ comment.replyContent }}</p>
               <p class="comments_date">{{ comment.displayDate }}</p>
             </li>
@@ -64,11 +66,13 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router"; // 라우터를 사용하여 페이지 이동
 import axios from "axios";
 import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
-import { fetchReplyLists } from '@/assets/js/feedReplyService';
+import { fetchReplyLists, getUserInfo } from '@/assets/js/feedReplyService';
+import replyForm from '@/components/feed/replyForm.vue';
 
 // 라우터에서 id 파라미터 가져오기
 const route = useRoute();
 const router = useRouter(); // router 사용 설정
+const userId = ref("");
 const username = ref(""); 
 const feedId = ref(route.params.id); 
 const loginState = useUserstore();
@@ -76,12 +80,11 @@ const loginState = useUserstore();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const content = ref("");
-const comments = ref(["아직 댓글이 없습니다!"]);
+const comments = ref([]);
 const imageUrl = ref("");
 const time = ref("");
 const userimg = ref("");
 const isOwner = ref(false); // 수정/삭제 버튼 노출 여부
-
 const token = localStorage.getItem("accessToken");
 
 // 날짜 포맷 함수
@@ -108,6 +111,7 @@ const fetchFeedDetail = async () => {
     console.log(response);
     
     const feedData = response.data;
+    userId.value = feedData.userId;
     username.value = feedData.userNickname; 
     userimg.value = feedData.userProfileImg;
     content.value = feedData.feedContent;
@@ -184,13 +188,42 @@ const goBackToDiary = () => {
   router.push(`/garden-diary/${loginState.userNickname}`); // 스토어에서 유저 닉네임을 가져와 이동
 };
 
+const emit = defineEmits(['addComment']);
+
+// 댓글 추가하기
+const handleAddReply = async (newReply) => {
+  try {
+    comments.value.push(newReply);
+    emit('addComment', newReply);
+
+    await allCommentLists();
+  } catch(error) {
+    console.error("댓글등록 이후에 다시 불러오는거 안됨..", error);
+  }
+  
+};
+
+// 댓글 목록 가져오기
 const allCommentLists = async () => {
   try {
     await fetchReplyLists(feedId.value, token, comments);
+
+    for (const comment of comments.value) {
+      try {
+        const { userNickname, profileImg } = await getUserInfo(comment.userId, token);
+        comment.userNickname = userNickname;  // 댓글에 닉네임 추가
+        comment.profileImg = `${import.meta.env.VITE_API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`;;
+      } catch (error) {
+        console.error(`유저정보 조회 실패 for userId ${comment.userId}`, error);
+      }
+    }
   } catch (error) {
     console.error("오류:", error);
   }
 }
+
+
+
 
 // 페이지 로드 시 피드 상세 정보를 가져오기
 onMounted(async () => {
@@ -355,8 +388,28 @@ onMounted(async () => {
   margin: 8px !important;
 }
 
+.reply_user_image {
+    width: 20px;
+    /* 이미지 크기 */
+    height: 20px;
+    /* 이미지 크기 */
+    border-radius: 100%;
+    /* 동그라미 모양 */
+    object-fit: cover;
+    /* 이미지 비율 유지 */
+    margin-right: 5px;
+    cursor: pointer;
+}
+
 .comments_content {
   font-size: 1em !important;
+  margin: 0 0.5em 0 0 !important;
+}
+
+.comments_nickName {
+  font-size: 0.8em !important;
+  font-weight: bold;
+  color: #2d8b5d !important;
   margin: 0 0.5em 0 0 !important;
 }
 
