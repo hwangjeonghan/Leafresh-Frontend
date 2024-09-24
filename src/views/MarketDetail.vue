@@ -75,7 +75,7 @@ const userImage = computed(() => {
 })
 
 const userNickname = computed(() => userInfo.value?.userNickname);
-const isUser = computed(() => userStore.email === market.value?.post?.userEmail);
+const isUser = computed(() => userStore.userId === market.value?.post?.userId);
 
 const allPostList = () => {
   router.push('/market');
@@ -128,9 +128,9 @@ onMounted(async () => {
   try {
     market.value = await fetchMarketDetails(marketId.value, token);
     if (market.value) {
-      const userEmail = market.value.post.userEmail; // 게시글에 저장된 email 가져오기
-      if (userEmail) {
-        const userData = await getUserInfo(userEmail, token); // 작성자의 Email을 기준으로 getUserInfo 함수를 실행함.
+      const userId = market.value.post.userId; // 게시글에 저장된 email 가져오기
+      if (userId) {
+        const userData = await getUserInfo(userId, token); // 작성자의 Email을 기준으로 getUserInfo 함수를 실행함.
         userInfo.value = userData;
         const userNickname = userInfo.value.userNickname;
       }

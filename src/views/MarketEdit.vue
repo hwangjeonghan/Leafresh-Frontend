@@ -41,6 +41,7 @@ import { ref, computed, onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';  // vue-router 사용을 위해 import
 import axios from 'axios';
 
+const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
 const router = useRouter(); 
 const route = useRoute();
 const post = reactive({ 
@@ -119,24 +120,18 @@ const submitForm = async () => {
 
             uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim();
         }
-   
-      const formData = new FormData();
-      formData.append('category', post.marketCategory);
-      formData.append('title', post.marketTitle);
-      formData.append('content', post.marketContent);
-      formData.append('image', uploadedImagePath);
-      console.log('status 잘 나오는지: ', post.marketStatus);
-      formData.append('status', post.marketStatus);
-      console.log('status 등록 전 상태 : ', post.marketStatus);
-      console.log('이미지 경로 잘 나오는지', uploadedImagePath);
 
-      const selectedScopeEnum = findScopeEnum(post.marketVisibleScope);
-      formData.append('visibleScope', selectedScopeEnum);
+        const postData = {
+          marketCategory: post.marketCategory,
+          marketTitle: post.marketTitle,
+          marketContent: post.marketContent,
+          marketImage: uploadedImagePath,  // 이미지 경로 추가
+          marketVisibleScope: findScopeEnum(post.marketVisibleScope)
+        };
+        console.log('폼데이터',postData);
+        console.log('공개범위 : ', post.marketVisibleScope);
   
-      const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
-      console.log('토큰 : ', token); // 토큰확인
-  
-      const response = await axios.put(`${API_BASE_URL}/market/modify/${postId}`, formData, {
+      const response = await axios.put(`${API_BASE_URL}/market/modify/${postId}`, postData, {
         headers: {
           'Authorization': 'Bearer ' + token,
         }
