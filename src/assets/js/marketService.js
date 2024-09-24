@@ -16,7 +16,7 @@ export async function fetchMarketDetails(marketId, token) {
             throw new Error(`서버 응답 오류 : ${errorData.message || "알수없는 오류"}`);
         }
         const marketData = await response.json(); // 응답받은 데이터
-        const userEmail = marketData.post.userEmail; // 게시글에 저장된 email 가져오기
+        const userId = marketData.post.userId; // 게시글에 저장된 userId 가져오기
         const imagePath = marketData.post.marketImage; // 게시글 url 경로 가져옴
         const marketImage = `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(imagePath)}`;
 
@@ -116,15 +116,16 @@ export async function deletePost(id, token) {
 };
 
 // 작성자 이메일 기준으로 작성자 정보를 가져오는 함수
-export async function getUserInfo(userEmail, token) {
+export async function getUserInfo(userId, token) {
         try {
-            const response = await fetch(`${API_BASE_URL}/user/info-market?email=${userEmail}`, {
+            const response = await fetch(`${API_BASE_URL}/user/userinfo-id?userId=${userId}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
                   }, 
             })
             const userData = await response.json();
+            console.log(userData);
             return userData;
         } catch (error) {
             console.error("오류:", error);

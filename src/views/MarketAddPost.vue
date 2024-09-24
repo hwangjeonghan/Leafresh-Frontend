@@ -41,11 +41,10 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';  // vue-router 사용을 위해 import
 import axios from 'axios';
 
-const router = useRouter(); 
-
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+const router = useRouter(); 
+const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
 const post = ref({ marketCategory: '', marketTitle: '', marketContent: '', marketImage: null, marketVisibleScope: '전체공개' });
 const postImage = ref(null);
 const categories = ['실내 소형 식물', '실내 대형 식물', '야외 정원용 식물'];
@@ -57,10 +56,12 @@ const isFormValid = computed(() => {
   return post.value.marketCategory && post.value.marketTitle && post.value.marketContent && postImage.value && post.value.marketVisibleScope;
 });
 
+// 이미지 업로드
 const handleImageUpload = (event) => {
   postImage.value = event.target.files[0];
 };
 
+// 공개범위를 enum값으로 바꿈
 const findScopeEnum = (visibleScopeLabel) => {
   return Object.keys(scopes).find(key => scopes[key] === visibleScopeLabel);
 };
@@ -80,30 +81,27 @@ const submitForm = async () => {
         // 이미지 업로드
         const imageUploadResponse = await axios.post(`${API_BASE_URL}/ftp/upload`, formData, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
         uploadedImagePath = imageUploadResponse.data.uploadedFilePath.trim();
       }
 
-      const formData = new FormData();
-      formData.append('category', post.value.marketCategory);
-      formData.append('title', post.value.marketTitle);
-      formData.append('content', post.value.marketContent);
-      formData.append('image', uploadedImagePath);
-
-      const selectedScopeEnum = findScopeEnum(post.value.marketVisibleScope);
-      formData.append('visibleScope', selectedScopeEnum);
+      const postData = {
+        marketCategory: post.value.marketCategory,
+        marketTitle: post.value.marketTitle,
+        marketContent: post.value.marketContent,
+        marketImage: uploadedImagePath,  // 이미지 경로 추가
+        marketVisibleScope: findScopeEnum(post.value.marketVisibleScope)
+      };
+      console.log('폼데이터',postData);
       console.log('공개범위 : ', post.value.marketVisibleScope);
-      console.log('공개범위 : ', selectedScopeEnum);
 
-      const token = localStorage.getItem('accessToken'); // 스토리지에 저장되어 있는 로그인 된 사용자의 토큰을 가져옴
-      console.log('토큰 : ', token); // 토큰확인
-
-      const response = await axios.post(`${API_BASE_URL}/market/addpost`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/market/addpost`, postData, {
         headers: {
           'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
         }
       });
 
@@ -111,7 +109,7 @@ const submitForm = async () => {
       alert('게시글이 등록되었습니다.'); // 게시글이 등록되면 alert를 띄워줌
       router.push('/market'); // 게시글이 등록되고 나면 /market로 리다이렉트 시켜줌
     } catch (error) {
-      console.error('오류:', error);
+      console.error('오류:', error.response ? error.response.data : error.message);
       alert('게시글 등록 중 오류가 발생했습니다.');
     }
   } else {
