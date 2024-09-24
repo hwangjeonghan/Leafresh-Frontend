@@ -27,18 +27,28 @@ const router = useRouter(); // router 사용 설정
 const loginState = useUserstore(); // Pinia 스토어에서 유저 정보 가져오기
 
 // 피드 추가 요청 처리 함수
-const addFeed = async (feedInfo) => {
-  try {
-    const token = loginState.token; // Pinia 스토어에서 인증 토큰 가져오기
+const addFeed = (feedInfo) => {
+  // 로컬 스토리지에서 엑세스 토큰 가져오기
+  const token = localStorage.getItem('accessToken');
 
-    // 서버에 피드 추가 요청 전송 (Authorization 헤더 추가)
-    const response = await axios.post(`${API_BASE_URL}/feeds`, feedInfo, {
-      headers: {
-        Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 추가
-      },
+  if (!token) {
+    return Swal.fire({
+      icon: 'warning',
+      title: '인증 필요',
+      text: '로그인이 필요합니다. 다시 로그인해주세요.',
     });
+  }
 
-    if (response.data.success) {
+  axios.post(`${API_BASE_URL}/feeds`, feedInfo, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    timeout: 5000,
+  })
+  .then(async response => {
+    const { success, message } = response.data;
+
+    if (success) {
       await Swal.fire({
         icon: 'success',
         title: '성공',
@@ -46,20 +56,36 @@ const addFeed = async (feedInfo) => {
       });
       goBackToDiary();
     } else {
-      Swal.fire({
+      return Swal.fire({
         icon: 'error',
         title: '등록 실패',
-        text: response.data.message || '피드 등록 중 오류가 발생했습니다.',
+        text: message || '피드 등록 중 오류가 발생했습니다.',
       });
     }
-  } catch (error) {
+  })
+  .catch(error => {
     console.error("피드 등록 오류:", error);
-    Swal.fire({
+    let errorMessage = '서버와 통신 중 오류가 발생했습니다.';
+
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // 서버가 응답했지만 상태 코드가 2xx가 아님
+        errorMessage = error.response.data.message || `서버 오류: ${error.response.status}`;
+      } else if (error.request) {
+        // 요청이 만들어졌으나 응답을 받지 못함
+        errorMessage = '서버 응답이 없습니다. 네트워크 상태를 확인해주세요.';
+      } else {
+        // 요청 설정 중 문제 발생
+        errorMessage = error.message;
+      }
+    }
+    
+    return Swal.fire({
       icon: 'error',
       title: '서버 오류',
-      text: '서버와 통신 중 오류가 발생했습니다.',
+      text: errorMessage,
     });
-  }
+  });
 };
 
 // 다이어리 목록으로 돌아가기 함수
