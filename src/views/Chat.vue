@@ -1,37 +1,53 @@
 <template>
+
   <div class="chat-container">
     <div class="chat-header">
       <h2>채팅방</h2>
-      <button @click="$emit('close')">X</button> <!-- 모달 닫기 -->
+      <button @click="$emit('close')">X</button>
+      <!-- 모달 닫기 -->
     </div>
     <div class="chat-messages" ref="chatMessages">
       <div
         v-for="msg in messages"
         :key="msg.id"
         class="chat-message-wrapper"
-        :class="{ 'sent': msg.senderId === userStore.userId, 'received': msg.senderId !== userStore.userId }"
+        :class="{
+          sent: msg.senderId === userStore.userId,
+          received: msg.senderId !== userStore.userId,
+        }"
       >
-      <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
-        <img :src="userStore.imageUrl" alt="프로필 사진" />
-      </div>
+        <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
+          <img :src="userStore.imageUrl" alt="프로필 사진" />
+        </div>
+
         <div class="chat-message">
-          <strong v-if="msg.senderId !== userStore.userId" class="sender-name">{{ msg.name }}</strong>
+          <strong
+            v-if="msg.senderId !== userStore.userId"
+            class="sender-name"
+            >{{ msg.name }}</strong
+          >
           <p>{{ msg.message }}</p>
         </div>
       </div>
     </div>
+
     <div class="chat-input">
-      <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요..." />
+      <input
+        v-model="newMessage"
+        @keyup.enter="sendMessage"
+        placeholder="메시지를 입력하세요..."
+      />
       <button @click="sendMessage">전송</button>
     </div>
   </div>
+
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
-import { useUserstore } from '@/stores/users'; // 사용자 스토어 가져오기
-import { Client } from '@stomp/stompjs';
+import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
+import { useRoute } from "vue-router";
+import { useUserstore } from "@/stores/users"; // 사용자 스토어 가져오기
+import { Client } from "@stomp/stompjs";
 
 const route = useRoute();
 const userStore = useUserstore(); // 사용자 스토어 인스턴스
@@ -42,20 +58,25 @@ const chatRoomId = ref(route.params.id);
 const chatMessages = ref(null); // 채팅 메시지 컨테이너 참조
 const roomId = ref(null); // roomid를 받아옴
 
+
 const loadMessages = () => {
-  const savedMessages = JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
+  const savedMessages =
+    JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
   messages.value = savedMessages;
-}
+};
 
 const saveMessages = () => {
-  localStorage.setItem(`messages_${chatRoomId.value}`, JSON.stringify(messages.value));
-}
+  localStorage.setItem(
+    `messages_${chatRoomId.value}`,
+    JSON.stringify(messages.value)
+  );
+};
 
 const connection = () => {
   client.value = new Client({
-    brokerURL: 'wss://api.leafresh.shop/ws', // WebSocket URL
+    brokerURL: 'ws://localhost:8080/ws', // WebSocket URL
     onConnect: () => {
-      console.log('STOMP 연결 성공');
+      console.log("STOMP 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
         const newMessage = JSON.parse(message.body);
         messages.value.push(newMessage);
@@ -66,16 +87,16 @@ const connection = () => {
       });
     },
     onStompError: (frame) => {
-      console.error('STOMP 오류:', frame.headers['message']);
-    }
+      console.error("STOMP 오류:", frame.headers["message"]);
+    },
   });
 
   client.value.activate();
-}
+};
 
 const sendMessage = () => {
-  console.log('User ID:', userStore.userId.value);
-  console.log('User Name:', userStore.userName.value);
+  console.log("User ID:", userStore.userId.value);
+  console.log("User Name:", userStore.userName.value);
 
   if (newMessage.value) {
     const messagePayload = {
@@ -83,29 +104,29 @@ const sendMessage = () => {
       name: userStore.userName,
       message: newMessage.value,
       chatRoomId: chatRoomId.value,
-      senderId: userStore.userId
+      senderId: userStore.userId,
     };
     console.log("전송할 메시지: ", messagePayload);
     client.value.publish({
-      destination: '/pub/message',
-      body: JSON.stringify(messagePayload)
+      destination: "/pub/message",
+      body: JSON.stringify(messagePayload),
     });
     newMessage.value = "";
   } else {
     console.log("메시지를 입력해주세요.");
   }
-}
+};
 
 const closeChat = () => {
   saveMessages(); // 채팅방 나가기 전에 메시지 저장
   client.value.deactivate(); // WebSocket 연결 종료
-}
+};
 
 const scrollToBottom = () => {
   if (chatMessages.value) {
     chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
   }
-}
+};
 
 onMounted(async () => {
   await userStore.fetchUserProfile(); // 사용자 정보 로드
@@ -119,18 +140,18 @@ onUnmounted(() => {
   }
 });
 
-watch(() => route.params.id, (newId) => {
-  chatRoomId.value = newId;
-  console.log('Updated chat room ID:', chatRoomId.value);
-  loadMessages(); // 새 채팅방 메시지 불러오기
-  nextTick(() => {
-    scrollToBottom(); // 새로운 채팅방으로 이동 후 스크롤을 맨 아래로
-  });
-});
+watch(
+  () => route.params.id,
+  (newId) => {
+    chatRoomId.value = newId;
+    console.log("Updated chat room ID:", chatRoomId.value);
+    loadMessages(); // 새 채팅방 메시지 불러오기
+    nextTick(() => {
+      scrollToBottom(); // 새로운 채팅방으로 이동 후 스크롤을 맨 아래로
+    });
+  }
+);
 </script>
-
-
-
 
 <style scoped>
 .chat-container {
@@ -151,7 +172,7 @@ watch(() => route.params.id, (newId) => {
 }
 
 .chat-header {
-  background-color: #5E9C06; /* 카카오톡 스타일의 짙은 녹색 */
+  background-color: #5e9c06; /* 카카오톡 스타일의 짙은 녹색 */
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -254,7 +275,7 @@ watch(() => route.params.id, (newId) => {
   margin-left: 12px;
   padding: 10px 16px;
   border: none;
-  background-color: #5E9C06; /* 전송 버튼 색상 카카오톡 스타일 */
+  background-color: #5e9c06; /* 전송 버튼 색상 카카오톡 스타일 */
   color: #fff;
   border-radius: 24px;
   cursor: pointer;
