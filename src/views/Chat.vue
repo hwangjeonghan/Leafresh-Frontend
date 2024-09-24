@@ -71,7 +71,6 @@ const saveMessages = () => {
     JSON.stringify(messages.value)
   );
 };
-
 const connection = () => {
   client.value = new Client({
     brokerURL: 'wss://https://api.leafresh.shop/ws', // WebSocket URL
