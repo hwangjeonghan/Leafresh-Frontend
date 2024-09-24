@@ -59,72 +59,142 @@
 </template>
 
 <script setup>
-import Swal from 'sweetalert2'; // SweetAlert2 import
 import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router"; // 라우터를 사용하여 페이지 이동
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
-import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
+import Swal from 'sweetalert2';
+import { useUserstore } from "@/stores/users.js";
 import { fetchReplyLists } from '@/assets/js/feedReplyService';
 
-// 라우터에서 id 파라미터 가져오기
-const route = useRoute();
-const router = useRouter(); // router 사용 설정
-const username = ref(""); 
-const feedId = ref(route.params.id); 
-const loginState = useUserstore();
-
+// -------------------- 상수 정의 --------------------
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// -------------------- 라우터 설정 --------------------
+const route = useRoute();
+const router = useRouter();
+
+// -------------------- 상태 변수 정의 --------------------
+const username = ref("");
+const feedId = ref(route.params.id);
+const loginState = useUserstore();
 
 const content = ref("");
 const comments = ref(["아직 댓글이 없습니다!"]);
-const imageUrl = ref("");
+const imageUrl = ref("/default-profile-image.jpg");
 const time = ref("");
 const userimg = ref("");
 const isOwner = ref(false); // 수정/삭제 버튼 노출 여부
 
-const token = localStorage.getItem("accessToken");
+// -------------------- 유틸리티 함수 --------------------
+
+// 토큰 가져오기 함수
+const getToken = () => localStorage.getItem("accessToken");
+
+// 에러 메시지 처리 함수
+const getErrorMessage = (error) => {
+  let message = '서버와 통신 중 오류가 발생했습니다.';
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      message = error.response.data.message || `서버 오류: ${error.response.status}`;
+    } else if (error.request) {
+      message = '서버 응답이 없습니다. 네트워크 상태를 확인해주세요.';
+    } else {
+      message = error.message;
+    }
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  return message;
+};
+
+// 로딩 스피너 표시 함수
+const showLoading = (title = '로딩 중...') => {
+  Swal.fire({
+    title,
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+};
+
+// 로딩 스피너 닫기 함수
+const closeLoading = () => {
+  Swal.close();
+};
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월을 두 자리로 맞춤
-  const day = String(date.getDate()).padStart(2, '0'); // 일을 두 자리로 맞춤
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
-// 피드 상세 정보를 가져오는 함수
-const fetchFeedDetail = async () => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/feeds/${feedId.value}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+// -------------------- 주요 함수 --------------------
 
-    console.log(response);
-    
+// 피드 상세 정보를 가져오는 함수
+const fetchFeedDetail = () => {
+  const token = getToken();
+
+  if (!token) {
+    return Swal.fire({
+      icon: 'warning',
+      title: '인증 필요',
+      text: '로그인이 필요합니다. 다시 로그인해주세요.',
+    });
+  }
+
+  showLoading('피드 상세 정보 로딩 중...');
+
+  axios.get(`${API_BASE_URL}/feeds/${feedId.value}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    timeout: 5000,
+  })
+  .then(response => {
+    closeLoading();
     const feedData = response.data;
+
+    if (!feedData) {
+      throw new Error('피드 데이터를 가져오는 데 실패했습니다.');
+    }
+
+    // 피드 데이터 할당
     username.value = feedData.userNickname; 
     userimg.value = feedData.userProfileImg;
     content.value = feedData.feedContent;
     time.value = formatDate(feedData.feedCreateAt);
-    const ftpImagePath = feedData.feedImage;
-
+    
     // 로그인한 유저와 피드 작성자가 같은지 확인
     isOwner.value = loginState.userNickname === feedData.userNickname;
 
+    // 이미지 URL 설정
+    const ftpImagePath = feedData.feedImage;
     imageUrl.value = ftpImagePath
       ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`
       : "/default-profile-image.jpg";
-    
-  } catch (error) {
+  })
+  .catch(error => {
+    closeLoading();
     console.error("피드 상세 조회 오류:", error);
+    const errorMessage = getErrorMessage(error);
+
+    Swal.fire({
+      icon: 'error',
+      title: '피드 조회 실패',
+      text: errorMessage,
+    });
+
+    // 기본 이미지 설정
     imageUrl.value = "/default-profile-image.jpg";
-  }
+  });
 };
 
 // 피드 수정 페이지로 이동하는 함수
@@ -133,9 +203,8 @@ const goToFeedEdit = () => {
 };
 
 // 피드 삭제 함수
-const goToFeedDelete = async () => {
-  // SweetAlert2로 삭제 확인 절차를 추가
-  const result = await Swal.fire({
+const goToFeedDelete = () => {
+  Swal.fire({
     title: '피드를 삭제하시겠습니까?',
     icon: 'warning',
     showCancelButton: true,
@@ -143,61 +212,96 @@ const goToFeedDelete = async () => {
     cancelButtonColor: '#b3b3b3',
     confirmButtonText: '삭제',
     cancelButtonText: '취소'
-  });
+  })
+  .then((result) => {
+    if (result.isConfirmed) {
+      const token = getToken();
 
-  // 사용자가 삭제를 확인하면 요청을 보냄
-  if (result.isConfirmed) {
-    try {
-      const response = await axios.put(`${API_BASE_URL}/feeds/${feedId.value}/delete`, null, {
+      if (!token) {
+        return Swal.fire({
+          icon: 'warning',
+          title: '인증 필요',
+          text: '로그인이 필요합니다. 다시 로그인해주세요.',
+        });
+      }
+
+      showLoading('피드 삭제 중...');
+
+      axios.put(`${API_BASE_URL}/feeds/${feedId.value}/delete`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-      });
+        timeout: 5000,
+      })
+      .then(response => {
+        closeLoading();
+        if (response.status === 200) {
+          Swal.fire(
+            '삭제 완료!',
+            '피드가 성공적으로 삭제되었습니다.',
+            'success'
+          ).then(() => {
+            goBackToDiary();
+          });
+        } else {
+          Swal.fire(
+            '삭제 실패',
+            '피드 삭제 중 오류가 발생했습니다.',
+            'error'
+          );
+        }
+      })
+      .catch(error => {
+        closeLoading();
+        console.error('피드 삭제 오류:', error);
+        const errorMessage = getErrorMessage(error);
 
-      if (response.status === 200) {
-        Swal.fire(
-          '삭제 완료!',
-          '피드가 성공적으로 삭제되었습니다.',
-          'success'
-        );
-        // 삭제 후 피드 목록으로 리다이렉션
-        goBackToDiary();
-      } else {
         Swal.fire(
           '삭제 실패',
-          '피드 삭제 중 오류가 발생했습니다.',
+          errorMessage,
           'error'
         );
-      }
-    } catch (error) {
-      console.error('피드 삭제 오류:', error);
-      Swal.fire(
-        '삭제 실패',
-        '피드 삭제 중 오류가 발생했습니다.',
-        'error'
-      );
+      });
     }
-  }
+  });
 };
 
+// 피드 목록으로 돌아가는 함수
 const goBackToDiary = () => {
-  router.push(`/garden-diary/${loginState.userNickname}`); // 스토어에서 유저 닉네임을 가져와 이동
+  router.push(`/garden-diary/${loginState.userNickname}`);
 };
 
-const allCommentLists = async () => {
-  try {
-    await fetchReplyLists(feedId.value, token, comments);
-  } catch (error) {
-    console.error("오류:", error);
-  }
-}
+// 모든 댓글 리스트를 가져오는 함수
+const allCommentLists = () => {
+  const token = getToken();
 
-// 페이지 로드 시 피드 상세 정보를 가져오기
-onMounted(async () => {
+  if (!token) {
+    return Swal.fire({
+      icon: 'warning',
+      title: '인증 필요',
+      text: '로그인이 필요합니다. 다시 로그인해주세요.',
+    });
+  }
+
+  fetchReplyLists(feedId.value, token, comments)
+    .catch(error => {
+      console.error("댓글 조회 오류:", error);
+      Swal.fire({
+        icon: 'error',
+        title: '댓글 조회 실패',
+        text: '댓글을 불러오는 중 오류가 발생했습니다.',
+      });
+    });
+};
+
+// -------------------- 라이프사이클 훅 --------------------
+onMounted(() => {
   fetchFeedDetail();
   allCommentLists();
 });
 </script>
+
 
 <style scoped>
 .mb-10 {
