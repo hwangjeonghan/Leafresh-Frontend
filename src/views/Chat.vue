@@ -71,9 +71,10 @@ const saveMessages = () => {
     JSON.stringify(messages.value)
   );
 };
+
 const connection = () => {
   client.value = new Client({
-    brokerURL: 'wss://https://api.leafresh.shop/ws', // WebSocket URL
+    brokerURL: 'wss://api.leafresh.shop/ws', // WebSocket URL
     onConnect: () => {
       console.log("STOMP 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
