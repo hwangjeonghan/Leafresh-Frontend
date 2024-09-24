@@ -24,6 +24,8 @@
           <ul>
             <replyForm :feedId="feed.feedId" @addComment="handleAddReply" />
             <li v-for="(comment, index) in feed.comments" :key="index" class="comments_item">
+              <img :src="comment.profileImg" alt="User Profile Image" class="reply_user_image" />
+              <p class="comments_nickName">{{ comment.userNickname }}</p>
               <p class="comments_content">{{ comment.replyContent }}</p>
               <p class="comments_date">{{ comment.displayDate }}</p>
             </li>
@@ -37,6 +39,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import replyForm from '../feed/replyForm.vue';
+import { getUserInfo } from '@/assets/js/feedReplyService';
 
 // 반응형 feedData 객체 생성
 const feedData = ref({
@@ -49,6 +52,9 @@ const feedData = ref({
 });
 
 const comments = ref([]);
+const userNickname = ref('');
+const userProfileImage = ref('');
+const token = localStorage.getItem("accessToken");
 
 // props로 feed를 받아옴
 const props = defineProps({
@@ -67,17 +73,31 @@ const setFeed = () => {
     time: props.feed.time,
     imageUrl: props.feed.imageUrl,
     comments: props.feed.comments
+  };
+};
+
+const fetchUserInfo = async () => {
+  try {
+    console.log('api호출됨');
+    console.log('userId: ', feedData.value.userId);
+    console.log('username: ', feedData.value.username);
+    const { userNickname: nickname, profileImg } = await getUserInfo(props.feed.userId, token);
+    userNickname.value = nickname;
+    userProfileImage.value = `${import.meta.env.VITE_API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`;
+  } catch (error) {
+    console.error("사용자 정보 조회 오류:", error);
   }
 };
 
+// 댓글달기
 const emit = defineEmits(['addComment']);
-
 const handleAddReply = (newReply) => {
   emit('addComment', newReply);
 };
 
 // 컴포넌트가 마운트될 때 setFeed 함수 실행
 onMounted(() => {
+  console.log('프롭스: ', props.feed);
   setFeed();
 });
 </script>
@@ -208,6 +228,26 @@ onMounted(() => {
   display: flex;
   align-items: center;
   margin: 8px !important;
+}
+
+.reply_user_image {
+    width: 20px;
+    /* 이미지 크기 */
+    height: 20px;
+    /* 이미지 크기 */
+    border-radius: 100%;
+    /* 동그라미 모양 */
+    object-fit: cover;
+    /* 이미지 비율 유지 */
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.comments_nickName {
+  font-size: 0.8em !important;
+  font-weight: bold;
+  color: #2d8b5d !important;
+  margin: 0 0.5em 0 0 !important;
 }
 
 .comments_content {

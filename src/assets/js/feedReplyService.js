@@ -47,3 +47,23 @@ export async function fetchReplyLists(feedId, token, comments) {
         console.error('오류:', error);
     }
 }
+
+// 작성자 고유id번호로 작성자 정보를 가져오는 함수
+export async function getUserInfo(userId, token) {
+  try {
+    console.log('js-api호출됨');
+    const response = await fetch(`${API_BASE_URL}/user/userinfo-id?userId=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }, 
+    })
+    const userData = await response.json();
+    const userNickname = userData.userNickname;
+    const profileImg = userData.imageUrl;
+    
+    return { userNickname, profileImg };
+  } catch(error) {
+    console.error("유저정보 조회 실패! : ", error);
+  }
+}
