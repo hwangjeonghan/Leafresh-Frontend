@@ -58,7 +58,6 @@ const chatRoomId = ref(route.params.id);
 const chatMessages = ref(null); // 채팅 메시지 컨테이너 참조
 const roomId = ref(null); // roomid를 받아옴
 
-
 const loadMessages = () => {
   const savedMessages =
     JSON.parse(localStorage.getItem(`messages_${chatRoomId.value}`)) || [];
@@ -72,11 +71,15 @@ const saveMessages = () => {
   );
 };
 
+// WebSocket 연결 설정
 const connection = () => {
   client.value = new Client({
-    brokerURL: 'wss://api.leafresh.shop/ws', // WebSocket URL
+    brokerURL: 'wss://api.leafresh.shop/ws',  // WebSocket URL
+    connectHeaders: {
+      Authorization: `Bearer ${userStore.token}`, // JWT 토큰을 헤더에 추가
+    },
     onConnect: () => {
-      console.log("STOMP 연결 성공");
+      console.log("WebSocket 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
         const newMessage = JSON.parse(message.body);
         messages.value.push(newMessage);
@@ -89,11 +92,18 @@ const connection = () => {
     onStompError: (frame) => {
       console.error("STOMP 오류:", frame.headers["message"]);
     },
+    onWebSocketClose: (evt) => {
+      console.error("WebSocket 연결이 닫혔습니다.", evt);
+    },
+    onWebSocketError: (evt) => {
+      console.error("WebSocket 오류가 발생했습니다.", evt);
+    },
   });
 
   client.value.activate();
 };
 
+// 메시지 전송 함수
 const sendMessage = () => {
   console.log("User ID:", userStore.userId.value);
   console.log("User Name:", userStore.userName.value);
@@ -152,6 +162,7 @@ watch(
   }
 );
 </script>
+
 
 <style scoped>
 .chat-container {
