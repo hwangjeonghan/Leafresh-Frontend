@@ -5,7 +5,6 @@
         v-for="feed in feeds"
         :key="feed.feedId"
         :feed="feed"
-        :comment="feed.comments"
         @addComment="handleAddReply(feed.feedId, $event)"
         class="feed-card"
       />
@@ -34,31 +33,31 @@ const fetchFeeds = async () => {
     });
 
     const feedsData = response.data
-  .map(feedData => ({
-    username: feedData.userNickname,
-    userimg: feedData.userProfileImg,
-    content: feedData.feedContent,
-    time: feedData.feedCreateAt,
-    imageUrl: feedData.feedImage
-      ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(feedData.feedImage)}`
-      : "/default-profile-image.jpg",
-    comments: feedData.comments || [],
-    feedId: feedData.feedId
-  }))
-  .sort((a, b) => new Date(b.time) - new Date(a.time)); // 최신순으로 정렬
-  
-  // 댓글조회하기
-  const feedsWithReply = await Promise.all(feedsData.map(async (feed) => {
+      .map(feedData => ({
+        username: feedData.userNickname,
+        content: feedData.feedContent,
+        time: feedData.feedCreateAt,
+        imageUrl: feedData.feedImage
+          ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(feedData.feedImage)}`
+          : "/default-profile-image.jpg",
+        comments: feedData.comments || [],
+        feedId: feedData.feedId
+      }))
+      .sort((a, b) => new Date(b.time) - new Date(a.time)); // 최신순으로 정렬
+
+    // Fetch user images and comments for each feed
+    const feedsWithDetails = await Promise.all(feedsData.map(async (feed) => {
+      // Fetch comments with user information
       const comments = ref([]);
-      await fetchReplyLists(feed.feedId, token, comments); // 각 피드의 댓글 가져오기
+      await fetchReplyLists(feed.feedId, token, comments); // Fetch comments for each feed
 
       const commentsWithUserInfo = await Promise.all(comments.value.map(async (comment) => {
         try {
           const { userNickname, profileImg } = await getUserInfo(comment.userId, token);
           return {
             ...comment,
-            userNickname, // 작성자닉네임
-            profileImg: `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`, // 댓글작성자 프로필 이미지
+            userNickname, // 댓글 작성자 닉네임
+            profileImg: `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`, // 댓글 작성자 프로필 이미지
           };
         } catch (error) {
           console.error(`유저 정보 조회 실패 for userId ${comment.userId}`, error);
@@ -66,12 +65,35 @@ const fetchFeeds = async () => {
         }
       }));
 
+      // Fetch feed owner's profile image
+      try {
+        const userImgResponse = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            nickname: feed.username, // Fetch image using username
+          },
+          timeout: 5000,
+        });
+
+        const userImg = userImgResponse.data.imageUrl;
+        feed.userimg = userImg
+          ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(userImg)}`
+          : "/default-profile-image.jpg";
+      } catch (error) {
+        console.error(`피드 작성자 프로필 이미지 조회 오류 for ${feed.username}:`, error);
+        feed.userimg = "/default-profile-image.jpg"; // Set default image if error occurs
+      }
+
       return {
         ...feed,
         comments: commentsWithUserInfo,
       };
     }));
-    feeds.value = feedsWithReply;
+
+    feeds.value = feedsWithDetails; // Set the feeds array with complete data
   } catch (error) {
     console.error("피드 리스트 조회 오류:", error);
   }

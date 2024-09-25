@@ -1,5 +1,5 @@
 <template>
-  <div class="feedDetail-container">
+  <div v-if="feed" class="feedDetail-container">
     <div class="container">
       <div class="photo-section">
         <img :src="feed.imageUrl" class="feed-img" />
@@ -37,73 +37,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import replyForm from '../feed/replyForm.vue';
-import { getUserInfo } from '@/assets/js/feedReplyService';
-
-// 반응형 feedData 객체 생성
-const feedData = ref({
-  username: '',
-  userimg: '',
-  content: '',
-  time: '',
-  imageUrl: '',
-  comments: []
-});
-
-const comments = ref([]);
-const userNickname = ref('');
-const userProfileImage = ref('');
-const token = localStorage.getItem("accessToken");
 
 // props로 feed를 받아옴
 const props = defineProps({
   feed: {
     type: Object,
-    required: true
+    required: true,
   }
 });
 
-// setFeed 함수: props로 받아온 값을 feedData에 설정
-const setFeed = () => {
-  feedData.value = {
-    username: props.feed.username,
-    userimg: props.feed.userimg,
-    content: props.feed.content,
-    time: props.feed.time,
-    imageUrl: props.feed.imageUrl,
-    comments: props.feed.comments
-  };
-};
+// feed 데이터를 바로 참조할 수 있도록 설정
+const feed = ref(props.feed); // feed 객체를 그대로 참조
 
-const fetchUserInfo = async () => {
-  try {
-    console.log('api호출됨');
-    console.log('userId: ', feedData.value.userId);
-    console.log('username: ', feedData.value.username);
-    const { userNickname: nickname, profileImg } = await getUserInfo(props.feed.userId, token);
-    userNickname.value = nickname;
-    userProfileImage.value = `${import.meta.env.VITE_API_BASE_URL}/ftp/image?path=${encodeURIComponent(profileImg)}`;
-  } catch (error) {
-    console.error("사용자 정보 조회 오류:", error);
-  }
-};
-
-// 댓글달기
+// 댓글 추가 이벤트를 받기 위한 emit 정의
 const emit = defineEmits(['addComment']);
 const handleAddReply = (newReply) => {
   emit('addComment', newReply);
 };
 
-// 컴포넌트가 마운트될 때 setFeed 함수 실행
-onMounted(() => {
-  console.log('프롭스: ', props.feed);
-  setFeed();
-});
 </script>
 
 <style scoped>
-
 .feedDetail-container {
   display: flex;
   justify-content: center;
