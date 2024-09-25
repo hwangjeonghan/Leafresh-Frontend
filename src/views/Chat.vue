@@ -48,6 +48,7 @@ import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { useUserstore } from "@/stores/users"; // 사용자 스토어 가져오기
 import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const route = useRoute();
 const userStore = useUserstore(); // 사용자 스토어 인스턴스
@@ -73,8 +74,11 @@ const saveMessages = () => {
 
 // WebSocket 연결 설정
 const connection = () => {
+  const socket = new SockJS(`https://api.leafresh.shop/ws`);
   client.value = new Client({
-    brokerURL: `wss://api.leafresh.shop/ws`,  // WebSocket URL
+    webSocketFactory: () => {
+        return socket; // SockJS 인스턴스를 사용
+    },
     onConnect: () => {
       console.log("WebSocket 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
