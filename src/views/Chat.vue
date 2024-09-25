@@ -73,6 +73,7 @@ const saveMessages = () => {
 
 // WebSocket 연결 설정
 const connection = () => {
+  console.log("TSRTERSTSETESTESTS");
   client.value = new Client({
     brokerURL: `wss://api.leafresh.shop/ws`,  // WebSocket URL
     connectHeaders: {
