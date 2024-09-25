@@ -16,7 +16,7 @@ export default defineConfig({
     port: 8000,
     proxy: {
       '/ws': {
-        target: 'https://api.leafresh.shop', // WebSocket 서버가 작동하는 주소
+        target: 'wss://api.leafresh.shop/ws', // WebSocket 서버가 작동하는 주소
         ws: true, // WebSocket 지원
         changeOrigin: true,
       },
