@@ -175,6 +175,7 @@ export const useUserstore = defineStore("useUserstore", () => {
     email,
     userPhoneNumber,
     role,
+    token,
     imageUrl,
     userReportCount,
     profileTitle,
