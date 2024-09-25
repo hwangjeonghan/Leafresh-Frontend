@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 
-export const useGardenStore = defineStore('garden', {
+export const useGardenStore = defineStore('useGardenStore', {
   state: () => ({
     plants: [], // 식물 목록을 저장할 배열
   }),

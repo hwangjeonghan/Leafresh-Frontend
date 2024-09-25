@@ -58,13 +58,13 @@ const fetchUserFeeds = async () => {
       return;
     }
 
-    console.log(`Fetching feeds for user: ${userNickname.value}`);
     const response = await axios.get(`${API_BASE_URL}/feeds/nickname/${userNickname.value}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
+    // 응답 데이터가 있고 피드 목록이 있을 경우 처리
     if (response.data && response.data.length > 0) {
       myObject.value = response.data.map(feed => {
         return {
@@ -75,18 +75,26 @@ const fetchUserFeeds = async () => {
         };
       });
     } else {
-      myObject.value = []; // 빈 배열로 설정하여 "유저의 피드가 없습니다." 메시지가 표시되도록 함
+      myObject.value = [];
     }
   } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: '서버 오류',
-      text: '피드를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.',
-    });
+    // 404 상태 코드에 대한 처리
+    if (error.response && error.response.status === 404) {
+      console.log("유저의 피드가 없습니다!");
+      myObject.value = []; // 피드 데이터를 빈 배열로 설정하여 처리
+    } else {
+      // 다른 오류에 대한 처리
+      Swal.fire({
+        icon: 'error',
+        title: '서버 오류',
+        text: '피드를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.',
+      });
+    }
   } finally {
     isLoading.value = false;
   }
 };
+
 
 // 페이지 로드 시 피드 데이터 가져오기
 onMounted(() => {

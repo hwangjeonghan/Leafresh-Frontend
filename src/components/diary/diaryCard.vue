@@ -93,7 +93,7 @@ const getImageUrl = (url) => {
 
 <template>
   <div class="plants-container">
-    <div v-if="gardenStore.plants.length>0">
+    <div v-if="gardenStore.plants.length>0" class="plant-list">
       <div
       v-for="(plant, index) in gardenStore.plants"
       :key="plant.id"
@@ -123,12 +123,24 @@ const getImageUrl = (url) => {
 
 <style scoped>
 .plants-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 'auto-fill'을 사용하여 가능한 한 많은 카드가 한 줄에 배치됩니다. */
-  gap: 20px; /* 카드 간격 */
-  padding: 20px; /* 컨테이너 패딩 */
-  justify-content: start; /* 왼쪽 정렬 */
+  display: flex;
+  flex-wrap: wrap; /* 줄 바꿈을 허용하여 카드가 한 줄에 다 담기지 않을 때 자동으로 새 줄로 이동 */
+  gap: 20px;
+  padding: 20px;
+
 }
+
+.plant-list{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개의 열을 생성 */
+  gap: 20px; /* 카드 간격 설정 */
+  padding: 0;
+  list-style-type: none;
+  width: 100%;
+  max-width: 1200px;
+}
+
+
 
 .plant-card {
   border: 1px solid #ddd; /* Lighter border for a softer look */
