@@ -27,13 +27,11 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserstore } from '@/stores/users';
 
 const feedContent = ref('');
 const feedImage = ref(null);
 const previousImageUrl = ref(''); // 이전 이미지 URL을 저장
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const loginState = useUserstore();
 const route = useRoute();
 const router = useRouter();
 
@@ -47,7 +45,7 @@ const handleFileUpload = (event) => {
 
 // 이미지 업로드 함수
 const uploadImageToFTP = async () => {
-  if (!feedImage.value) return ''; // 새 이미지가 없으면 빈 문자열 반환
+  if (!feedImage.value) return null; // 새 이미지가 없을 경우 null 반환
 
   const formData = new FormData();
   formData.append('file', feedImage.value);
@@ -69,10 +67,13 @@ const uploadImageToFTP = async () => {
 const loadFeedData = async () => {
   const feedId = route.params.id; // URL에서 피드 ID를 가져옴
   try {
+    const token = localStorage.getItem('accessToken');
+    const authHeaders = {
+      Authorization: `Bearer ${token}`,
+    };
+    
     const response = await axios.get(`${API_BASE_URL}/feeds/${feedId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
+      headers: authHeaders,
     });
     const feedData = response.data;
     feedContent.value = feedData.feedContent;
@@ -85,6 +86,13 @@ const loadFeedData = async () => {
 // 피드 수정 함수
 const updateFeed = async () => {
   const feedId = route.params.id; // 수정할 피드 ID
+  
+  // 피드 내용 길이 체크
+  if (feedContent.value.length < 20) {
+    alert('피드 내용은 최소 20자 이상이어야 합니다.');
+    return;
+  }
+
   try {
     // 새로운 이미지가 있으면 업로드, 없으면 기존 이미지 URL 유지
     const updatedImageUrl = feedImage.value ? await uploadImageToFTP() : previousImageUrl.value;
@@ -94,16 +102,17 @@ const updateFeed = async () => {
       feedImage: updatedImageUrl, // 수정된 이미지 URL 또는 기존 이미지 URL
     };
 
+    const token = localStorage.getItem('accessToken');
     const response = await axios.put(`${API_BASE_URL}/feeds/${feedId}`, updatedFeedData, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
 
     if (response.status === 200) {
       alert('피드가 성공적으로 수정되었습니다.');
-      router.push(`/garden-diary/${loginState.userNickname}`); // 수정 후 피드 목록으로 이동
+      router.back(); // 수정 후 피드 목록으로 이동
     }
   } catch (error) {
     console.error('피드 수정 중 오류 발생:', error);

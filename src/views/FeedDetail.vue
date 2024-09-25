@@ -65,9 +65,9 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from 'sweetalert2';
-import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 가져오기
 import { fetchReplyLists, getUserInfo } from '@/assets/js/feedReplyService';
 import replyForm from '@/components/feed/replyForm.vue';
+import { useUserstore } from "@/stores/users";
 
 // -------------------- 상수 정의 --------------------
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -75,17 +75,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // -------------------- 라우터 설정 --------------------
 const route = useRoute();
 const router = useRouter();
+const useStore = useUserstore();
 
 // -------------------- 상태 변수 정의 --------------------
 const username = ref("");
 const feedId = ref(route.params.id);
-const loginState = useUserstore();
 
 const content = ref("");
 const comments = ref(["아직 댓글이 없습니다!"]);
 const imageUrl = ref("/default-profile-image.jpg");
 const time = ref("");
-const userimg = ref("");
 const isOwner = ref(false); // 수정/삭제 버튼 노출 여부
 
 // -------------------- 유틸리티 함수 --------------------
@@ -152,8 +151,6 @@ const fetchFeedDetail = () => {
     });
   }
 
-  showLoading('피드 상세 정보 로딩 중...');
-
   axios.get(`${API_BASE_URL}/feeds/${feedId.value}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -171,12 +168,11 @@ const fetchFeedDetail = () => {
 
     // 피드 데이터 할당
     username.value = feedData.userNickname; 
-    userimg.value = feedData.userProfileImg;
     content.value = feedData.feedContent;
     time.value = formatDate(feedData.feedCreateAt);
     
     // 로그인한 유저와 피드 작성자가 같은지 확인
-    isOwner.value = loginState.userNickname === feedData.userNickname;
+    isOwner.value = useStore.userNickname === feedData.userNickname;
 
     // 이미지 URL 설정
     const ftpImagePath = feedData.feedImage;
@@ -272,7 +268,7 @@ const goToFeedDelete = () => {
 
 // 피드 목록으로 돌아가는 함수
 const goBackToDiary = () => {
-  router.push(`/garden-diary/${loginState.userNickname}`);
+  router.push(`/garden-diary/${useStore.userNickname}`);
 };
 
 // 댓글 추가 이벤트를 받기 위한 emit 정의
