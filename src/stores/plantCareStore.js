@@ -1,6 +1,7 @@
 // stores/plantCareStore.js
 import { defineStore } from 'pinia';
 import { useUserstore } from '@/stores/users';
+import { useGardenstore } from '@/stores/plantGardenstore';
 
 export const usePlantCareStore = defineStore('plantCare', {
   state: () => ({
@@ -16,6 +17,8 @@ export const usePlantCareStore = defineStore('plantCare', {
     // 데이터를 저장
     async savePlantCare() {
       const userStore = useUserstore();
+      const userGarden = useGardenstore();
+
       const token = localStorage.getItem('accessToken'); // 토큰 추가
       const data = {
         water: this.water,
@@ -25,6 +28,7 @@ export const usePlantCareStore = defineStore('plantCare', {
         nutrients: this.nutrients,
         selectedDate: this.selectedDate,
         userId: userStore.userId,
+        plantId: userGarden.plantId
       };
 
       try {
