@@ -11,6 +11,7 @@
         :allPostList="allPostList"
         :isModal="true"
       />
+
         <div class="market_user_container" v-if="userInfo">
           <img :src="userImage" alt="User Profile Image" class="user_image" @click="toGardenDiary()"/>
           <div class="user_info" @click="toGardenDiary()" style="cursor: pointer;">
@@ -32,6 +33,7 @@
             </svg>
           </button>
         </div>
+
       <div v-else>
         <p>Loading...</p>
       </div>
@@ -71,6 +73,7 @@ const marketImage = computed(() => {
 });
 
 const userImage = computed(() => {
+  console.log(import.meta.env.VITE_API_BASE_URL)
   return `${import.meta.env.VITE_API_BASE_URL}/ftp/image?path=${encodeURIComponent(userInfo.value?.imageUrl)}`;
 })
 
