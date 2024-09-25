@@ -52,15 +52,15 @@ const login = async (credentials) => {
     ); // 서버에 로그인 요청 전송
     console.log("응답 데이터:", response.data); // 디버깅용 콘솔 출력
 
-    // 응답 데이터에 accessToken과 refreshToken이 존재하는지 확인
-    if (response.data.accessToken && response.data.refreshToken) {
+    // 응답 데이터에 accessToken이 존재하는지 확인
+    if (response.data.accessToken) {
       // 액세스 토큰과 리프레시 토큰을 로컬 스토리지에 저장
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
-
+      
       userStore.setLoginState(true);
       await userStore.fetchUserProfile();
-      
+
       // 로그인 성공 시, 대시보드로 리다이렉트
       router.push("/").then(() => {
         location.reload(); // 페이지 새로고침
