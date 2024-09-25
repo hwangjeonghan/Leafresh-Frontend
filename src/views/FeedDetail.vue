@@ -8,7 +8,7 @@
         <div class="user-header">
           <div class="user-info">
             <img
-              :src="userimg"
+              :src="userProfileImg"
               alt="User Profile"
               class="photo"
             />
@@ -84,6 +84,7 @@ const feedId = ref(route.params.id);
 const content = ref("");
 const comments = ref(["아직 댓글이 없습니다!"]);
 const imageUrl = ref("/default-profile-image.jpg");
+const userProfileImg = ref("/default-profile-image.jpg");
 const time = ref("");
 const isOwner = ref(false); // 수정/삭제 버튼 노출 여부
 
@@ -140,7 +141,7 @@ const formatDate = (dateString) => {
 // -------------------- 주요 함수 --------------------
 
 // 피드 상세 정보를 가져오는 함수
-const fetchFeedDetail = () => {
+const fetchFeedDetail = async () => {
   const token = getToken();
 
   if (!token) {
@@ -151,14 +152,15 @@ const fetchFeedDetail = () => {
     });
   }
 
-  axios.get(`${API_BASE_URL}/feeds/${feedId.value}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    timeout: 5000,
-  })
-  .then(response => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/feeds/${feedId.value}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 5000,
+    });
+
     closeLoading();
     const feedData = response.data;
 
@@ -179,8 +181,11 @@ const fetchFeedDetail = () => {
     imageUrl.value = ftpImagePath
       ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`
       : "/default-profile-image.jpg";
-  })
-  .catch(error => {
+    
+    // Fetch user profile image after fetching feed details
+    await fetchUserImg();
+
+  } catch (error) {
     closeLoading();
     console.error("피드 상세 조회 오류:", error);
     const errorMessage = getErrorMessage(error);
@@ -193,7 +198,48 @@ const fetchFeedDetail = () => {
 
     // 기본 이미지 설정
     imageUrl.value = "/default-profile-image.jpg";
-  });
+  }
+};
+
+// 작성한 유저의 프로필 사진을 조회하는 함수
+const fetchUserImg = async () => {
+  const token = getToken();
+
+  if (!token) {
+    return Swal.fire({
+      icon: 'warning',
+      title: '인증 필요',
+      text: '로그인이 필요합니다. 다시 로그인해주세요.',
+    });
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/user/info-by-nickname`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      params: {
+        nickname: username.value, // 닉네임 값 사용
+      },
+      timeout: 5000,
+    });
+    const userImg = response.data.imageUrl;
+    const ftpImagePath = userImg;
+
+    userProfileImg.value = ftpImagePath
+      ? `${API_BASE_URL}/ftp/image?path=${encodeURIComponent(ftpImagePath)}`
+      : "/default-profile-image.jpg";
+    return userProfileImg.value; // 최종적으로 프로필 이미지 URL 반환
+    
+  } catch (error) {
+    console.error("오류 발생:", error); // 에러 내용 출력
+    Swal.fire({
+      icon: 'error',
+      title: '오류 발생',
+      text: '유저 프로필 사진을 불러오는데 실패했습니다.',
+    });
+  }
 };
 
 // 피드 수정 페이지로 이동하는 함수
