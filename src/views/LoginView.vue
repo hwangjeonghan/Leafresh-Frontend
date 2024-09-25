@@ -17,6 +17,8 @@ import { useRouter } from "vue-router"; // vue-router 사용을 위해 import
 import LoginForm from "../components/LoginForm.vue"; // LoginForm 컴포넌트 import
 import axios from "axios"; // axios import
 import Swal from "sweetalert2"; // SweetAlert2 import
+import { useUserstore } from '@/stores/users.js';
+const userStore = useUserstore();
 
 const router = useRouter(); // router 사용 설정
 
@@ -54,6 +56,10 @@ const login = async (credentials) => {
     if (response.data.accessToken) {
       // 액세스 토큰과 리프레시 토큰을 로컬 스토리지에 저장
       localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      
+      userStore.setLoginState(true);
+      await userStore.fetchUserProfile();
 
       // 로그인 성공 시, 대시보드로 리다이렉트
       router.push("/").then(() => {

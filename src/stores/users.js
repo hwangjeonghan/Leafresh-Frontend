@@ -19,14 +19,11 @@ export const useUserstore = defineStore("useUserstore", () => {
   const profileDescription = ref(""); // 프로필 설명
   const token = ref(localStorage.getItem("accessToken") || ''); // 로컬 스토리지에서 토큰을 초기화
 
-
-
   // 로그인 상태 변수 추가
   const isLoggedIn = ref(false); // 로그인 상태 관리
   const usersInfo = ref(false); // 사용자 정보가 존재하는지 여부
-  const profileExists = ref(false); // 프로필이 존재하는지 여부
-
-  // 사용자 기본 정보를 받아와 상태를 업데이트하는 함수 (프로필 정보는 포함하지 않음)
+  const profileExists = ref(false); // 프로필이 존재하는지 여부\
+  
   const fetchUserProfile = async () => {
     const localToken = localStorage.getItem("accessToken");
     if (localToken) {

@@ -19,12 +19,10 @@ import { useRouter } from "vue-router"; // vue-router 사용
 import FeedForm from "@/components/feed/feedForm.vue"; // FeedForm 컴포넌트 import
 import axios from "axios"; // axios import
 import Swal from "sweetalert2"; // SweetAlert2 import
-import { useUserstore } from "@/stores/users.js"; // Pinia 스토어 import
 
 // 환경 변수에서 API URL 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const router = useRouter(); // router 사용 설정
-const loginState = useUserstore(); // Pinia 스토어에서 유저 정보 가져오기
 
 // 피드 추가 요청 처리 함수
 const addFeed = (feedInfo) => {
@@ -90,7 +88,7 @@ const addFeed = (feedInfo) => {
 
 // 다이어리 목록으로 돌아가기 함수
 const goBackToDiary = () => {
-  router.push(`/garden-diary/${loginState.userNickname}`); // 스토어에서 유저 닉네임을 가져와 이동
+  router.back(); // 스토어에서 유저 닉네임을 가져와 이동
 };
 </script>
 
