@@ -76,9 +76,7 @@ const saveMessages = () => {
 const connection = () => {
   const socket = new SockJS(`https://api.leafresh.shop/ws`);
   client.value = new Client({
-    webSocketFactory: () => {
-        return socket; // SockJS 인스턴스를 사용
-    },
+    brokerURL: `wss://api.leafresh.shop/ws`,  // WebSocket URL
     onConnect: () => {
       console.log("WebSocket 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
