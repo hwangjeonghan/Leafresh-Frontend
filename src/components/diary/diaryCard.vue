@@ -93,7 +93,7 @@ const getImageUrl = (url) => {
 
 <template>
   <div class="plants-container">
-    <div v-if="gardenStore.plants.length>0">
+    <div v-if="gardenStore.plants.length>0" class="plant-list">
       <div
       v-for="(plant, index) in gardenStore.plants"
       :key="plant.id"
@@ -129,6 +129,18 @@ const getImageUrl = (url) => {
   padding: 20px;
 
 }
+
+.plant-list{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개의 열을 생성 */
+  gap: 20px; /* 카드 간격 설정 */
+  padding: 0;
+  list-style-type: none;
+  width: 100%;
+  max-width: 1200px;
+}
+
+
 
 .plant-card {
   border: 1px solid #ddd; /* Lighter border for a softer look */
