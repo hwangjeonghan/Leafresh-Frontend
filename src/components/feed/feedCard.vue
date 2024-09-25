@@ -44,7 +44,6 @@ const isLoading = ref(true); // 로딩 상태 관리
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // API 기본 경로
 
 // 유저 피드를 가져오는 함수
-// 유저 피드를 가져오는 함수
 const fetchUserFeeds = async () => {
   try {
     const token = localStorage.getItem("accessToken");
@@ -59,7 +58,6 @@ const fetchUserFeeds = async () => {
       return;
     }
 
-    console.log(`Fetching feeds for user: ${userNickname.value}`);
     const response = await axios.get(`${API_BASE_URL}/feeds/nickname/${userNickname.value}`, {
       headers: {
         Authorization: `Bearer ${token}`,
