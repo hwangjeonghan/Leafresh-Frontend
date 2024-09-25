@@ -123,11 +123,11 @@ const getImageUrl = (url) => {
 
 <style scoped>
 .plants-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 'auto-fill'을 사용하여 가능한 한 많은 카드가 한 줄에 배치됩니다. */
-  gap: 20px; /* 카드 간격 */
-  padding: 20px; /* 컨테이너 패딩 */
-  justify-content: start; /* 왼쪽 정렬 */
+  display: flex;
+  flex-wrap: wrap; /* 줄 바꿈을 허용하여 카드가 한 줄에 다 담기지 않을 때 자동으로 새 줄로 이동 */
+  gap: 20px;
+  padding: 20px;
+
 }
 
 .plant-card {

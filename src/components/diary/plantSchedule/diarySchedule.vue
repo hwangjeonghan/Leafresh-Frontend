@@ -145,7 +145,6 @@ onMounted(() => {
 .diaryschedule_container {
   width: 100%;
   height: 100%;
-  max-width: 1200px;  /* 최대 너비 설정 */
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -155,7 +154,7 @@ onMounted(() => {
 
 .schedule_box {
   display: flex;
-  width: 85%;
+  width: 70%;
   justify-content: space-evenly; /* 컴포넌트들 간의 간격을 조정 */
   align-items: flex-start; /* 상단 정렬 */
   flex-direction: row; /* 가로로 나열 */
