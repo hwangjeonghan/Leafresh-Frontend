@@ -16,10 +16,9 @@
           received: msg.senderId !== userStore.userId,
         }"
       >
-      <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
-  <img :src="msg.imageUrl" alt="프로필 사진" />
-</div>
-
+        <div v-if="msg.senderId !== userStore.userId" class="profile-picture">
+          <img :src="userStore.imageUrl" alt="프로필 사진" />
+        </div>
 
         <div class="chat-message">
           <strong
@@ -116,7 +115,7 @@ const sendMessage = () => {
       message: newMessage.value,
       chatRoomId: chatRoomId.value,
       senderId: userStore.userId,
-      imageUrl: userStore.imageUrl, // 발신자의 프로필 사진 URL 추가
+
     };
     console.log("전송할 메시지: ", messagePayload);
     client.value.publish({
