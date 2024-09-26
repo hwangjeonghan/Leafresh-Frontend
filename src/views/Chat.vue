@@ -73,9 +73,11 @@ const saveMessages = () => {
 
 // WebSocket 연결 설정
 const connection = () => {
-  console.log(userStore.token);
   client.value = new Client({
     brokerURL: 'wss://api.leafresh.shop/ws',  // WebSocket URL
+    connectHeaders: {
+        Authorization: `Bearer ${userStore.token}`,  // JWT 토큰 추가
+    },
     onConnect: () => {
       console.log("WebSocket 연결 성공");
       client.value.subscribe(`/sub/chatroom/${chatRoomId.value}`, (message) => {
